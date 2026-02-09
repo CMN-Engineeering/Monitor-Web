@@ -1,90 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Monitor Dashboard</title>
-<link rel="stylesheet" href="styles.css">
-</head>
-<body>
-<nav class="nav">
-<button class="nav-btn active" data-page="dashboard">Dashboard</button>
-<button class="nav-btn" data-page="settings">Settings</button>
-</nav>
-
-<div id="dashboard" class="page active">
-<div class="card">
-<h2>Input / Output Status</h2>
-<div id="io-status-dash"></div>
-</div>
-<div class="card">
-<h2>Motor Control</h2>
-<div class="motor-visual">
-<div class="motor-speed-display"><span id="motor-speed-big">50</span><span class="unit">m/s</span></div>
-<div class="motor-circle stopped" id="motor-circle" title="Motor status"></div>
-<div class="motor-circle-label" id="motor-label">Stopped</div>
-</div>
-<div class="motor-row">
-<button class="btn btn-primary" id="btn-start">Start</button>
-<button class="btn btn-danger" id="btn-stop">Stop</button>
-</div>
-<div class="slider-wrap">
-<label>Speed:</label>
-<input type="range" id="speed-slider" min="0" max="100" value="50">
-<span class="speed-val" id="speed-display">0</span>m/s
-<button class="btn btn-primary" id="btn-confirm-speed">Confirm</button>
-</div>
-<div class="dir-row">
-<button class="btn btn-warn" id="btn-forward">Forward</button>
-<button class="btn btn-warn" id="btn-backward">Backward</button>
-<p class="warn-msg" id="dir-warn">Stop the motor before switching direction.</p>
-</div>
-</div>
-<div class="card">
-<h2>Timer Display</h2>
-<div class="status-row" style="margin-bottom:8px"><span id="current-time">--:--:--</span></div>
-<div class="timer-grid" id="timer-dash"></div>
-</div>
-</div>
-
-<div id="settings" class="page">
-<div class="card">
-<h2>Input / Output Settings</h2>
-<div class="toggle-row">
-<label>Inputs Master:</label>
-<div class="switch" id="input-master" data-on="0"></div>
-</div>
-<div class="toggle-row">
-<label>Outputs Master:</label>
-<div class="switch" id="output-master" data-on="0"></div>
-</div>
-<div id="io-settings"></div>
-</div>
-<div class="card timer-settings">
-<h2>Timers (4)</h2>
-<div id="timer-settings"></div>
-</div>
-<div class="card">
-<h2>WiFi Configuration</h2>
-<div class="wifi-row">
-<label for="wifi-ssid">SSID</label>
-<input id="wifi-ssid" class="text-input" type="text" autocomplete="off">
-</div>
-<div class="wifi-row">
-<label for="wifi-password">Password</label>
-<input id="wifi-password" class="text-input" type="password" autocomplete="off">
-</div>
-<div class="wifi-row">
-<label for="wifi-ip">Device IP</label>
-<input id="wifi-ip" class="text-input" type="text" autocomplete="off">
-</div>
-<button class="btn btn-primary" id="wifi-save">Save WiFi</button>
-<p class="wifi-note" id="wifi-status">WiFi settings are stored only in this browser.</p>
-</div>
-</div>
-
-<script>
-(function(){
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Monitor Dashboard</title><link rel="stylesheet" href="styles.css"></head><body><nav class="nav"><button class="nav-btn active" data-page="dashboard">Dashboard</button><button class="nav-btn" data-page="settings">Settings</button></nav><div id="dashboard" class="page active"><div class="card"><h2>Input / Output Status</h2><div id="io-status-dash"></div></div><div class="card"><h2>Motor Control</h2><div class="motor-visual"><div class="motor-speed-display"><span id="motor-speed-big">50</span><span class="unit">m/s</span></div><div class="motor-circle stopped" id="motor-circle" title="Motor status"></div><div class="motor-circle-label" id="motor-label">Stopped</div></div><div class="motor-row"><button class="btn btn-primary" id="btn-start">Start</button><button class="btn btn-danger" id="btn-stop">Stop</button></div><div class="slider-wrap"><label>Speed:</label><input type="range" id="speed-slider" min="0" max="100" value="50"><span class="speed-val" id="speed-display">0</span>m/s<button class="btn btn-primary" id="btn-confirm-speed">Confirm</button></div><div class="dir-row"><button class="btn btn-warn" id="btn-forward">Forward</button><button class="btn btn-warn" id="btn-backward">Backward</button><p class="warn-msg" id="dir-warn">Stop the motor before switching direction.</p></div></div><div class="card"><h2>Timer Display</h2><div class="status-row" style="margin-bottom:8px"><span id="current-time">--:--:--</span></div><div class="timer-grid" id="timer-dash"></div></div></div><div id="settings" class="page"><div class="card"><h2>Input / Output Settings</h2><div class="toggle-row"><label>Inputs Master:</label><div class="switch" id="input-master" data-on="0"></div></div><div class="toggle-row"><label>Outputs Master:</label><div class="switch" id="output-master" data-on="0"></div></div><div id="io-settings"></div></div><div class="card timer-settings"><h2>Timers (4)</h2><div id="timer-settings"></div></div><div class="card"><h2>WiFi Configuration</h2><div class="wifi-row"><label for="wifi-ssid">SSID</label><input id="wifi-ssid" class="text-input" type="text" autocomplete="off"></div><div class="wifi-row"><label for="wifi-password">Password</label><input id="wifi-password" class="text-input" type="password" autocomplete="off"></div><div class="wifi-row"><label for="wifi-ip">Device IP</label><input id="wifi-ip" class="text-input" type="text" autocomplete="off"></div><button class="btn btn-primary" id="wifi-save">Save WiFi</button><p class="wifi-note" id="wifi-status">WiFi settings are stored only in this browser.</p></div></div><script>(function(){
 const STORAGE='monitor_state';
 function load(){
 try{return JSON.parse(localStorage.getItem(STORAGE)||'{}')}catch(e){return {}}
@@ -206,8 +120,8 @@ const el=document.getElementById('io-settings');
 const io=state.io;
 let html='<div class="io-grid">';
 ['Input1','Input2','Input3','Input4'].forEach((l,i)=>{
-const item=io.inputs[i]||{on:0,timer:0};
-html+=`<div class="io-item"><label>${l}</label><div class="switch ${item.on?'on':''}" data-type="input" data-i="${i}" data-f="on"></div><button class="btn" data-type="input" data-i="${i}" data-f="timer">Timer</button></div>`;
+	const item=io.inputs[i]||{on:0,timer:0};
+	html+=`<div class="io-item"><label>${l}</label><div class="switch ${item.on?'on':''}" data-type="input" data-i="${i}" data-f="on"></div></div>`;
 });
 ['Output1','Output2','Output3','Output4'].forEach((l,i)=>{
 const item=io.outputs[i]||{on:0,timer:0};
@@ -215,32 +129,40 @@ html+=`<div class="io-item"><label>${l}</label><div class="switch ${item.on?'on'
 });
 el.innerHTML=html+'</div>';
 el.querySelectorAll('.switch[data-type]').forEach(sw=>{
-sw.onclick=function(){
-if(sw.dataset.f!=='on')return;
-const arr=sw.dataset.type==='input'?state.io.inputs:state.io.outputs;
-const i=+sw.dataset.i;
-const master=sw.dataset.type==='input'?state.io.inputMaster:state.io.outputMaster;
-if(!master)return;
-arr[i]=arr[i]||{on:0,timer:0,onSince:0};
-var isInput=sw.dataset.type==='input';
-if(arr[i].on){arr[i].on=0;if(isInput)arr[i].onSince=0;}
-else{arr[i].on=1;if(isInput)arr[i].onSince=Date.now();}
-sw.classList.toggle('on',!!arr[i].on);
-persist();
-renderIODash();
-};
+	sw.onclick=function(){
+		if(sw.dataset.f!=='on')return;
+		const arr=sw.dataset.type==='input'?state.io.inputs:state.io.outputs;
+		const i=+sw.dataset.i;
+		const master=sw.dataset.type==='input'?state.io.inputMaster:state.io.outputMaster;
+		if(!master)return;
+		arr[i]=arr[i]||{on:0,timer:0,onSince:0};
+		var isInput=sw.dataset.type==='input';
+		if(sw.dataset.type==='output' && arr[i].timer){
+			// If output timer is ON, do not allow manual toggle
+			return;
+		}
+		if(arr[i].on){arr[i].on=0;if(isInput)arr[i].onSince=0;}
+		else{arr[i].on=1;if(isInput)arr[i].onSince=Date.now();}
+		sw.classList.toggle('on',!!arr[i].on);
+		persist();
+		renderIODash();
+	};
 });
 el.querySelectorAll('.btn[data-f="timer"]').forEach(btn=>{
-const arr=btn.dataset.type==='input'?state.io.inputs:state.io.outputs;
-const i=+btn.dataset.i;
-btn.style.background=arr[i].timer?'#0d7377':'';
-btn.style.color=arr[i].timer?'#fff':'';
-btn.onclick=function(){
-arr[i].timer=arr[i].timer?0:1;
-this.style.background=arr[i].timer?'#0d7377':'';
-this.style.color=arr[i].timer?'#fff':'';
-persist();
-};
+	if(btn.dataset.type==='output'){
+		const arr=state.io.outputs;
+		const i=+btn.dataset.i;
+		btn.style.background=arr[i].timer?'#0d7377':'';
+		btn.style.color=arr[i].timer?'#fff':'';
+		btn.onclick=function(){
+			arr[i].timer=arr[i].timer?0:1;
+			this.style.background=arr[i].timer?'#0d7377':'';
+			this.style.color=arr[i].timer?'#fff':'';
+			persist();
+		};
+	} else {
+		btn.style.display = 'none';
+	}
 });
 }
 
@@ -332,13 +254,19 @@ if(active)outputActive[o]=true;
 });
 });
 for(var o=0;o<4;o++){
-var controlled=state.timers.some(function(t){
-return t.enabled&&t.outputs&&t.outputs.indexOf(o)>=0;
-});
-if(controlled){
-state.io.outputs[o]=state.io.outputs[o]||{on:0,timer:0};
-state.io.outputs[o].on=outputActive[o]?1:0;
-}
+	state.io.outputs[o]=state.io.outputs[o]||{on:0,timer:0};
+	if(state.io.outputs[o].timer){
+		// Timer button ON: output controlled by timer
+		var controlled=state.timers.some(function(t){
+			return t.enabled&&t.outputs&&t.outputs.indexOf(o)>=0;
+		});
+		if(controlled){
+			state.io.outputs[o].on=outputActive[o]?1:0;
+		} else {
+			state.io.outputs[o].on=0;
+		}
+	}
+	// else: manual ON/OFF, do not change .on
 }
 }
 

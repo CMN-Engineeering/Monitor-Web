@@ -2,6 +2,7 @@ const http = require('http');
 const fs = require('fs');
 const path = require('path');
 
+
 const mimeTypes = {
   '.html': 'text/html; charset=utf-8',
   '.css': 'text/css; charset=utf-8',
@@ -11,7 +12,14 @@ const mimeTypes = {
 
 const server = http.createServer((req, res) => {
   const urlPath = req.url.split('?')[0];
+
   let filePath = urlPath === '/' ? '/index.html' : urlPath;
+  // Do not serve app.js or README.md
+  if (filePath.endsWith('app.js') || filePath.endsWith('README.md')) {
+    res.writeHead(404, { 'Content-Type': 'text/plain; charset=utf-8' });
+    res.end('Not found');
+    return;
+  }
   filePath = path.join(__dirname, filePath);
 
   fs.stat(filePath, (err, stats) => {
