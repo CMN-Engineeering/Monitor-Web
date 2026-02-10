@@ -26,11 +26,11 @@ device_state = {
 # --- ROUTE CHO GIAO DIỆN WEB ---
 @app.route('/')
 def home():
-    return send_file('index.html')
+    return send_file('dashboard.html')
 
-@app.route('/index.html')
+@app.route('/dashboard.html')
 def index_page():
-    return send_file('index.html')
+    return send_file('dashboard.html')
 
 @app.route('/settings.html')
 def settings_page():
