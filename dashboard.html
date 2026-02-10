@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CMNIoT - Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root { --bg-color: #1a1a2e; --card-bg: #16213e; --text-color: #ffffff; --text-secondary: #b0b0b0; --accent: #2ae005ff; --accent-red: #cc4562ff; --btn-color: #3b3a3bff}
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+        body { background-color: var(--bg-color); color: var(--text-color); display: flex; justify-content: center; padding: 20px; min-height: 100vh; }
+        .container { width: 100%; max-width: 480px; }
+        h1 { text-align: center; margin-bottom: 10px; font-weight: 700; }
+        
+        /* Navigation Bar */
+        .nav-bar { display: flex; gap: 10px; margin-bottom: 20px; background: var(--card-bg); padding: 5px; border-radius: 10px; }
+        .nav-btn { flex: 1; text-align: center; padding: 10px; color: var(--text-secondary); text-decoration: none; border-radius: 8px; font-weight: 600; transition: 0.3s; }
+        .nav-btn:hover { background: rgba(255,255,255,0.05); color: white; }
+        .nav-btn.active { background: var(--btn-color); color: white; border: 1px solid #444; }
+
+        .status-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; background: rgba(255,255,255,0.05); padding: 10px; border-radius: 10px; }
+        .badge { padding: 5px 12px; border-radius: 20px; font-size: 0.85rem; font-weight: bold; display: flex; align-items: center; gap: 5px; }
+        .badge.online { background: rgba(46, 204, 113, 0.2); color: #2ecc71; border: 1px solid #2ecc71; }
+        .badge.offline { background: rgba(233, 69, 96, 0.2); color: #e94560; border: 1px solid #e94560; }
+        .ip-addr { font-family: monospace; color: #aaa; font-size: 0.9rem; }
+        .card { background-color: var(--card-bg); border-radius: 15px; padding: 20px; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
+        .card-header { display: flex; align-items: center; margin-bottom: 20px; font-size: 1.2rem; font-weight: 600; }
+        .card-header i { margin-right: 12px; color: var(--text-secondary); }
+        .control-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; gap: 10px; }
+        .btn { background-color: var(--btn-color); color: white; border: none; padding: 12px 20px; border-radius: 8px; cursor: pointer; font-size: 1rem; font-weight: 600; display: flex; justify-content: center; align-items: center;}
+        .btn i { margin-right: 8px; }
+        .dir-fwd { background-color: #0c1fed !important; }
+        .dir-rev { background-color: #f29913 !important; }
+        .btn { transition: transform 120ms ease, box-shadow 120ms ease; }
+        .btn:active { transform: scale(0.98); box-shadow: 0 2px 6px rgba(0,0,0,0.35) inset; }
+        .medium {width: 50%;}
+        .range-slider { -webkit-appearance: none; width: 100%; height: 10px; background: #333; border-radius: 5px; outline: none; }
+        .range-slider::-webkit-slider-thumb { -webkit-appearance: none; width: 22px; height: 22px; background: var(--accent); border-radius: 50%; cursor: pointer; }
+        .mt-2 { margin-top: 15px; }
+        .progress-container { margin: 1px 0; }
+        .progress-label { display: flex; justify-content: space-between; margin-bottom: 5px; }
+        .progress-bar { height: 20px; width: 100%; background: #e9ecef; border-radius: 10px; overflow: hidden; }
+        .progress-fill { height: 100%; background: linear-gradient(90deg, #4CAF50, #8BC34A); border-radius: 10px; transition: width 0.5s ease; position: relative; }
+        .progress-fill.high { background: linear-gradient(90deg, #f44336, #ff9800); }
+        .progress-fill.warning { background: linear-gradient(90deg, #ff9800, #ffc107); }
+        .status-indicator { display: flex; align-items: center; gap: 10px; padding: 15px; border-radius: 10px; background: rgba(255,255,255,0.05); margin-bottom: 15px; }
+        .indicator-light { width: 30px; height: 30px; border-radius: 50%; background-color: #555; border: 2px solid #888; transition: all 0.3s ease; box-shadow: 0 0 10px rgba(0,0,0,0.5); }
+        .indicator-light.running { background-color: #2ecc71; border-color: #27ae60; box-shadow: 0 0 15px rgba(46, 204, 113, 0.8); animation: pulse-green 1.5s infinite; }
+        .indicator-light.stopped { background-color: #e94560; border-color: #c73a50; box-shadow: 0 0 15px rgba(233, 69, 96, 0.8); }
+        @keyframes pulse-green { 0%, 100% { box-shadow: 0 0 15px rgba(46, 204, 113, 0.8); } 50% { box-shadow: 0 0 25px rgba(46, 204, 113, 1); } }
+        .indicator-text { display: flex; flex-direction: column; }
+        .indicator-label { font-size: 0.9rem; color: var(--text-secondary); }
+        .indicator-state { font-size: 1.2rem; font-weight: bold; color: white; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>BẢNG ĐIỀU KHIỂN</h1>
+        
+        <div class="nav-bar">
+            <a href="dashboard.html" class="nav-btn active"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+            <a href="settings.html" class="nav-btn"><i class="fas fa-cogs"></i> Cài đặt</a>
+        </div>
+
+        <div class="status-bar">
+            <div id="statusBadge" class="badge offline"><i class="fas fa-wifi"></i> Đang kiểm tra...</div>
+            <div id="ipDisplay" class="ip-addr">IP: ...</div>
+        </div>
+
+        <div class="status-bar">
+            <div class="card-header"><i class="fa-solid fa-database"></i> Thông tin Module:</div>
+            <div class="progress-container">
+                <div class="progress-label">
+                    <span>Bộ Nhớ: </span>
+                    <span id="memoryPercent"> 0%</span>
+                </div>
+                <div class="progress-bar mt-2">
+                    <div class="progress-fill" id="memoryBar" style="width: 0%"></div>
+                </div>
+            </div>
+            <div class="progress-container">
+                <div class="progress-label">
+                    <span>CPU: </span>
+                    <span id="cpuPercent"> 0%</span>
+                </div>
+                <div class="progress-bar mt-2">
+                    <div class="progress-fill" id="cpuBar" style="width: 0%"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header"><i class="fas fa-fan"></i> Động cơ</div>
+            
+            <div class="status-indicator">
+                <div class="indicator-light stopped" id="motorStatusLight"></div>
+                <div class="indicator-text">
+                    <span class="indicator-label">Trạng thái:</span>
+                    <span class="indicator-state" id="motorStatusText" style="margin-top: 5px;">DỪNG</span>
+                </div>
+            </div>
+            
+            <div class="control-row">
+                <button class="btn medium" onclick="startMotor()" style="background-color: #2ecc71;"><i class="fas fa-play"></i> Bắt đầu</button>
+                <button class="btn medium" onclick="stopMotor()" style="background-color: #e94560;"><i class="fas fa-stop"></i> Dừng</button>
+            </div>
+            <button id="dirBtn" class="btn mt-2 medium dir-fwd" onclick="toggleDir()"><i class="fas fa-sync"></i> <span id="dirLabel">Quay Thuận</span></button>
+            <div class="card-header mt-2"><i class="fas fa-bolt"></i> Tần số: <span id="freqVal" style="color:#e94560; margin-left:10px; margin-right: 10px;">0</span> Hz</div>
+            <div class="control-row" style="gap: 10px;">
+                <input type="range" min="0" max="50" value="0" class="range-slider" id="freqSlider" oninput="document.getElementById('freqSlider_val').innerText=this.value" style="flex: 1;">
+                <span id="freqSlider_val" style="color: var(--accent); font-weight: bold; min-width: 30px;">0</span>
+            </div>
+            <button class="btn medium mt-2" onclick="setFrequency()" style="background-color: #3498db;"><i class="fas fa-check"></i>Xác nhận Tần số</button>
+        </div>
+    </div>
+
+    <script>
+        function sendReq(url) { fetch(url).catch(e=>console.log(e)); }
+        
+        let isFwd = true;
+
+        function computeGpioMask() {
+            try {
+                let m = 0;
+                if (document.getElementById('input1Toggle') && document.getElementById('input1Toggle').checked) m |= 1;
+                if (document.getElementById('input2Toggle') && document.getElementById('input2Toggle').checked) m |= 2;
+                if (document.getElementById('output1Toggle') && document.getElementById('output1Toggle').checked) m |= 4;
+                if (document.getElementById('output2Toggle') && document.getElementById('output2Toggle').checked) m |= 8;
+                return m;
+            } catch (e) { console.log(e); return 0; }
+        }
+
+        function sendGpioMask(m) {
+            try {
+                fetch('/setGpios?m=' + m)
+                .then(r => { if(!r.ok) console.log('Failed to send combined GPIOs'); })
+                .catch(e => console.log(e));
+            } catch (e) { console.log(e); }
+        }
+
+        function confirmGpios() {
+            try {
+                let m = computeGpioMask();
+                if(confirm('Xác nhận thay đổi GPIO? (m=' + m + ')')) {
+                    sendGpioMask(m);
+                }
+            } catch (e) { console.log(e); }
+        }
+
+        function toggleDir() {
+            isFwd = !isFwd;
+            const dirLabel = document.getElementById('dirLabel');
+            const dirBtn = document.getElementById('dirBtn');
+            if (dirLabel) dirLabel.innerText = isFwd ? "Quay Thuận" : "Quay Nghịch";
+            if (dirBtn) {
+                dirBtn.classList.remove('dir-fwd','dir-rev');
+                dirBtn.classList.add(isFwd ? 'dir-fwd' : 'dir-rev');
+            }
+            fetch('/setDir?val=' + (isFwd ? 1 : 0)).then(r => { if(r.ok) alert("Motor đã đổi chiều quay"); });
+        }
+
+        function startMotor() { fetch('/setPower?val=1').then(r => { if(r.ok) alert("Inverter Power: ON"); }); }
+        function stopMotor() { fetch('/setPower?val=0').then(r => { if(r.ok) alert("Inverter Power: OFF"); }); }
+
+        function setFrequency() {
+            let s = document.getElementById('freqSlider');
+            if(!s) return;
+            let freqValue = s.value;
+            fetch('/setFreq?val=' + freqValue)
+            .then(r => { if(r.ok) alert("Đã xác nhận tần số: " + freqValue + " Hz"); })
+            .catch(e => console.log(e));
+        }
+
+        function saveWifi() {
+            var s = document.getElementById('ssid').value;
+            var p = document.getElementById('pass').value;
+            if(!s | !p){
+                if(!s){alert("Vui long nhap WiFi!"); return;}
+                if(!p){ alert("Vui long nhap mat khau!"); return; }
+            }
+            if(confirm("Lưu WiFi: " + s)) {
+                fetch('/saveWifi', { method: 'POST', body:  `ssid=${s}&pass=${p}` })
+                .then(r => { if(r.ok) alert("Đã lưu! Đang khởi động lại...") });
+            }
+        }
+
+        function saveTimers() {
+            let timers = [];
+            for(let i=1; i<=4; i++) {
+                let en = document.getElementById(`timer${i}_en`);
+                let on = document.getElementById(`timer${i}_on`);
+                let off = document.getElementById(`timer${i}_off`);
+                let out1 = document.getElementById(`timer${i}_out1`);
+                let out2 = document.getElementById(`timer${i}_out2`);
+
+                if(en && on && off && out1 && out2) {
+                    // Logic bitmask output: 1=Out1, 2=Out2, 3=Both
+                    let outMask = (out1.checked ? 1 : 0) | (out2.checked ? 2 : 0);
+                    timers.push({
+                        id: i,
+                        en: en.checked ? 1 : 0,
+                        on: on.value,
+                        off: off.value,
+                        out: outMask
+                    });
+                }
+            }
+            
+            if(confirm("Lưu cài đặt 4 bộ hẹn giờ?")) {
+                fetch('/saveTimers', { 
+                    method: 'POST', 
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({timers: timers}) 
+                })
+                .then(r => { if(r.ok) alert("Đã lưu hẹn giờ thành công!"); });
+            }
+        }
+
+        function updateMemoryBar(percent) {
+            const bar = document.getElementById('memoryBar');
+            if(!bar) return;
+            bar.style.width = percent + '%';
+            if (percent > 80) bar.className = 'progress-fill high';
+            else if (percent > 60) bar.className = 'progress-fill warning';
+            else bar.className = 'progress-fill';
+        }
+
+        function updateCpuBar(percent) {
+            const bar = document.getElementById('cpuBar');
+            if(!bar) return;
+            bar.style.width = percent + '%';
+            if (percent > 80) bar.className = 'progress-fill high';
+            else if (percent > 60) bar.className = 'progress-fill warning';
+            else bar.className = 'progress-fill';
+        }
+
+        function updateMotorStatusIndicator(isPowerOn) {
+            let light = document.getElementById('motorStatusLight');
+            let text = document.getElementById('motorStatusText');
+            if(!light || !text) return;
+            
+            if (isPowerOn) {
+                light.className = 'indicator-light running';
+                text.innerText = 'CHẠY';
+            } else {
+                light.className = 'indicator-light stopped';
+                text.innerText = 'DỪNG';
+            }
+        }
+
+        setInterval(() => {
+            fetch('/status')
+            .then(response => {
+                if (!response.ok) throw new Error("Mất kết nối tới Module");
+                return response.json();
+            })
+            .then(d => {
+                if(document.getElementById('clock')) document.getElementById('clock').innerText = d.time;
+                if(document.getElementById('ipDisplay')) document.getElementById('ipDisplay').innerText = "IP: " + d.ip;
+                
+                let badge = document.getElementById('statusBadge');
+                if(badge) {
+                    if(d.connected) {
+                        badge.className = "badge online";
+                        badge.innerHTML = '<i class="fas fa-check-circle"></i> Đã kết nối';
+                    } else {
+                        badge.className = "badge offline";
+                        badge.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Đang phát WiFi AP';
+                    }
+                }
+
+                let dirLbl = document.getElementById('dirLabel');
+                let dirBtn = document.getElementById('dirBtn');
+                if (dirLbl) {
+                    isFwd = d.dir; 
+                    dirLbl.innerText = isFwd ? "Quay Thuận" : "Quay Nghịch";
+                    if (dirBtn) {
+                        dirBtn.classList.remove('dir-fwd','dir-rev');
+                        dirBtn.classList.add(isFwd ? 'dir-fwd' : 'dir-rev');
+                    }
+                }
+                
+                if (d.pwr !== undefined) updateMotorStatusIndicator(d.pwr);
+
+                if(document.getElementById('freqVal') && d.freq !== undefined) document.getElementById('freqVal').innerText = d.freq;
+                if(document.getElementById('memoryPercent')) document.getElementById('memoryPercent').innerText =" " + d.ram_usage + " %";
+                updateMemoryBar(parseInt(d.ram_usage));
+
+                if(document.getElementById('cpuPercent') && d.cpu_load !== undefined){
+                    document.getElementById('cpuPercent').innerText =" " + d.cpu_load + " %";
+                    updateCpuBar(parseInt(d.cpu_load));
+                }
+
+                if (d.output1 !== undefined) updateOutputButton('output1ToggleBtn', d.output1 ? 1 : 0);
+                if (d.output2 !== undefined) updateOutputButton('output2ToggleBtn', d.output2 ? 1 : 0);
+
+                if (d.input1_on_interval !== undefined && document.getElementById('input1OnInterval')) document.getElementById('input1OnInterval').value = d.input1_on_interval;
+                if (d.input1_off_interval !== undefined && document.getElementById('input1OffInterval')) document.getElementById('input1OffInterval').value = d.input1_off_interval;
+                if (d.input2_on_interval !== undefined && document.getElementById('input2OnInterval')) document.getElementById('input2OnInterval').value = d.input2_on_interval;
+                if (d.input2_off_interval !== undefined && document.getElementById('input2OffInterval')) document.getElementById('input2OffInterval').value = d.input2_off_interval;
+
+            })
+            .catch(error => {
+                let badge = document.getElementById('statusBadge');
+                if(badge) {
+                    badge.className = "badge offline";
+                    badge.innerHTML = '<i class="fas fa-times-circle"></i> Mất tín hiệu';
+                }
+            });
+        }, 2000);
+
+        window.onload = function() {
+            fetch('/get-config').then(r=>r.json()).then(d => {
+                if(document.getElementById('ssid')) document.getElementById('ssid').value = d.ssid;
+                if(document.getElementById('pass')) document.getElementById('pass').value = d.pass;
+                if(document.getElementById('freqSlider')) {
+                    document.getElementById('freqSlider').value = d.freq;
+                    document.getElementById('freqSlider_val').innerText = d.freq;
+                }
+                
+                if (d.gpios !== undefined) {
+                    let mask = parseInt(d.gpios);
+                    if (document.getElementById('input1Toggle')) document.getElementById('input1Toggle').checked = !!(mask & 1);
+                    if (document.getElementById('input2Toggle')) document.getElementById('input2Toggle').checked = !!(mask & 2);
+                    if (document.getElementById('output1Toggle')) document.getElementById('output1Toggle').checked = !!(mask & 4);
+                    if (document.getElementById('output2Toggle')) document.getElementById('output2Toggle').checked = !!(mask & 8);
+                }
+
+                // Load Timer Data if available (expects array d.timers or flattened t1_en...)
+                // Supporting flattened structure for simplicity in case of limited JSON depth on embedded
+                for(let i=1; i<=4; i++) {
+                    // Check if we have tX_en, tX_on...
+                    if(d[`t${i}_en`] !== undefined) document.getElementById(`timer${i}_en`).checked = d[`t${i}_en`];
+                    if(d[`t${i}_on`] !== undefined) document.getElementById(`timer${i}_on`).value = d[`t${i}_on`];
+                    if(d[`t${i}_off`] !== undefined) document.getElementById(`timer${i}_off`).value = d[`t${i}_off`];
+                    if(d[`t${i}_out`] !== undefined) {
+                        let out = parseInt(d[`t${i}_out`]);
+                        document.getElementById(`timer${i}_out1`).checked = !!(out & 1);
+                        document.getElementById(`timer${i}_out2`).checked = !!(out & 2);
+                    }
+                }
+
+                toggleInput1Details();
+                toggleInput2Details();
+                toggleOutput1Controls();
+                toggleOutput2Controls();
+            });
+        };
+
+        function togglePass() {
+            let x = document.getElementById("pass");
+            if(x) x.type = (x.type === "password") ? "text" : "password";
+        }
+
+        function toggleInput1Details() {
+            let detailsDiv = document.getElementById('input1Details');
+            let toggle = document.getElementById('input1Toggle');
+            if(detailsDiv && toggle) detailsDiv.style.display = toggle.checked ? 'block' : 'none';
+        }
+
+        function toggleInput2Details() {
+            let detailsDiv = document.getElementById('input2Details');
+            let toggle = document.getElementById('input2Toggle');
+            if(detailsDiv && toggle) detailsDiv.style.display = toggle.checked ? 'block' : 'none';
+        }
+
+        function toggleOutput1Controls() {
+            let controlsDiv = document.getElementById('output1Controls');
+            let toggle = document.getElementById('output1Toggle');
+            if(controlsDiv && toggle) controlsDiv.style.display = toggle.checked ? 'flex' : 'none';
+        }
+
+        function toggleOutput2Controls() {
+            let controlsDiv = document.getElementById('output2Controls');
+            let toggle = document.getElementById('output2Toggle');
+            if(controlsDiv && toggle) controlsDiv.style.display = toggle.checked ? 'flex' : 'none';
+        }
+
+        function updateOutputButton(btnId, state) {
+            const btn = document.getElementById(btnId);
+            if(!btn) return;
+            btn.dataset.state = state ? '1' : '0';
+            if(state) {
+                btn.innerHTML = '<i class="fas fa-power-off"></i> BẬT';
+                btn.style.backgroundColor = '#2ecc71';
+            } else {
+                btn.innerHTML = '<i class="fas fa-power-off"></i> TẮT';
+                btn.style.backgroundColor = '#e94560';
+            }
+        }
+
+        function toggleOutput1() {
+            const btn = document.getElementById('output1ToggleBtn');
+            if(!btn) return;
+            const cur = btn.dataset.state === '1' ? 1 : 0;
+            setOutput1(cur ? 0 : 1);
+        }
+
+        function toggleOutput2() {
+            const btn = document.getElementById('output2ToggleBtn');
+            if(!btn) return;
+            const cur = btn.dataset.state === '1' ? 1 : 0;
+            setOutput2(cur ? 0 : 1);
+        }
+
+        function setOutput1(state) {
+            fetch('/setOutput1?val=' + state).then(r => {
+                if(r.ok) updateOutputButton('output1ToggleBtn', state);
+            }).catch(e => console.log(e));
+        }
+
+        function setOutput2(state) {
+            fetch('/setOutput2?val=' + state).then(r => {
+                if(r.ok) updateOutputButton('output2ToggleBtn', state);
+            }).catch(e => console.log(e));
+        }
+    </script>
+</body>
+</html>

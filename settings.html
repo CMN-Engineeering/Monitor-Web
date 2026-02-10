@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CMNIoT - Cài đặt</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root { --bg-color: #1a1a2e; --card-bg: #16213e; --text-color: #ffffff; --text-secondary: #b0b0b0; --accent: #2ae005ff; --accent-red: #cc4562ff; --btn-color: #3b3a3bff}
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+        body { background-color: var(--bg-color); color: var(--text-color); display: flex; justify-content: center; padding: 20px; min-height: 100vh; }
+        .container { width: 100%; max-width: 480px; }
+        h1 { text-align: center; margin-bottom: 10px; font-weight: 700; }
+        
+        /* Navigation Bar */
+        .nav-bar { display: flex; gap: 10px; margin-bottom: 20px; background: var(--card-bg); padding: 5px; border-radius: 10px; }
+        .nav-btn { flex: 1; text-align: center; padding: 10px; color: var(--text-secondary); text-decoration: none; border-radius: 8px; font-weight: 600; transition: 0.3s; }
+        .nav-btn:hover { background: rgba(255,255,255,0.05); color: white; }
+        .nav-btn.active { background: var(--btn-color); color: white; border: 1px solid #444; }
+
+        .card { background-color: var(--card-bg); border-radius: 15px; padding: 20px; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
+        .card-header { display: flex; align-items: center; margin-bottom: 20px; font-size: 1.2rem; font-weight: 600; }
+        .card-header i { margin-right: 12px; color: var(--text-secondary); }
+        .control-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; gap: 10px; }
+        .btn { background-color: var(--btn-color); color: white; border: none; padding: 12px 20px; border-radius: 8px; cursor: pointer; font-size: 1rem; font-weight: 600; display: flex; justify-content: center; align-items: center;}
+        .btn i { margin-right: 8px; }
+        .btn { transition: transform 120ms ease, box-shadow 120ms ease; }
+        .btn:active { transform: scale(0.98); box-shadow: 0 2px 6px rgba(0,0,0,0.35) inset; }
+        .big {width: 100%; }
+        .small {width: 25%;}
+        .switch { position: relative; display: inline-block; width: 60px; height: 30px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #333; transition: .4s; border-radius: 30px; }
+        .slider:before { position: absolute; content: ""; height: 22px; width: 22px; left: 4px; bottom: 4px; background-color: white; transition: .4s; border-radius: 50%; }
+        input:checked + .slider { background-color: var(--accent); }
+        input:checked + .slider:before { transform: translateX(30px); }
+        input[type="time"] { background: transparent; border: 1px solid #555; color: var(--text-color); font-size: 1rem; padding: 5px; border-radius: 5px; width: 48%; text-align: center; }
+        input[type="time"]::-webkit-calendar-picker-indicator { filter: invert(1); cursor: pointer;}
+        .timer-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; background: rgba(255,255,255,0.05); padding: 10px; border-radius: 8px;}
+        input[type="text"], input[type="password"] { width: 100%; padding: 12px; margin-bottom: 10px; background-color: rgba(255,255,255,0.05); border: 1px solid #333; border-radius: 8px; color: white; outline: none; }
+        .mt-2 { margin-top: 15px; }
+        .input-group { position: relative; margin-bottom: 15px; }
+        .input-group input { width: 100%; padding: 12px; background: rgba(255,255,255,0.1); border: 1px solid #444; color: #fff; border-radius: 8px; outline: none; padding-right: 40px; }
+        .input-group i { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); color: #aaa; cursor: pointer; }
+        
+        .timer-block { border: 1px solid rgba(255,255,255,0.1); padding: 10px; border-radius: 10px; margin-bottom: 15px; }
+        .timer-title { font-weight: bold; color: var(--accent); margin-bottom: 8px; display: flex; justify-content: space-between;}
+        .timer-checks { display: flex; gap: 15px; font-size: 0.85rem; color: #bbb; margin-top: 8px; }
+        .checkbox-wrapper { display: flex; align-items: center; gap: 5px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>CÀI ĐẶT HỆ THỐNG</h1>
+        
+        <div class="nav-bar">
+            <a href="dashboard.html" class="nav-btn"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+            <a href="settings.html" class="nav-btn active"><i class="fas fa-cogs"></i> Cài đặt</a>
+        </div>
+
+        <div class="card">
+            <div class="card-header"><i class="fas fa-microchip"></i> Điều khiển chân IO </div>
+            
+            <div class="card-header mt-2" style="font-size: 1rem;"><i class="fas fa-arrow-right"></i> NGÕ VÀO</div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
+                <div>
+                    <div class="control-row" style="margin-bottom: 10px;">
+                        <span>Ngõ vào 1</span>
+                        <label class="switch">
+                            <input type="checkbox" id="input1Toggle" onchange="toggleInput1Details()">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <div id="input1Details" style="display: none; background: rgba(255,255,255,0.05); padding: 10px; border-radius: 8px;">
+                        <div style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 5px;">Thời gian ở mức HIGH (phút):</div>
+                        <input type="number" id="input1OnInterval" min="0" max="1440" placeholder="0" style="width: 100%; padding: 8px; background: rgba(255,255,255,0.1); border: 1px solid #444; color: #fff; border-radius: 5px; margin-bottom: 8px;">
+                        <div style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 5px;">Thời gian ở mức LOW (phút):</div>
+                        <input type="number" id="input1OffInterval" min="0" max="1440" placeholder="0" style="width: 100%; padding: 8px; background: rgba(255,255,255,0.1); border: 1px solid #444; color: #fff; border-radius: 5px;">
+                    </div>
+                </div>
+                <div>
+                    <div class="control-row" style="margin-bottom: 10px;">
+                        <span>Ngõ vào 2</span>
+                        <label class="switch">
+                            <input type="checkbox" id="input2Toggle" onchange="toggleInput2Details()">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <div id="input2Details" style="display: none; background: rgba(255,255,255,0.05); padding: 10px; border-radius: 8px;">
+                        <div style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 5px;">Thời gian ở mức HIGH (phút):</div>
+                        <input type="number" id="input2OnInterval" min="0" max="1440" placeholder="0" style="width: 100%; padding: 8px; background: rgba(255,255,255,0.1); border: 1px solid #444; color: #fff; border-radius: 5px; margin-bottom: 8px;">
+                        <div style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 5px;">Thời gian ở mức LOW (phút):</div>
+                        <input type="number" id="input2OffInterval" min="0" max="1440" placeholder="0" style="width: 100%; padding: 8px; background: rgba(255,255,255,0.1); border: 1px solid #444; color: #fff; border-radius: 5px;">
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-header mt-2" style="font-size: 1rem;"><i class="fas fa-arrow-left"></i> NGÕ RA</div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                <div>
+                    <div class="control-row" style="margin-bottom: 10px;">
+                        <span>Ngõ ra 1</span>
+                        <label class="switch">
+                            <input type="checkbox" id="output1Toggle" onchange="toggleOutput1Controls()">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <div id="output1Controls" style="display: none; display: flex; gap: 8px;">
+                        <button id="output1ToggleBtn" class="btn small" onclick="toggleOutput1()" data-state="0" style="background-color: #444; flex: 1;"><i class="fas fa-power-off"></i> TẮT</button>
+                    </div>
+                </div>
+                <div>
+                    <div class="control-row" style="margin-bottom: 10px;">
+                        <span>Ngõ ra 2</span>
+                        <label class="switch">
+                            <input type="checkbox" id="output2Toggle" onchange="toggleOutput2Controls()">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <div id="output2Controls" style="display: none; display: flex; gap: 8px;">
+                        <button id="output2ToggleBtn" class="btn small" onclick="toggleOutput2()" data-state="0" style="background-color: #444; flex: 1;"><i class="fas fa-power-off"></i> TẮT</button>
+                    </div>
+                </div>
+            </div>
+            <div style="display:flex; justify-content:flex-end; margin-top:10px;">
+                <button class="btn" onclick="confirmGpios()" style="background-color: #27ae60;"><i class="fas fa-check"></i> Xác nhận GPIO</button>
+            </div>
+        </div>
+            
+        <div class="card">
+            <div class="card-header">
+                <i class="fas fa-clock"></i> 4 Bộ Hẹn Giờ 
+                <span id="clock" class="clock" style="margin-left:auto; font-size: 1rem; color: var(--accent);">--:--:--</span>
+            </div>
+
+            <div class="timer-block">
+                <div class="timer-title">
+                    <span>Hẹn Giờ 1</span>
+                    <label class="switch" style="transform: scale(0.8);">
+                        <input type="checkbox" id="timer1_en"><span class="slider"></span>
+                    </label>
+                </div>
+                <div style="display: flex; justify-content: space-between; margin-top: 5px;">
+                    <input type="time" id="timer1_on" title="Thời gian BẬT">
+                    <span style="align-self: center;">-</span>
+                    <input type="time" id="timer1_off" title="Thời gian TẮT">
+                </div>
+                <div class="timer-checks">
+                    <label class="checkbox-wrapper"><input type="checkbox" id="timer1_out1"> Out 1</label>
+                    <label class="checkbox-wrapper"><input type="checkbox" id="timer1_out2"> Out 2</label>
+                </div>
+            </div>
+
+            <div class="timer-block">
+                <div class="timer-title">
+                    <span>Hẹn Giờ 2</span>
+                    <label class="switch" style="transform: scale(0.8);">
+                        <input type="checkbox" id="timer2_en"><span class="slider"></span>
+                    </label>
+                </div>
+                <div style="display: flex; justify-content: space-between; margin-top: 5px;">
+                    <input type="time" id="timer2_on" title="Thời gian BẬT">
+                    <span style="align-self: center;">-</span>
+                    <input type="time" id="timer2_off" title="Thời gian TẮT">
+                </div>
+                <div class="timer-checks">
+                    <label class="checkbox-wrapper"><input type="checkbox" id="timer2_out1"> Out 1</label>
+                    <label class="checkbox-wrapper"><input type="checkbox" id="timer2_out2"> Out 2</label>
+                </div>
+            </div>
+
+            <div class="timer-block">
+                <div class="timer-title">
+                    <span>Hẹn Giờ 3</span>
+                    <label class="switch" style="transform: scale(0.8);">
+                        <input type="checkbox" id="timer3_en"><span class="slider"></span>
+                    </label>
+                </div>
+                <div style="display: flex; justify-content: space-between; margin-top: 5px;">
+                    <input type="time" id="timer3_on" title="Thời gian BẬT">
+                    <span style="align-self: center;">-</span>
+                    <input type="time" id="timer3_off" title="Thời gian TẮT">
+                </div>
+                <div class="timer-checks">
+                    <label class="checkbox-wrapper"><input type="checkbox" id="timer3_out1"> Out 1</label>
+                    <label class="checkbox-wrapper"><input type="checkbox" id="timer3_out2"> Out 2</label>
+                </div>
+            </div>
+
+            <div class="timer-block">
+                <div class="timer-title">
+                    <span>Hẹn Giờ 4</span>
+                    <label class="switch" style="transform: scale(0.8);">
+                        <input type="checkbox" id="timer4_en"><span class="slider"></span>
+                    </label>
+                </div>
+                <div style="display: flex; justify-content: space-between; margin-top: 5px;">
+                    <input type="time" id="timer4_on" title="Thời gian BẬT">
+                    <span style="align-self: center;">-</span>
+                    <input type="time" id="timer4_off" title="Thời gian TẮT">
+                </div>
+                <div class="timer-checks">
+                    <label class="checkbox-wrapper"><input type="checkbox" id="timer4_out1"> Out 1</label>
+                    <label class="checkbox-wrapper"><input type="checkbox" id="timer4_out2"> Out 2</label>
+                </div>
+            </div>
+
+            <button class="btn big" onclick="saveTimers()">Lưu Cài Đặt Hẹn Giờ</button>
+        </div>
+
+        <div class="card">
+            <div class="card-header"><span><i class="fas fa-wifi"></i> Cài đặt WiFi</span></div>
+            <div class="input-group">
+                <input type="text" id="ssid" placeholder="Tên WiFi (SSID)">
+                <i class="fas fa-signal"></i>
+            </div>
+            <div class="input-group">
+                <input type="password" id="pass" placeholder="Mật khẩu">
+                <i class="fa fa-eye" onclick="togglePass()"></i> </div>
+            <button class="btn" onclick="saveWifi()">Lưu & Kết Nối Lại</button>
+        </div>
+
+        <div class="card" style="border: 1px solid rgba(233, 69, 96, 0.3);">
+            <div class="card-header"><i class="fas fa-power-off"></i> Hệ Thống</div>
+            <button class="btn" onclick="if(confirm('Reboot?')) sendReq('/reboot')">Khởi động lại</button>
+        </div>
+    </div>
+
+    <script>
+        function sendReq(url) { fetch(url).catch(e=>console.log(e)); }
+        
+        let isFwd = true;
+
+        function computeGpioMask() {
+            try {
+                let m = 0;
+                if (document.getElementById('input1Toggle') && document.getElementById('input1Toggle').checked) m |= 1;
+                if (document.getElementById('input2Toggle') && document.getElementById('input2Toggle').checked) m |= 2;
+                if (document.getElementById('output1Toggle') && document.getElementById('output1Toggle').checked) m |= 4;
+                if (document.getElementById('output2Toggle') && document.getElementById('output2Toggle').checked) m |= 8;
+                return m;
+            } catch (e) { console.log(e); return 0; }
+        }
+
+        function sendGpioMask(m) {
+            try {
+                fetch('/setGpios?m=' + m)
+                .then(r => { if(!r.ok) console.log('Failed to send combined GPIOs'); })
+                .catch(e => console.log(e));
+            } catch (e) { console.log(e); }
+        }
+
+        function confirmGpios() {
+            try {
+                let m = computeGpioMask();
+                if(confirm('Xác nhận thay đổi GPIO? (m=' + m + ')')) {
+                    sendGpioMask(m);
+                }
+            } catch (e) { console.log(e); }
+        }
+
+        function toggleDir() {
+            isFwd = !isFwd;
+            const dirLabel = document.getElementById('dirLabel');
+            const dirBtn = document.getElementById('dirBtn');
+            if (dirLabel) dirLabel.innerText = isFwd ? "Quay Thuận" : "Quay Nghịch";
+            if (dirBtn) {
+                dirBtn.classList.remove('dir-fwd','dir-rev');
+                dirBtn.classList.add(isFwd ? 'dir-fwd' : 'dir-rev');
+            }
+            fetch('/setDir?val=' + (isFwd ? 1 : 0)).then(r => { if(r.ok) alert("Motor đã đổi chiều quay"); });
+        }
+
+        function startMotor() { fetch('/setPower?val=1').then(r => { if(r.ok) alert("Inverter Power: ON"); }); }
+        function stopMotor() { fetch('/setPower?val=0').then(r => { if(r.ok) alert("Inverter Power: OFF"); }); }
+
+        function setFrequency() {
+            let s = document.getElementById('freqSlider');
+            if(!s) return;
+            let freqValue = s.value;
+            fetch('/setFreq?val=' + freqValue)
+            .then(r => { if(r.ok) alert("Đã xác nhận tần số: " + freqValue + " Hz"); })
+            .catch(e => console.log(e));
+        }
+
+        function saveWifi() {
+            var s = document.getElementById('ssid').value;
+            var p = document.getElementById('pass').value;
+            if(!s | !p){
+                if(!s){alert("Vui long nhap WiFi!"); return;}
+                if(!p){ alert("Vui long nhap mat khau!"); return; }
+            }
+            if(confirm("Lưu WiFi: " + s)) {
+                fetch('/saveWifi', { method: 'POST', body:  `ssid=${s}&pass=${p}` })
+                .then(r => { if(r.ok) alert("Đã lưu! Đang khởi động lại...") });
+            }
+        }
+
+        function saveTimers() {
+            let timers = [];
+            for(let i=1; i<=4; i++) {
+                let en = document.getElementById(`timer${i}_en`);
+                let on = document.getElementById(`timer${i}_on`);
+                let off = document.getElementById(`timer${i}_off`);
+                let out1 = document.getElementById(`timer${i}_out1`);
+                let out2 = document.getElementById(`timer${i}_out2`);
+
+                if(en && on && off && out1 && out2) {
+                    // Logic bitmask output: 1=Out1, 2=Out2, 3=Both
+                    let outMask = (out1.checked ? 1 : 0) | (out2.checked ? 2 : 0);
+                    timers.push({
+                        id: i,
+                        en: en.checked ? 1 : 0,
+                        on: on.value,
+                        off: off.value,
+                        out: outMask
+                    });
+                }
+            }
+            
+            if(confirm("Lưu cài đặt 4 bộ hẹn giờ?")) {
+                fetch('/saveTimers', { 
+                    method: 'POST', 
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({timers: timers}) 
+                })
+                .then(r => { if(r.ok) alert("Đã lưu hẹn giờ thành công!"); });
+            }
+        }
+
+        function updateMemoryBar(percent) {
+            const bar = document.getElementById('memoryBar');
+            if(!bar) return;
+            bar.style.width = percent + '%';
+            if (percent > 80) bar.className = 'progress-fill high';
+            else if (percent > 60) bar.className = 'progress-fill warning';
+            else bar.className = 'progress-fill';
+        }
+
+        function updateCpuBar(percent) {
+            const bar = document.getElementById('cpuBar');
+            if(!bar) return;
+            bar.style.width = percent + '%';
+            if (percent > 80) bar.className = 'progress-fill high';
+            else if (percent > 60) bar.className = 'progress-fill warning';
+            else bar.className = 'progress-fill';
+        }
+
+        function updateMotorStatusIndicator(isPowerOn) {
+            let light = document.getElementById('motorStatusLight');
+            let text = document.getElementById('motorStatusText');
+            if(!light || !text) return;
+            
+            if (isPowerOn) {
+                light.className = 'indicator-light running';
+                text.innerText = 'CHẠY';
+            } else {
+                light.className = 'indicator-light stopped';
+                text.innerText = 'DỪNG';
+            }
+        }
+
+        setInterval(() => {
+            fetch('/status')
+            .then(response => {
+                if (!response.ok) throw new Error("Mất kết nối tới Module");
+                return response.json();
+            })
+            .then(d => {
+                if(document.getElementById('clock')) document.getElementById('clock').innerText = d.time;
+                if(document.getElementById('ipDisplay')) document.getElementById('ipDisplay').innerText = "IP: " + d.ip;
+                
+                let badge = document.getElementById('statusBadge');
+                if(badge) {
+                    if(d.connected) {
+                        badge.className = "badge online";
+                        badge.innerHTML = '<i class="fas fa-check-circle"></i> Đã kết nối';
+                    } else {
+                        badge.className = "badge offline";
+                        badge.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Đang phát WiFi AP';
+                    }
+                }
+
+                let dirLbl = document.getElementById('dirLabel');
+                let dirBtn = document.getElementById('dirBtn');
+                if (dirLbl) {
+                    isFwd = d.dir; 
+                    dirLbl.innerText = isFwd ? "Quay Thuận" : "Quay Nghịch";
+                    if (dirBtn) {
+                        dirBtn.classList.remove('dir-fwd','dir-rev');
+                        dirBtn.classList.add(isFwd ? 'dir-fwd' : 'dir-rev');
+                    }
+                }
+                
+                if (d.pwr !== undefined) updateMotorStatusIndicator(d.pwr);
+
+                if(document.getElementById('freqVal') && d.freq !== undefined) document.getElementById('freqVal').innerText = d.freq;
+                if(document.getElementById('memoryPercent')) document.getElementById('memoryPercent').innerText =" " + d.ram_usage + " %";
+                updateMemoryBar(parseInt(d.ram_usage));
+
+                if(document.getElementById('cpuPercent') && d.cpu_load !== undefined){
+                    document.getElementById('cpuPercent').innerText =" " + d.cpu_load + " %";
+                    updateCpuBar(parseInt(d.cpu_load));
+                }
+
+                if (d.output1 !== undefined) updateOutputButton('output1ToggleBtn', d.output1 ? 1 : 0);
+                if (d.output2 !== undefined) updateOutputButton('output2ToggleBtn', d.output2 ? 1 : 0);
+
+                if (d.input1_on_interval !== undefined && document.getElementById('input1OnInterval')) document.getElementById('input1OnInterval').value = d.input1_on_interval;
+                if (d.input1_off_interval !== undefined && document.getElementById('input1OffInterval')) document.getElementById('input1OffInterval').value = d.input1_off_interval;
+                if (d.input2_on_interval !== undefined && document.getElementById('input2OnInterval')) document.getElementById('input2OnInterval').value = d.input2_on_interval;
+                if (d.input2_off_interval !== undefined && document.getElementById('input2OffInterval')) document.getElementById('input2OffInterval').value = d.input2_off_interval;
+
+            })
+            .catch(error => {
+                let badge = document.getElementById('statusBadge');
+                if(badge) {
+                    badge.className = "badge offline";
+                    badge.innerHTML = '<i class="fas fa-times-circle"></i> Mất tín hiệu';
+                }
+            });
+        }, 2000);
+
+        window.onload = function() {
+            fetch('/get-config').then(r=>r.json()).then(d => {
+                if(document.getElementById('ssid')) document.getElementById('ssid').value = d.ssid;
+                if(document.getElementById('pass')) document.getElementById('pass').value = d.pass;
+                if(document.getElementById('freqSlider')) {
+                    document.getElementById('freqSlider').value = d.freq;
+                    document.getElementById('freqSlider_val').innerText = d.freq;
+                }
+                
+                if (d.gpios !== undefined) {
+                    let mask = parseInt(d.gpios);
+                    if (document.getElementById('input1Toggle')) document.getElementById('input1Toggle').checked = !!(mask & 1);
+                    if (document.getElementById('input2Toggle')) document.getElementById('input2Toggle').checked = !!(mask & 2);
+                    if (document.getElementById('output1Toggle')) document.getElementById('output1Toggle').checked = !!(mask & 4);
+                    if (document.getElementById('output2Toggle')) document.getElementById('output2Toggle').checked = !!(mask & 8);
+                }
+
+                // Load Timer Data if available (expects array d.timers or flattened t1_en...)
+                // Supporting flattened structure for simplicity in case of limited JSON depth on embedded
+                for(let i=1; i<=4; i++) {
+                    // Check if we have tX_en, tX_on...
+                    if(d[`t${i}_en`] !== undefined) document.getElementById(`timer${i}_en`).checked = d[`t${i}_en`];
+                    if(d[`t${i}_on`] !== undefined) document.getElementById(`timer${i}_on`).value = d[`t${i}_on`];
+                    if(d[`t${i}_off`] !== undefined) document.getElementById(`timer${i}_off`).value = d[`t${i}_off`];
+                    if(d[`t${i}_out`] !== undefined) {
+                        let out = parseInt(d[`t${i}_out`]);
+                        document.getElementById(`timer${i}_out1`).checked = !!(out & 1);
+                        document.getElementById(`timer${i}_out2`).checked = !!(out & 2);
+                    }
+                }
+
+                toggleInput1Details();
+                toggleInput2Details();
+                toggleOutput1Controls();
+                toggleOutput2Controls();
+            });
+        };
+
+        function togglePass() {
+            let x = document.getElementById("pass");
+            if(x) x.type = (x.type === "password") ? "text" : "password";
+        }
+
+        function toggleInput1Details() {
+            let detailsDiv = document.getElementById('input1Details');
+            let toggle = document.getElementById('input1Toggle');
+            if(detailsDiv && toggle) detailsDiv.style.display = toggle.checked ? 'block' : 'none';
+        }
+
+        function toggleInput2Details() {
+            let detailsDiv = document.getElementById('input2Details');
+            let toggle = document.getElementById('input2Toggle');
+            if(detailsDiv && toggle) detailsDiv.style.display = toggle.checked ? 'block' : 'none';
+        }
+
+        function toggleOutput1Controls() {
+            let controlsDiv = document.getElementById('output1Controls');
+            let toggle = document.getElementById('output1Toggle');
+            if(controlsDiv && toggle) controlsDiv.style.display = toggle.checked ? 'flex' : 'none';
+        }
+
+        function toggleOutput2Controls() {
+            let controlsDiv = document.getElementById('output2Controls');
+            let toggle = document.getElementById('output2Toggle');
+            if(controlsDiv && toggle) controlsDiv.style.display = toggle.checked ? 'flex' : 'none';
+        }
+
+        function updateOutputButton(btnId, state) {
+            const btn = document.getElementById(btnId);
+            if(!btn) return;
+            btn.dataset.state = state ? '1' : '0';
+            if(state) {
+                btn.innerHTML = '<i class="fas fa-power-off"></i> BẬT';
+                btn.style.backgroundColor = '#2ecc71';
+            } else {
+                btn.innerHTML = '<i class="fas fa-power-off"></i> TẮT';
+                btn.style.backgroundColor = '#e94560';
+            }
+        }
+
+        function toggleOutput1() {
+            const btn = document.getElementById('output1ToggleBtn');
+            if(!btn) return;
+            const cur = btn.dataset.state === '1' ? 1 : 0;
+            setOutput1(cur ? 0 : 1);
+        }
+
+        function toggleOutput2() {
+            const btn = document.getElementById('output2ToggleBtn');
+            if(!btn) return;
+            const cur = btn.dataset.state === '1' ? 1 : 0;
+            setOutput2(cur ? 0 : 1);
+        }
+
+        function setOutput1(state) {
+            fetch('/setOutput1?val=' + state).then(r => {
+                if(r.ok) updateOutputButton('output1ToggleBtn', state);
+            }).catch(e => console.log(e));
+        }
+
+        function setOutput2(state) {
+            fetch('/setOutput2?val=' + state).then(r => {
+                if(r.ok) updateOutputButton('output2ToggleBtn', state);
+            }).catch(e => console.log(e));
+        }
+    </script>
+</body>
+</html>
