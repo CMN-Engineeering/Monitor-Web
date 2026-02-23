@@ -803,8 +803,8 @@
         </div>
     </div>
 
-    <script>
-// --- Navigation Logic ---
+    <script>    
+        // --- Navigation Logic ---
 function showTab(tabName) {
     document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
     document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
@@ -920,6 +920,7 @@ function toggleDir() {
 function setFrequency() {
     let val = document.getElementById('freqSlider').value;
     fetch('/setFreq?val=' + val).then(r => { if(r.ok) alert("Đã đặt tần số: " + val + " Hz"); });
+    freqVal.innerText = val;
 }
 
 function updateOutputButton(btnId, state) {
