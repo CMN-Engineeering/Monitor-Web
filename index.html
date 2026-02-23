@@ -867,7 +867,7 @@ function refreshSystemTimerUI() {
     }
     document.getElementById('activeTimersDisplay').innerHTML = dashboardHtml;
 
-    // KHOÁ CẢ CÔNG TẮC XANH VÀ NÚT ĐIỀU KHIỂN
+    // Khoá nút nếu đang dùng Timer
     let btn1 = document.getElementById('output1ToggleBtn');
     let btn2 = document.getElementById('output2ToggleBtn');
     let switch1 = document.getElementById('output1Toggle');
@@ -887,11 +887,27 @@ function refreshSystemTimerUI() {
     }
 }
 
-// --- Core Functions ---
+// --- Core API Functions ---
 let isFwd = true;
 
-function startMotor() { fetch('/setPower?val=1').then(r => { if(r.ok) alert("Inverter Power: ON"); }); }
-function stopMotor() { fetch('/setPower?val=0').then(r => { if(r.ok) alert("Inverter Power: OFF"); }); }
+function startMotor() { 
+    fetch('/setPower?val=1').then(r => { 
+        if(r.ok) {
+            document.getElementById('motorStatusLight').className = 'indicator-light running';
+            document.getElementById('motorStatusText').innerText = 'Đang Chạy';
+            alert("Đã BẬT Nguồn"); 
+        }
+    }); 
+}
+function stopMotor() { 
+    fetch('/setPower?val=0').then(r => { 
+        if(r.ok) {
+            document.getElementById('motorStatusLight').className = 'indicator-light stopped';
+            document.getElementById('motorStatusText').innerText = 'DỪNG';
+            alert("Đã TẮT Nguồn"); 
+        }
+    }); 
+}
 
 function toggleDir() {
     isFwd = !isFwd;
@@ -920,7 +936,6 @@ function toggleOutput1() {
     fetch('/setOutput1?val=' + s).then(r => { 
         if(r.ok) {
             updateOutputButton('output1ToggleBtn', s); 
-            // Nếu ấn để TẮT (state = 0) -> chuyển cả công tắc xanh về OFF và ẩn nút
             if (s === 0) {
                 let toggle = document.getElementById('output1Toggle');
                 toggle.checked = false;
@@ -937,7 +952,6 @@ function toggleOutput2() {
     fetch('/setOutput2?val=' + s).then(r => { 
         if(r.ok) {
             updateOutputButton('output2ToggleBtn', s); 
-            // Nếu ấn để TẮT (state = 0) -> chuyển cả công tắc xanh về OFF và ẩn nút
             if (s === 0) {
                 let toggle = document.getElementById('output2Toggle');
                 toggle.checked = false;
@@ -964,25 +978,40 @@ function confirmGpios() {
 function saveWifi() {
     let s = document.getElementById('wifi_name').value;
     let p = document.getElementById('wifi_pass').value;
-    if(confirm("Lưu WiFi: " + s)) fetch('/saveWifi', { method: 'POST', body: `wifi_name=${s}&wifi_pass=${p}` });
+    if(confirm("Lưu WiFi: " + s)) {
+        fetch('/saveWifi', { 
+            method: 'POST', 
+            headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+            body: `ssid=${encodeURIComponent(s)}&pass=${encodeURIComponent(p)}` 
+        });
+    }
 }
+
+// Note: The /saveIP endpoint is present in the HTML but was not documented in the API routing table. 
 function saveIP() {
     let s = document.getElementById('ap_name').value;
     let p = document.getElementById('ap_pass').value;
-    if(confirm("Lưu Access Point: " + s)) fetch('/saveIP', { method: 'POST', body: `ap_name=${s}&ap_pass=${p}` });
+    if(confirm("Lưu Access Point: " + s)) {
+        fetch('/saveIP', { 
+            method: 'POST', 
+            headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+            body: `ap_name=${encodeURIComponent(s)}&ap_pass=${encodeURIComponent(p)}` 
+        });
+    }
 }
 
 function saveTimers() {
-    let timers = [];
-    for(let i=1; i<=4; i++) {
-        let en = document.getElementById(`timer${i}_en`).checked ? 1 : 0;
-        let on = document.getElementById(`timer${i}_on`).value;
-        let off = document.getElementById(`timer${i}_off`).value;
-        let out = (document.getElementById(`timer${i}_out1`).checked ? 1 : 0) | (document.getElementById(`timer${i}_out2`).checked ? 2 : 0);
-        timers.push({id: i, en, on, off, out});
-    }
     if(confirm("Lưu cài đặt 4 bộ hẹn giờ?")) {
-        fetch('/saveTimers', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({timers}) });
+        for(let i=1; i<=4; i++) {
+            let en = document.getElementById(`timer${i}_en`).checked ? 1 : 0;
+            let on = document.getElementById(`timer${i}_on`).value || "00:00";
+            let off = document.getElementById(`timer${i}_off`).value || "00:00";
+            
+            // Sending sequential GET requests as per the API table
+            fetch(`/setTimer?timer=${i}&on=${on}&off=${off}`);
+            fetch(`/setTimerEn?timer=${i}&en=${en}`);
+        }
+        alert("Đã gửi lệnh cập nhật các bộ hẹn giờ.");
     }
 }
 
@@ -1002,45 +1031,56 @@ function updateBar(id, pct) {
     bar.className = pct > 80 ? 'progress-fill high' : (pct > 60 ? 'progress-fill warning' : 'progress-fill');
 }
 
-// --- Polling Loop ---
-setInterval(() => {
+// --- Single Status Fetch ---
+function fetchStatusOnce() {
     fetch('/status')
     .then(r => r.json())
     .then(d => {
         document.getElementById('statusBadge').className = "badge online";
         document.getElementById('statusBadge').innerHTML = '<i class="fas fa-check-circle"></i> Đã kết nối';
-        document.getElementById('ipDisplay').innerText = "IP: " + d.ip;
-        document.getElementById('clock').innerText = d.time;
+        if(d.ip) document.getElementById('ipDisplay').innerText = "IP: " + d.ip;
+        if(d.time) document.getElementById('clock').innerText = d.time;
 
-        if(d.pwr) {
-            document.getElementById('motorStatusLight').className = 'indicator-light running';
-            document.getElementById('motorStatusText').innerText = 'CHẠY';
-        } else {
-            document.getElementById('motorStatusLight').className = 'indicator-light stopped';
-            document.getElementById('motorStatusText').innerText = 'DỪNG';
+        if(d.pwr !== undefined) {
+            if(d.pwr) {
+                document.getElementById('motorStatusLight').className = 'indicator-light running';
+                document.getElementById('motorStatusText').innerText = 'CHẠY';
+            } else {
+                document.getElementById('motorStatusLight').className = 'indicator-light stopped';
+                document.getElementById('motorStatusText').innerText = 'DỪNG';
+            }
         }
         
-        isFwd = d.dir;
-        document.getElementById('dirLabel').innerText = isFwd ? "Quay Thuận" : "Quay Nghịch";
-        document.getElementById('dirBtn').className = isFwd ? "btn mt-2 medium dir-fwd" : "btn mt-2 medium dir-rev";
+        if(d.dir !== undefined) {
+            isFwd = d.dir;
+            document.getElementById('dirLabel').innerText = isFwd ? "Quay Thuận" : "Quay Nghịch";
+            document.getElementById('dirBtn').className = isFwd ? "btn mt-2 medium dir-fwd" : "btn mt-2 medium dir-rev";
+        }
         
-        document.getElementById('freqVal').innerText = d.freq;
-        document.getElementById('memoryPercent').innerText = " " + d.ram_usage + " %";
-        updateBar('memoryBar', d.ram_usage);
-        document.getElementById('cpuPercent').innerText = " " + d.cpu_load + " %";
-        updateBar('cpuBar', d.cpu_load);
+        if(d.freq !== undefined) document.getElementById('freqVal').innerText = d.freq;
+        
+        if(d.ram_usage !== undefined) {
+            document.getElementById('memoryPercent').innerText = " " + d.ram_usage + " %";
+            updateBar('memoryBar', d.ram_usage);
+        }
+        if(d.cpu_load !== undefined) {
+            document.getElementById('cpuPercent').innerText = " " + d.cpu_load + " %";
+            updateBar('cpuBar', d.cpu_load);
+        }
 
-        updateOutputButton('output1ToggleBtn', d.output1);
-        updateOutputButton('output2ToggleBtn', d.output2);
+        // Only update outputs if they are returned by the status endpoint
+        if(d.output1 !== undefined) updateOutputButton('output1ToggleBtn', d.output1);
+        if(d.output2 !== undefined) updateOutputButton('output2ToggleBtn', d.output2);
     })
     .catch(() => {
         document.getElementById('statusBadge').className = "badge offline";
         document.getElementById('statusBadge').innerHTML = '<i class="fas fa-times-circle"></i> Mất tín hiệu';
     });
-}, 2000);
+}
 
-// --- Init (Load Config Once) ---
+// --- Init (Run on Startup) ---
 window.onload = function() {
+    // 1. Fetch Configuration
     fetch('/get-config').then(r=>r.json()).then(d => {
         document.getElementById('wifi_name').value = d.ssid || "";
         document.getElementById('wifi_pass').value = d.pass || "";
@@ -1056,11 +1096,13 @@ window.onload = function() {
         document.getElementById('output1Toggle').checked = !!(mask & 4);
         document.getElementById('output2Toggle').checked = !!(mask & 8);
 
+        // Updated keys to match the API (timer1_en instead of t1_en)
         for(let i=1; i<=4; i++) {
-            if(d[`t${i}_en`] !== undefined) document.getElementById(`timer${i}_en`).checked = d[`t${i}_en`];
-            if(d[`t${i}_on`]) document.getElementById(`timer${i}_on`).value = d[`t${i}_on`];
-            if(d[`t${i}_off`]) document.getElementById(`timer${i}_off`).value = d[`t${i}_off`];
-            let out = d[`t${i}_out`] || 0;
+            if(d[`timer${i}_en`] !== undefined) document.getElementById(`timer${i}_en`).checked = d[`timer${i}_en`];
+            if(d[`timer${i}_on`]) document.getElementById(`timer${i}_on`).value = d[`timer${i}_on`];
+            if(d[`timer${i}_off`]) document.getElementById(`timer${i}_off`).value = d[`timer${i}_off`];
+            
+            let out = d[`timer${i}_out`] || 0;
             document.getElementById(`timer${i}_out1`).checked = !!(out & 1);
             document.getElementById(`timer${i}_out2`).checked = !!(out & 2);
             
@@ -1072,10 +1114,14 @@ window.onload = function() {
 
         refreshSystemTimerUI();
     }).catch(e => {
+        console.warn("Could not load config on init", e);
         for(let i=1; i<=4; i++) handleTimerChange(i);
         toggleMotorVisibility();
         refreshSystemTimerUI();
     });
+
+    // 2. Fetch Status Once
+    fetchStatusOnce();
 };
     </script>
 </body>
