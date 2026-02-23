@@ -202,6 +202,13 @@
             box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35) inset;
         }
 
+        /* Khi button bị disable */
+        .btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            filter: grayscale(100%);
+        }
+
         .medium {
             width: 50%;
         }
@@ -378,6 +385,12 @@
             transform: translateX(30px);
         }
 
+        /* CSS khi công tắc (switch) bị disabled */
+        input:disabled+.slider {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
         input[type="time"] {
             background: transparent;
             border: 1px solid #555;
@@ -446,6 +459,7 @@
             padding: 10px;
             border-radius: 10px;
             margin-bottom: 15px;
+            background-color: #1e2a4a;
         }
 
         .timer-title {
@@ -454,21 +468,33 @@
             margin-bottom: 8px;
             display: flex;
             justify-content: space-between;
+            align-items: center;
         }
 
         .timer-checks {
             display: flex;
             gap: 15px;
-            font-size: 0.85rem;
-            color: #bbb;
-            margin-top: 8px;
+            font-size: 0.9rem;
+            color: #fff;
+            margin-top: 10px;
+            background: rgba(0,0,0,0.2);
+            padding: 8px;
+            border-radius: 5px;
         }
 
         .checkbox-wrapper {
             display: flex;
             align-items: center;
-            gap: 5px;
+            gap: 8px;
             cursor: pointer;
+        }
+        
+        .timer-item-dash {
+            background: rgba(255,255,255,0.05);
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            border-left: 4px solid var(--accent);
         }
     </style>
 </head>
@@ -493,32 +519,35 @@
             </div>
 
             <div class="status-bar">
-                <div class="card-header"><i class="fa-solid fa-database"></i> Thông tin Module:</div>
-                <div class="progress-container">
-                    <div class="progress-label"><span>Bộ Nhớ: </span><span id="memoryPercent"> 0%</span></div>
-                    <div class="progress-bar mt-2">
-                        <div class="progress-fill" id="memoryBar" style="width: 0%"></div>
+                <div style="width: 100%;">
+                    <div class="card-header" style="margin-bottom: 10px;"><i class="fa-solid fa-database"></i> Thông tin Module:</div>
+                    <div class="progress-container">
+                        <div class="progress-label"><span>Bộ Nhớ: </span><span id="memoryPercent"> 0%</span></div>
+                        <div class="progress-bar mt-2">
+                            <div class="progress-fill" id="memoryBar" style="width: 0%"></div>
+                        </div>
                     </div>
-                </div>
-                <div class="progress-container">
-                    <div class="progress-label"><span>CPU: </span><span id="cpuPercent"> 0%</span></div>
-                    <div class="progress-bar mt-2">
-                        <div class="progress-fill" id="cpuBar" style="width: 0%"></div>
+                    <div class="progress-container mt-2">
+                        <div class="progress-label"><span>CPU: </span><span id="cpuPercent"> 0%</span></div>
+                        <div class="progress-bar mt-2">
+                            <div class="progress-fill" id="cpuBar" style="width: 0%"></div>
+                        </div>
                     </div>
                 </div>
             </div>
             <div class="status-bar">
-                <div class="card-header"><i class="fa-solid fa-database"></i> Thông tin Nguồn:</div>
-                <div class="progress-container">
-                    <div class="Voltage"><span>Điện áp:</span></div>
-                    <div class="Voltage"><span id="voltage">0</span><span> </span><span>V</span></div>
-                </div>
-                <div class="progress-container">
-                    <div class="Current"><span>Dòng điện:</span></div>
-                    <div class="Current"><span id="current">0</span><span> </span><span>A</span></div>
+                <div style="width: 100%;">
+                    <div class="card-header" style="margin-bottom: 10px;"><i class="fa-solid fa-bolt"></i> Thông tin Nguồn:</div>
+                    <div class="progress-container">
+                        <div class="progress-label"><span>Điện áp:</span><span><span id="voltage">0</span> V</span></div>
+                    </div>
+                    <div class="progress-container mt-2">
+                        <div class="progress-label"><span>Dòng điện:</span><span><span id="current">0</span> A</span></div>
+                    </div>
                 </div>
             </div>
-            <div class="card">
+
+            <div class="card" id="motorControlCard">
                 <div class="card-header"><i class="fas fa-fan"></i> Động cơ</div>
                 <div class="status-indicator">
                     <div class="indicator-light stopped" id="motorStatusLight"></div>
@@ -545,9 +574,29 @@
                 <button class="btn medium mt-2" onclick="setFrequency()" style="background-color: #3498db;"><i
                         class="fas fa-check"></i> Xác nhận Tần số</button>
             </div>
+            <div class="status-bar" style="flex-direction: column; align-items: stretch;">
+                <div class="card-header" style="margin-bottom: 10px;">
+                    <i class="fa-solid fa-clock"></i> Bộ Hẹn Giờ (Đang chạy)
+                </div>
+                <div id="activeTimersDisplay">
+                    <div style="color:#aaa; text-align:center; font-size: 0.9rem;">Không có bộ hẹn giờ nào được bật.</div>
+                </div>
+            </div>
         </div>
 
         <div id="view-settings" class="view-section">
+
+            <div class="card">
+                <div class="card-header"><i class="fas fa-cogs"></i> Chức năng hệ thống</div>
+                <div class="control-row" style="margin-bottom: 0;">
+                    <span style="font-weight: 500;">Hiển thị điều khiển Động cơ</span>
+                    <label class="switch">
+                        <input type="checkbox" id="motorEnableToggle" onchange="toggleMotorVisibility()" checked>
+                        <span class="slider"></span>
+                    </label>
+                </div>
+            </div>
+
             <div class="card">
                 <div class="card-header"><i class="fas fa-microchip"></i> Điều khiển chân IO </div>
 
@@ -588,6 +637,9 @@
                 </div>
 
                 <div class="card-header mt-2" style="font-size: 1rem;"><i class="fas fa-arrow-left"></i> NGÕ RA</div>
+                <div style="font-size: 0.85rem; color: #f39c12; margin-bottom: 10px; display: none;" id="outputLockWarning">
+                    <i class="fas fa-exclamation-triangle"></i> Nút bấm ngõ ra đã bị khoá do đang được cấu hình bởi bộ Hẹn Giờ (Timer).
+                </div>
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
                     <div>
                         <div class="control-row" style="margin-bottom: 10px;">
@@ -625,9 +677,99 @@
                         style="margin-left:auto; font-size: 1rem; color: var(--accent);">--:--:--</span>
                 </div>
 
-                <!-- Timer blocks are generated by external script -->
+                <div class="timer-block" id="timerBlock1">
+                    <div class="timer-title">
+                        <span><i class="fas fa-stopwatch"></i> Hẹn giờ 1</span>
+                        <label class="switch">
+                            <input type="checkbox" id="timer1_en" onchange="handleTimerChange(1)">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <div id="timer1_details" style="display: none; animation: fadeIn 0.3s;">
+                        <div class="timer-row">
+                            <span style="font-size: 0.9rem;">Bật lúc:</span>
+                            <input type="time" id="timer1_on" onchange="handleTimerChange(1)"> 
+                            <span style="font-size: 0.9rem;">Tắt lúc:</span> 
+                            <input type="time" id="timer1_off" onchange="handleTimerChange(1)">
+                        </div>
+                        <div class="timer-checks">
+                            <span>Kích hoạt:</span>
+                            <label class="checkbox-wrapper"><input type="checkbox" id="timer1_out1" onchange="handleTimerChange(1)"> Ngõ ra 1</label>
+                            <label class="checkbox-wrapper"><input type="checkbox" id="timer1_out2" onchange="handleTimerChange(1)"> Ngõ ra 2</label>
+                        </div>
+                    </div>
+                </div>
 
-                <button class="btn big" onclick="saveTimers()">Lưu Cài Đặt Hẹn Giờ</button>
+                <div class="timer-block" id="timerBlock2">
+                    <div class="timer-title">
+                        <span><i class="fas fa-stopwatch"></i> Hẹn giờ 2</span>
+                        <label class="switch">
+                            <input type="checkbox" id="timer2_en" onchange="handleTimerChange(2)">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <div id="timer2_details" style="display: none; animation: fadeIn 0.3s;">
+                        <div class="timer-row">
+                            <span style="font-size: 0.9rem;">Bật lúc:</span>
+                            <input type="time" id="timer2_on" onchange="handleTimerChange(2)"> 
+                            <span style="font-size: 0.9rem;">Tắt lúc:</span> 
+                            <input type="time" id="timer2_off" onchange="handleTimerChange(2)">
+                        </div>
+                        <div class="timer-checks">
+                            <span>Kích hoạt:</span>
+                            <label class="checkbox-wrapper"><input type="checkbox" id="timer2_out1" onchange="handleTimerChange(2)"> Ngõ ra 1</label>
+                            <label class="checkbox-wrapper"><input type="checkbox" id="timer2_out2" onchange="handleTimerChange(2)"> Ngõ ra 2</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timer-block" id="timerBlock3">
+                    <div class="timer-title">
+                        <span><i class="fas fa-stopwatch"></i> Hẹn giờ 3</span>
+                        <label class="switch">
+                            <input type="checkbox" id="timer3_en" onchange="handleTimerChange(3)">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <div id="timer3_details" style="display: none; animation: fadeIn 0.3s;">
+                        <div class="timer-row">
+                            <span style="font-size: 0.9rem;">Bật lúc:</span>
+                            <input type="time" id="timer3_on" onchange="handleTimerChange(3)"> 
+                            <span style="font-size: 0.9rem;">Tắt lúc:</span> 
+                            <input type="time" id="timer3_off" onchange="handleTimerChange(3)">
+                        </div>
+                        <div class="timer-checks">
+                            <span>Kích hoạt:</span>
+                            <label class="checkbox-wrapper"><input type="checkbox" id="timer3_out1" onchange="handleTimerChange(3)"> Ngõ ra 1</label>
+                            <label class="checkbox-wrapper"><input type="checkbox" id="timer3_out2" onchange="handleTimerChange(3)"> Ngõ ra 2</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timer-block" id="timerBlock4">
+                    <div class="timer-title">
+                        <span><i class="fas fa-stopwatch"></i> Hẹn giờ 4</span>
+                        <label class="switch">
+                            <input type="checkbox" id="timer4_en" onchange="handleTimerChange(4)">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <div id="timer4_details" style="display: none; animation: fadeIn 0.3s;">
+                        <div class="timer-row">
+                            <span style="font-size: 0.9rem;">Bật lúc:</span>
+                            <input type="time" id="timer4_on" onchange="handleTimerChange(4)"> 
+                            <span style="font-size: 0.9rem;">Tắt lúc:</span> 
+                            <input type="time" id="timer4_off" onchange="handleTimerChange(4)">
+                        </div>
+                        <div class="timer-checks">
+                            <span>Kích hoạt:</span>
+                            <label class="checkbox-wrapper"><input type="checkbox" id="timer4_out1" onchange="handleTimerChange(4)"> Ngõ ra 1</label>
+                            <label class="checkbox-wrapper"><input type="checkbox" id="timer4_out2" onchange="handleTimerChange(4)"> Ngõ ra 2</label>
+                        </div>
+                    </div>
+                </div>
+
+                <button class="btn big" onclick="saveTimers()" style="background-color: var(--accent); color: #000;"><i class="fas fa-save"></i> Lưu Cài Đặt Hẹn Giờ</button>
             </div>
 
             <div class="card">
@@ -638,7 +780,7 @@
                 </div>
                 <div class="input-group">
                     <input type="password" id="wifi_pass" placeholder="Mật khẩu">
-                    <i class="fa fa-eye" onclick="togglePass()"></i>
+                    <i class="fa fa-eye" onclick="togglePass('wifi_pass')"></i>
                 </div>
                 <button class="btn" onclick="saveWifi()">Lưu & Kết Nối Lại</button>
             </div>
@@ -649,7 +791,7 @@
                 </div>
                 <div class="input-group">
                     <input type="password" id="ap_pass" placeholder="Mật khẩu">
-                    <i class="fa fa-eye" onclick="togglePass()"></i>
+                    <i class="fa fa-eye" onclick="togglePass('ap_pass')"></i>
                 </div>
                 <button class="btn" onclick="saveIP()">Lưu & Kết Nối Lại</button>
 
@@ -661,7 +803,280 @@
         </div>
     </div>
 
-    <script src="script.js"></script>
-</body>
+    <script>
+// --- Navigation Logic ---
+function showTab(tabName) {
+    document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
+    document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
+    document.getElementById('view-' + tabName).classList.add('active');
+    
+    if(tabName === 'dashboard') document.getElementById('nav-dash').classList.add('active');
+    else document.getElementById('nav-set').classList.add('active');
+}
 
+// --- Logic Ẩn/Hiện Motor ---
+function toggleMotorVisibility() {
+    let isEn = document.getElementById('motorEnableToggle').checked;
+    document.getElementById('motorControlCard').style.display = isEn ? 'block' : 'none';
+}
+
+function handleTimerChange(id) {
+    let isEn = document.getElementById(`timer${id}_en`).checked;
+    document.getElementById(`timer${id}_details`).style.display = isEn ? 'block' : 'none';
+    refreshSystemTimerUI();
+}
+
+function refreshSystemTimerUI() {
+    let out1Locked = false;
+    let out2Locked = false;
+    let dashboardHtml = '';
+
+    for(let i = 1; i <= 4; i++) {
+        let isEn = document.getElementById(`timer${i}_en`).checked;
+        if(isEn) {
+            let out1 = document.getElementById(`timer${i}_out1`).checked;
+            let out2 = document.getElementById(`timer${i}_out2`).checked;
+            let onTime = document.getElementById(`timer${i}_on`).value || '--:--';
+            let offTime = document.getElementById(`timer${i}_off`).value || '--:--';
+
+            if(out1) out1Locked = true;
+            if(out2) out2Locked = true;
+
+            let targets = [];
+            if(out1) targets.push('Ra 1');
+            if(out2) targets.push('Ra 2');
+            let targetStr = targets.length > 0 ? targets.join(' & ') : '<span style="color:#e94560">Chưa gán</span>';
+
+            dashboardHtml += `
+                <div class="timer-item-dash">
+                    <div style="display:flex; justify-content:space-between; margin-bottom: 5px;">
+                        <span style="color: var(--accent); font-weight: bold;">Timer ${i}</span>
+                        <span style="font-size:0.85rem; background:#333; padding:2px 6px; border-radius:4px;">${targetStr}</span>
+                    </div>
+                    <div style="font-size:0.9rem; color:#ddd; display:flex; justify-content:space-between;">
+                        <span><i class="fas fa-play" style="color:#2ecc71; font-size:0.7rem;"></i> ${onTime}</span>
+                        <span><i class="fas fa-stop" style="color:#e94560; font-size:0.7rem;"></i> ${offTime}</span>
+                    </div>
+                </div>
+            `;
+        }
+    }
+
+    if(dashboardHtml === '') {
+        dashboardHtml = '<div style="color:#aaa; text-align:center; font-size: 0.9rem; padding: 10px;">Không có bộ hẹn giờ nào được bật.</div>';
+    }
+    document.getElementById('activeTimersDisplay').innerHTML = dashboardHtml;
+
+    // KHOÁ CẢ CÔNG TẮC XANH VÀ NÚT ĐIỀU KHIỂN
+    let btn1 = document.getElementById('output1ToggleBtn');
+    let btn2 = document.getElementById('output2ToggleBtn');
+    let switch1 = document.getElementById('output1Toggle');
+    let switch2 = document.getElementById('output2Toggle');
+    let warning = document.getElementById('outputLockWarning');
+    
+    if(btn1) btn1.disabled = out1Locked;
+    if(switch1) switch1.disabled = out1Locked;
+
+    if(btn2) btn2.disabled = out2Locked;
+    if(switch2) switch2.disabled = out2Locked;
+
+    if(out1Locked || out2Locked) {
+        warning.style.display = 'block';
+    } else {
+        warning.style.display = 'none';
+    }
+}
+
+// --- Core Functions ---
+let isFwd = true;
+
+function startMotor() { fetch('/setPower?val=1').then(r => { if(r.ok) alert("Inverter Power: ON"); }); }
+function stopMotor() { fetch('/setPower?val=0').then(r => { if(r.ok) alert("Inverter Power: OFF"); }); }
+
+function toggleDir() {
+    isFwd = !isFwd;
+    document.getElementById('dirLabel').innerText = isFwd ? "Quay Thuận" : "Quay Nghịch";
+    const btn = document.getElementById('dirBtn');
+    btn.className = isFwd ? "btn mt-2 medium dir-fwd" : "btn mt-2 medium dir-rev";
+    fetch('/setDir?val=' + (isFwd ? 1 : 0));
+}
+
+function setFrequency() {
+    let val = document.getElementById('freqSlider').value;
+    fetch('/setFreq?val=' + val).then(r => { if(r.ok) alert("Đã đặt tần số: " + val + " Hz"); });
+}
+
+function updateOutputButton(btnId, state) {
+    const btn = document.getElementById(btnId);
+    btn.dataset.state = state ? '1' : '0';
+    btn.innerHTML = state ? '<i class="fas fa-power-off"></i> BẬT' : '<i class="fas fa-power-off"></i> TẮT';
+    btn.style.backgroundColor = state ? '#2ecc71' : '#e94560';
+}
+
+function toggleOutput1() {
+    let btn = document.getElementById('output1ToggleBtn');
+    if(btn.disabled) return; 
+    let s = btn.dataset.state === '1' ? 0 : 1;
+    fetch('/setOutput1?val=' + s).then(r => { 
+        if(r.ok) {
+            updateOutputButton('output1ToggleBtn', s); 
+            // Nếu ấn để TẮT (state = 0) -> chuyển cả công tắc xanh về OFF và ẩn nút
+            if (s === 0) {
+                let toggle = document.getElementById('output1Toggle');
+                toggle.checked = false;
+                toggleOutput1Controls();
+            }
+        } 
+    });
+}
+
+function toggleOutput2() {
+    let btn = document.getElementById('output2ToggleBtn');
+    if(btn.disabled) return; 
+    let s = btn.dataset.state === '1' ? 0 : 1;
+    fetch('/setOutput2?val=' + s).then(r => { 
+        if(r.ok) {
+            updateOutputButton('output2ToggleBtn', s); 
+            // Nếu ấn để TẮT (state = 0) -> chuyển cả công tắc xanh về OFF và ẩn nút
+            if (s === 0) {
+                let toggle = document.getElementById('output2Toggle');
+                toggle.checked = false;
+                toggleOutput2Controls();
+            }
+        } 
+    });
+}
+
+function computeGpioMask() {
+    let m = 0;
+    if (document.getElementById('input1Toggle').checked) m |= 1;
+    if (document.getElementById('input2Toggle').checked) m |= 2;
+    if (document.getElementById('output1Toggle').checked) m |= 4;
+    if (document.getElementById('output2Toggle').checked) m |= 8;
+    return m;
+}
+
+function confirmGpios() {
+    let m = computeGpioMask();
+    if(confirm('Xác nhận thay đổi GPIO?')) fetch('/setGpios?m=' + m);
+}
+
+function saveWifi() {
+    let s = document.getElementById('wifi_name').value;
+    let p = document.getElementById('wifi_pass').value;
+    if(confirm("Lưu WiFi: " + s)) fetch('/saveWifi', { method: 'POST', body: `wifi_name=${s}&wifi_pass=${p}` });
+}
+function saveIP() {
+    let s = document.getElementById('ap_name').value;
+    let p = document.getElementById('ap_pass').value;
+    if(confirm("Lưu Access Point: " + s)) fetch('/saveIP', { method: 'POST', body: `ap_name=${s}&ap_pass=${p}` });
+}
+
+function saveTimers() {
+    let timers = [];
+    for(let i=1; i<=4; i++) {
+        let en = document.getElementById(`timer${i}_en`).checked ? 1 : 0;
+        let on = document.getElementById(`timer${i}_on`).value;
+        let off = document.getElementById(`timer${i}_off`).value;
+        let out = (document.getElementById(`timer${i}_out1`).checked ? 1 : 0) | (document.getElementById(`timer${i}_out2`).checked ? 2 : 0);
+        timers.push({id: i, en, on, off, out});
+    }
+    if(confirm("Lưu cài đặt 4 bộ hẹn giờ?")) {
+        fetch('/saveTimers', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({timers}) });
+    }
+}
+
+// --- UI Helpers ---
+function togglePass(id) {
+    let x = document.getElementById(id);
+    x.type = (x.type === "password") ? "text" : "password";
+}
+function toggleInput1Details() { document.getElementById('input1Details').style.display = document.getElementById('input1Toggle').checked ? 'block' : 'none'; }
+function toggleInput2Details() { document.getElementById('input2Details').style.display = document.getElementById('input2Toggle').checked ? 'block' : 'none'; }
+function toggleOutput1Controls() { document.getElementById('output1Controls').style.display = document.getElementById('output1Toggle').checked ? 'flex' : 'none'; }
+function toggleOutput2Controls() { document.getElementById('output2Controls').style.display = document.getElementById('output2Toggle').checked ? 'flex' : 'none'; }
+
+function updateBar(id, pct) {
+    let bar = document.getElementById(id);
+    bar.style.width = pct + '%';
+    bar.className = pct > 80 ? 'progress-fill high' : (pct > 60 ? 'progress-fill warning' : 'progress-fill');
+}
+
+// --- Polling Loop ---
+setInterval(() => {
+    fetch('/status')
+    .then(r => r.json())
+    .then(d => {
+        document.getElementById('statusBadge').className = "badge online";
+        document.getElementById('statusBadge').innerHTML = '<i class="fas fa-check-circle"></i> Đã kết nối';
+        document.getElementById('ipDisplay').innerText = "IP: " + d.ip;
+        document.getElementById('clock').innerText = d.time;
+
+        if(d.pwr) {
+            document.getElementById('motorStatusLight').className = 'indicator-light running';
+            document.getElementById('motorStatusText').innerText = 'CHẠY';
+        } else {
+            document.getElementById('motorStatusLight').className = 'indicator-light stopped';
+            document.getElementById('motorStatusText').innerText = 'DỪNG';
+        }
+        
+        isFwd = d.dir;
+        document.getElementById('dirLabel').innerText = isFwd ? "Quay Thuận" : "Quay Nghịch";
+        document.getElementById('dirBtn').className = isFwd ? "btn mt-2 medium dir-fwd" : "btn mt-2 medium dir-rev";
+        
+        document.getElementById('freqVal').innerText = d.freq;
+        document.getElementById('memoryPercent').innerText = " " + d.ram_usage + " %";
+        updateBar('memoryBar', d.ram_usage);
+        document.getElementById('cpuPercent').innerText = " " + d.cpu_load + " %";
+        updateBar('cpuBar', d.cpu_load);
+
+        updateOutputButton('output1ToggleBtn', d.output1);
+        updateOutputButton('output2ToggleBtn', d.output2);
+    })
+    .catch(() => {
+        document.getElementById('statusBadge').className = "badge offline";
+        document.getElementById('statusBadge').innerHTML = '<i class="fas fa-times-circle"></i> Mất tín hiệu';
+    });
+}, 2000);
+
+// --- Init (Load Config Once) ---
+window.onload = function() {
+    fetch('/get-config').then(r=>r.json()).then(d => {
+        document.getElementById('wifi_name').value = d.ssid || "";
+        document.getElementById('wifi_pass').value = d.pass || "";
+        document.getElementById('freqSlider').value = d.freq || 0;
+        document.getElementById('freqSlider_val').innerText = d.freq || 0;
+
+        if(d.motor_en !== undefined) document.getElementById('motorEnableToggle').checked = d.motor_en;
+        toggleMotorVisibility();
+
+        let mask = d.gpios ? parseInt(d.gpios) : 0;
+        document.getElementById('input1Toggle').checked = !!(mask & 1);
+        document.getElementById('input2Toggle').checked = !!(mask & 2);
+        document.getElementById('output1Toggle').checked = !!(mask & 4);
+        document.getElementById('output2Toggle').checked = !!(mask & 8);
+
+        for(let i=1; i<=4; i++) {
+            if(d[`t${i}_en`] !== undefined) document.getElementById(`timer${i}_en`).checked = d[`t${i}_en`];
+            if(d[`t${i}_on`]) document.getElementById(`timer${i}_on`).value = d[`t${i}_on`];
+            if(d[`t${i}_off`]) document.getElementById(`timer${i}_off`).value = d[`t${i}_off`];
+            let out = d[`t${i}_out`] || 0;
+            document.getElementById(`timer${i}_out1`).checked = !!(out & 1);
+            document.getElementById(`timer${i}_out2`).checked = !!(out & 2);
+            
+            handleTimerChange(i); 
+        }
+
+        toggleInput1Details(); toggleInput2Details();
+        toggleOutput1Controls(); toggleOutput2Controls();
+
+        refreshSystemTimerUI();
+    }).catch(e => {
+        for(let i=1; i<=4; i++) handleTimerChange(i);
+        toggleMotorVisibility();
+        refreshSystemTimerUI();
+    });
+};
+    </script>
+</body>
 </html>
