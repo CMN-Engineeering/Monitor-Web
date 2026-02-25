@@ -546,7 +546,132 @@
                     </div>
                 </div>
             </div>
-<div class="card">
+            
+            <div class="card" id="motorControlCard">
+                <div class="card-header"><i class="fas fa-fan"></i> Động cơ</div>
+                <div class="status-indicator">
+                    <div class="indicator-light stopped" id="motorStatusLight"></div>
+                    <div class="indicator-text">
+                        <span class="indicator-label">Trạng thái:</span>
+                        <span class="indicator-state" id="motorStatusText" style="margin-top: 5px;">DỪNG</span>
+                    </div>
+                </div>
+                <div class="control-row">
+                    <button class="btn medium" onclick="startMotor()" style="background-color: #2ecc71;"><i
+                            class="fas fa-play"></i> Bắt đầu</button>
+                    <button class="btn medium" onclick="stopMotor()" style="background-color: #e94560;"><i
+                            class="fas fa-stop"></i> Dừng</button>
+                </div>
+                <button id="dirBtn" class="btn mt-2 medium dir-fwd" onclick="toggleDir()"><i class="fas fa-sync"></i>
+                    <span id="dirLabel">Quay Thuận</span></button>
+                <div class="card-header mt-2"><i class="fas fa-bolt"></i> Tần số: <span id="freqVal"
+                        style="color:#e94560; margin: 0 10px;">0</span> Hz</div>
+                <div class="control-row" style="gap: 10px;">
+                    <input type="range" min="0" max="50" value="0" class="range-slider" id="freqSlider"
+                        oninput="document.getElementById('freqSlider_val').innerText=this.value" style="flex: 1;">
+                    <span id="freqSlider_val" style="color: var(--accent); font-weight: bold; min-width: 30px;">0</span>
+                </div>
+                <button class="btn medium mt-2" onclick="setFrequency()" style="background-color: #3498db;"><i
+                        class="fas fa-check"></i> Xác nhận Tần số</button>
+            </div>
+            
+            <div class="status-bar" style="flex-direction: column; align-items: stretch;">
+                <div class="card-header" style="margin-bottom: 10px;"><i class="fa-solid fa-clock"></i>NGÕ VÀO</div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">    
+                    <div>
+                        <div id="input1Details"
+                        style="display: none; background: rgba(255,255,255,0.05); padding: 10px; border-radius: 8px;">
+                        <!-- Header for Detail -->
+                        <div style="font-size: large; font-weight:bold; padding: 5px;">NGÕ VÀO 1</div>
+                        <div style="font-size: 0.8rem; color: #bbb;">HIGH (phút):</div>
+                        <input type="number" id="input1OnInterval" min="0" max="1440" placeholder="0"
+                            style="width: 100%; padding: 5px; margin-bottom: 5px; border-radius: 4px;">
+                        <div style="font-size: 0.8rem; color: #bbb;">LOW (phút):</div>
+                        <input type="number" id="input1OffInterval" min="0" max="1440" placeholder="0"
+                            style="width: 100%; padding: 5px; border-radius: 4px;">
+                        </div>
+
+                    </div>
+                    <div>
+                    <div id="input2Details"
+                        style="display: none; background: rgba(255,255,255,0.05); padding: 10px; border-radius: 8px;">
+                        <div style="font-size: large; font-weight:bold; padding: 5px;">NGÕ VÀO 2</div>
+                        <div style="font-size: 0.8rem; color: #bbb;">HIGH (phút):</div>
+                        <input type="number" id="input2OnInterval" min="0" max="1440" placeholder="0"
+                            style="width: 100%; padding: 5px; margin-bottom: 5px; border-radius: 4px;">
+                        <div style="font-size: 0.8rem; color: #bbb;">LOW (phút):</div>
+                        <input type="number" id="input2OffInterval" min="0" max="1440" placeholder="0"
+                            style="width: 100%; padding: 5px; border-radius: 4px;">
+                    </div>
+                    </div>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
+                    <div>
+                        <div id="input3Details"
+                            style="display: none; background: rgba(255,255,255,0.05); padding: 10px; border-radius: 8px;">
+                            <div style="font-size: large; font-weight:bold; padding: 5px;">NGÕ VÀO 3</div>
+                            <div style="font-size: 0.8rem; color: #bbb;">HIGH (phút):</div>
+                            <input type="number" id="input3OnInterval" min="0" max="1440" placeholder="0"
+                                style="width: 100%; padding: 5px; margin-bottom: 5px; border-radius: 4px;">
+                            <div style="font-size: 0.8rem; color: #bbb;">LOW (phút):</div>
+                            <input type="number" id="input3OffInterval" min="0" max="1440" placeholder="0"
+                                style="width: 100%; padding: 5px; border-radius: 4px;">
+                        </div>
+                    </div>
+                    <div>
+                        <div id="input4Details"
+                            style="display: none; background: rgba(255,255,255,0.05); padding: 10px; border-radius: 8px;">
+                            <div style="font-size: large; font-weight:bold; padding: 5px;">NGÕ VÀO 4</div>
+                            <div style="font-size: 0.8rem; color: #bbb;">HIGH (phút):</div>
+                            <input type="number" id="input4OnInterval" min="0" max="1440" placeholder="0"
+                                style="width: 100%; padding: 5px; margin-bottom: 5px; border-radius: 4px;">
+                            <div style="font-size: 0.8rem; color: #bbb;">LOW (phút):</div>
+                            <input type="number" id="input4OffInterval" min="0" max="1440" placeholder="0"
+                                style="width: 100%; padding: 5px; border-radius: 4px;">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="status-bar" style="flex-direction: column; align-items: stretch;">
+                <div class="card-header" style="margin-bottom: 10px;"><i class="fa-solid fa-clock"></i> NGÕ RA</div>
+                <!-- Nếu slider của ngõ ra nào ON => Hiện ngõ ra đó + Nút tắt -->
+                    <div id="output1Controls" style="display: none; gap: 8px; padding: 8px;">
+                        <div style="font-weight: 900; padding: 15px 0;">NGÕ RA 1</div>
+                        <button id="output1ToggleBtn" class="btn small" onclick="toggleOutput1()" data-state="0"
+                            style="background-color: #444; flex: 1;"><i class="fas fa-power-off"></i>TẮT</button>
+                    </div>
+                    <div id="output2Controls" style="display: none; gap: 8px; padding: 8px;">
+                        <div style="font-weight: 900; padding: 15px 0;">NGÕ RA 2</div>
+                        <button id="output2ToggleBtn" class="btn small" onclick="toggleOutput2()" data-state="0"
+                            style="background-color: #444; flex: 1;"><i class="fas fa-power-off"></i> TẮT</button>
+                    </div>
+                    <div id="output3Controls" style="display: none; gap: 8px; padding: 8px;">
+                        <div style="font-weight: 900; padding: 15px 0;">NGÕ RA 3</div>
+                        <button id="output3ToggleBtn" class="btn small" onclick="toggleOutput3()" data-state="0"
+                            style="background-color: #444; flex: 1;"><i class="fas fa-power-off"></i> TẮT</button>
+                    </div>
+                    <div id="output4Controls" style="display: none; gap: 8px; padding: 8px;">
+                        <div style="font-weight: 900; padding: 15px 0;">NGÕ RA 4</div>
+                        <button id="output4ToggleBtn" class="btn small" onclick="toggleOutput4()" data-state="0"
+                            style="background-color: #444; flex: 1;"><i class="fas fa-power-off"></i> TẮT</button>
+            </div>
+            </div>
+        </div>
+        <div id="view-settings" class="view-section">
+
+            <div class="card">
+                <div class="card-header"><i class="fas fa-cogs"></i> Chức năng hệ thống</div>
+                <div class="control-row" style="margin-bottom: 0;">
+                    <span style="font-weight: 500;">Hiển thị điều khiển Động cơ</span>
+                    <label class="switch">
+                        <input type="checkbox" id="motorEnableToggle" onchange="toggleMotorVisibility()" checked>
+                        <span class="slider"></span>
+                    </label>
+                </div>
+            </div>
+            
+            <div class="card">
                 <div class="card-header"><i class="fas fa-microchip"></i> Điều khiển chân IO </div>
 
                 <div class="card-header mt-2" style="font-size: 1rem;"><i class="fas fa-arrow-right"></i> NGÕ VÀO</div>
@@ -557,30 +682,13 @@
                             <label class="switch"><input type="checkbox" id="input1Toggle"
                                     onchange="toggleInput1Details()"><span class="slider"></span></label>
                         </div>
-                        <div id="input1Details"
-                            style="display: none; background: rgba(255,255,255,0.05); padding: 10px; border-radius: 8px;">
-                            <div style="font-size: 0.8rem; color: #bbb;">HIGH (phút):</div>
-                            <input type="number" id="input1OnInterval" min="0" max="1440" placeholder="0"
-                                style="width: 100%; padding: 5px; margin-bottom: 5px; border-radius: 4px;">
-                            <div style="font-size: 0.8rem; color: #bbb;">LOW (phút):</div>
-                            <input type="number" id="input1OffInterval" min="0" max="1440" placeholder="0"
-                                style="width: 100%; padding: 5px; border-radius: 4px;">
-                        </div>
+
                     </div>
                     <div>
                         <div class="control-row" style="margin-bottom: 10px;">
                             <span>Ngõ vào 2</span>
                             <label class="switch"><input type="checkbox" id="input2Toggle"
                                     onchange="toggleInput2Details()"><span class="slider"></span></label>
-                        </div>
-                        <div id="input2Details"
-                            style="display: none; background: rgba(255,255,255,0.05); padding: 10px; border-radius: 8px;">
-                            <div style="font-size: 0.8rem; color: #bbb;">HIGH (phút):</div>
-                            <input type="number" id="input2OnInterval" min="0" max="1440" placeholder="0"
-                                style="width: 100%; padding: 5px; margin-bottom: 5px; border-radius: 4px;">
-                            <div style="font-size: 0.8rem; color: #bbb;">LOW (phút):</div>
-                            <input type="number" id="input2OffInterval" min="0" max="1440" placeholder="0"
-                                style="width: 100%; padding: 5px; border-radius: 4px;">
                         </div>
                     </div>
                 </div>
@@ -591,7 +699,7 @@
                             <label class="switch"><input type="checkbox" id="input3Toggle"
                                     onchange="toggleInput3Details()"><span class="slider"></span></label>
                         </div>
-                        <div id="input3Details"
+                        <!-- <div id="input3Details"
                             style="display: none; background: rgba(255,255,255,0.05); padding: 10px; border-radius: 8px;">
                             <div style="font-size: 0.8rem; color: #bbb;">HIGH (phút):</div>
                             <input type="number" id="input3OnInterval" min="0" max="1440" placeholder="0"
@@ -599,7 +707,7 @@
                             <div style="font-size: 0.8rem; color: #bbb;">LOW (phút):</div>
                             <input type="number" id="input3OffInterval" min="0" max="1440" placeholder="0"
                                 style="width: 100%; padding: 5px; border-radius: 4px;">
-                        </div>
+                        </div> -->
                     </div>
                     <div>
                         <div class="control-row" style="margin-bottom: 10px;">
@@ -607,7 +715,7 @@
                             <label class="switch"><input type="checkbox" id="input4Toggle"
                                     onchange="toggleInput4Details()"><span class="slider"></span></label>
                         </div>
-                        <div id="input4Details"
+                        <!-- <div id="input4Details"
                             style="display: none; background: rgba(255,255,255,0.05); padding: 10px; border-radius: 8px;">
                             <div style="font-size: 0.8rem; color: #bbb;">HIGH (phút):</div>
                             <input type="number" id="input4OnInterval" min="0" max="1440" placeholder="0"
@@ -615,7 +723,7 @@
                             <div style="font-size: 0.8rem; color: #bbb;">LOW (phút):</div>
                             <input type="number" id="input4OffInterval" min="0" max="1440" placeholder="0"
                                 style="width: 100%; padding: 5px; border-radius: 4px;">
-                        </div>
+                        </div> -->
                     </div>
                 </div>
 
@@ -672,55 +780,6 @@
                 <div style="display:flex; justify-content:flex-end; margin-top:10px;">
                     <button class="btn" onclick="confirmGpios()" style="background-color: #27ae60;"><i
                             class="fas fa-check"></i> Lưu GPIO</button>
-                </div>
-            </div>
-            <div class="card" id="motorControlCard">
-                <div class="card-header"><i class="fas fa-fan"></i> Động cơ</div>
-                <div class="status-indicator">
-                    <div class="indicator-light stopped" id="motorStatusLight"></div>
-                    <div class="indicator-text">
-                        <span class="indicator-label">Trạng thái:</span>
-                        <span class="indicator-state" id="motorStatusText" style="margin-top: 5px;">DỪNG</span>
-                    </div>
-                </div>
-                <div class="control-row">
-                    <button class="btn medium" onclick="startMotor()" style="background-color: #2ecc71;"><i
-                            class="fas fa-play"></i> Bắt đầu</button>
-                    <button class="btn medium" onclick="stopMotor()" style="background-color: #e94560;"><i
-                            class="fas fa-stop"></i> Dừng</button>
-                </div>
-                <button id="dirBtn" class="btn mt-2 medium dir-fwd" onclick="toggleDir()"><i class="fas fa-sync"></i>
-                    <span id="dirLabel">Quay Thuận</span></button>
-                <div class="card-header mt-2"><i class="fas fa-bolt"></i> Tần số: <span id="freqVal"
-                        style="color:#e94560; margin: 0 10px;">0</span> Hz</div>
-                <div class="control-row" style="gap: 10px;">
-                    <input type="range" min="0" max="50" value="0" class="range-slider" id="freqSlider"
-                        oninput="document.getElementById('freqSlider_val').innerText=this.value" style="flex: 1;">
-                    <span id="freqSlider_val" style="color: var(--accent); font-weight: bold; min-width: 30px;">0</span>
-                </div>
-                <button class="btn medium mt-2" onclick="setFrequency()" style="background-color: #3498db;"><i
-                        class="fas fa-check"></i> Xác nhận Tần số</button>
-            </div>
-            <div class="status-bar" style="flex-direction: column; align-items: stretch;">
-                <div class="card-header" style="margin-bottom: 10px;">
-                    <i class="fa-solid fa-clock"></i> Bộ Hẹn Giờ (Đang chạy)
-                </div>
-                <div id="activeTimersDisplay">
-                    <div style="color:#aaa; text-align:center; font-size: 0.9rem;">Không có bộ hẹn giờ nào được bật.</div>
-                </div>
-            </div>
-        </div>
-
-        <div id="view-settings" class="view-section">
-
-            <div class="card">
-                <div class="card-header"><i class="fas fa-cogs"></i> Chức năng hệ thống</div>
-                <div class="control-row" style="margin-bottom: 0;">
-                    <span style="font-weight: 500;">Hiển thị điều khiển Động cơ</span>
-                    <label class="switch">
-                        <input type="checkbox" id="motorEnableToggle" onchange="toggleMotorVisibility()" checked>
-                        <span class="slider"></span>
-                    </label>
                 </div>
             </div>
 
@@ -1011,12 +1070,6 @@ function toggleOutput1() {
     let btn = document.getElementById('output1ToggleBtn');
     if(btn.disabled) return; 
     
-    // Auto toggle OFF immediately
-    let toggle = document.getElementById('output1Toggle');
-    toggle.checked = false;
-    toggleOutput1Controls();
-    updateOutputButton('output1ToggleBtn', 0);
-    
     // Send to API
     fetch('/setOutput1?val=0');
 }
@@ -1024,13 +1077,7 @@ function toggleOutput1() {
 function toggleOutput2() {
     let btn = document.getElementById('output2ToggleBtn');
     if(btn.disabled) return; 
-    
-    // Auto toggle OFF immediately
-    let toggle = document.getElementById('output2Toggle');
-    toggle.checked = false;
-    toggleOutput2Controls();
-    updateOutputButton('output2ToggleBtn', 0);
-    
+
     // Send to API
     fetch('/setOutput2?val=0');
 }
@@ -1038,13 +1085,7 @@ function toggleOutput2() {
 function toggleOutput3() {
     let btn = document.getElementById('output3ToggleBtn');
     if(btn.disabled) return; 
-    
-    // Auto toggle OFF immediately
-    let toggle = document.getElementById('output3Toggle');
-    toggle.checked = false;
-    toggleOutput3Controls();
-    updateOutputButton('output3ToggleBtn', 0);
-    
+  
     // Send to API
     fetch('/setOutput3?val=0');
 }
@@ -1052,13 +1093,7 @@ function toggleOutput3() {
 function toggleOutput4() {
     let btn = document.getElementById('output4ToggleBtn');
     if(btn.disabled) return; 
-    
-    // Auto toggle OFF immediately
-    let toggle = document.getElementById('output4Toggle');
-    toggle.checked = false;
-    toggleOutput4Controls();
-    updateOutputButton('output4ToggleBtn', 0);
-    
+
     // Send to API
     fetch('/setOutput4?val=0');
 }
