@@ -546,7 +546,134 @@
                     </div>
                 </div>
             </div>
+<div class="card">
+                <div class="card-header"><i class="fas fa-microchip"></i> Điều khiển chân IO </div>
 
+                <div class="card-header mt-2" style="font-size: 1rem;"><i class="fas fa-arrow-right"></i> NGÕ VÀO</div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
+                    <div>
+                        <div class="control-row" style="margin-bottom: 10px;">
+                            <span>Ngõ vào 1</span>
+                            <label class="switch"><input type="checkbox" id="input1Toggle"
+                                    onchange="toggleInput1Details()"><span class="slider"></span></label>
+                        </div>
+                        <div id="input1Details"
+                            style="display: none; background: rgba(255,255,255,0.05); padding: 10px; border-radius: 8px;">
+                            <div style="font-size: 0.8rem; color: #bbb;">HIGH (phút):</div>
+                            <input type="number" id="input1OnInterval" min="0" max="1440" placeholder="0"
+                                style="width: 100%; padding: 5px; margin-bottom: 5px; border-radius: 4px;">
+                            <div style="font-size: 0.8rem; color: #bbb;">LOW (phút):</div>
+                            <input type="number" id="input1OffInterval" min="0" max="1440" placeholder="0"
+                                style="width: 100%; padding: 5px; border-radius: 4px;">
+                        </div>
+                    </div>
+                    <div>
+                        <div class="control-row" style="margin-bottom: 10px;">
+                            <span>Ngõ vào 2</span>
+                            <label class="switch"><input type="checkbox" id="input2Toggle"
+                                    onchange="toggleInput2Details()"><span class="slider"></span></label>
+                        </div>
+                        <div id="input2Details"
+                            style="display: none; background: rgba(255,255,255,0.05); padding: 10px; border-radius: 8px;">
+                            <div style="font-size: 0.8rem; color: #bbb;">HIGH (phút):</div>
+                            <input type="number" id="input2OnInterval" min="0" max="1440" placeholder="0"
+                                style="width: 100%; padding: 5px; margin-bottom: 5px; border-radius: 4px;">
+                            <div style="font-size: 0.8rem; color: #bbb;">LOW (phút):</div>
+                            <input type="number" id="input2OffInterval" min="0" max="1440" placeholder="0"
+                                style="width: 100%; padding: 5px; border-radius: 4px;">
+                        </div>
+                    </div>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
+                    <div>
+                        <div class="control-row" style="margin-bottom: 10px;">
+                            <span>Ngõ vào 3</span>
+                            <label class="switch"><input type="checkbox" id="input3Toggle"
+                                    onchange="toggleInput3Details()"><span class="slider"></span></label>
+                        </div>
+                        <div id="input3Details"
+                            style="display: none; background: rgba(255,255,255,0.05); padding: 10px; border-radius: 8px;">
+                            <div style="font-size: 0.8rem; color: #bbb;">HIGH (phút):</div>
+                            <input type="number" id="input3OnInterval" min="0" max="1440" placeholder="0"
+                                style="width: 100%; padding: 5px; margin-bottom: 5px; border-radius: 4px;">
+                            <div style="font-size: 0.8rem; color: #bbb;">LOW (phút):</div>
+                            <input type="number" id="input3OffInterval" min="0" max="1440" placeholder="0"
+                                style="width: 100%; padding: 5px; border-radius: 4px;">
+                        </div>
+                    </div>
+                    <div>
+                        <div class="control-row" style="margin-bottom: 10px;">
+                            <span>Ngõ vào 4</span>
+                            <label class="switch"><input type="checkbox" id="input4Toggle"
+                                    onchange="toggleInput4Details()"><span class="slider"></span></label>
+                        </div>
+                        <div id="input4Details"
+                            style="display: none; background: rgba(255,255,255,0.05); padding: 10px; border-radius: 8px;">
+                            <div style="font-size: 0.8rem; color: #bbb;">HIGH (phút):</div>
+                            <input type="number" id="input4OnInterval" min="0" max="1440" placeholder="0"
+                                style="width: 100%; padding: 5px; margin-bottom: 5px; border-radius: 4px;">
+                            <div style="font-size: 0.8rem; color: #bbb;">LOW (phút):</div>
+                            <input type="number" id="input4OffInterval" min="0" max="1440" placeholder="0"
+                                style="width: 100%; padding: 5px; border-radius: 4px;">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-header mt-2" style="font-size: 1rem;"><i class="fas fa-arrow-left"></i> NGÕ RA</div>
+                <div style="font-size: 0.85rem; color: #f39c12; margin-bottom: 10px; display: none;" id="outputLockWarning">
+                    <i class="fas fa-exclamation-triangle"></i> Nút bấm ngõ ra đã bị khoá do đang được cấu hình bởi bộ Hẹn Giờ (Timer).
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <div>
+                        <div class="control-row" style="margin-bottom: 10px;">
+                            <span>Ngõ ra 1</span>
+                            <label class="switch"><input type="checkbox" id="output1Toggle"
+                                    onchange="toggleOutput1Controls()"><span class="slider"></span></label>
+                        </div>
+                        <div id="output1Controls" style="display: none; gap: 8px;">
+                            <button id="output1ToggleBtn" class="btn small" onclick="toggleOutput1()" data-state="0"
+                                style="background-color: #444; flex: 1;"><i class="fas fa-power-off"></i> TẮT</button>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="control-row" style="margin-bottom: 10px;">
+                            <span>Ngõ ra 2</span>
+                            <label class="switch"><input type="checkbox" id="output2Toggle"
+                                    onchange="toggleOutput2Controls()"><span class="slider"></span></label>
+                        </div>
+                        <div id="output2Controls" style="display: none; gap: 8px;">
+                            <button id="output2ToggleBtn" class="btn small" onclick="toggleOutput2()" data-state="0"
+                                style="background-color: #444; flex: 1;"><i class="fas fa-power-off"></i> TẮT</button>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="control-row" style="margin-bottom: 10px;">
+                            <span>Ngõ ra 3</span>
+                            <label class="switch"><input type="checkbox" id="output3Toggle"
+                                    onchange="toggleOutput3Controls()"><span class="slider"></span></label>
+                        </div>
+                        <div id="output3Controls" style="display: none; gap: 8px;">
+                            <button id="output3ToggleBtn" class="btn small" onclick="toggleOutput3()" data-state="0"
+                                style="background-color: #444; flex: 1;"><i class="fas fa-power-off"></i> TẮT</button>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="control-row" style="margin-bottom: 10px;">
+                            <span>Ngõ ra 4</span>
+                            <label class="switch"><input type="checkbox" id="output4Toggle"
+                                    onchange="toggleOutput4Controls()"><span class="slider"></span></label>
+                        </div>
+                        <div id="output4Controls" style="display: none; gap: 8px;">
+                            <button id="output4ToggleBtn" class="btn small" onclick="toggleOutput4()" data-state="0"
+                                style="background-color: #444; flex: 1;"><i class="fas fa-power-off"></i> TẮT</button>
+                        </div>
+                    </div>
+                </div>
+                <div style="display:flex; justify-content:flex-end; margin-top:10px;">
+                    <button class="btn" onclick="confirmGpios()" style="background-color: #27ae60;"><i
+                            class="fas fa-check"></i> Lưu GPIO</button>
+                </div>
+            </div>
             <div class="card" id="motorControlCard">
                 <div class="card-header"><i class="fas fa-fan"></i> Động cơ</div>
                 <div class="status-indicator">
@@ -598,79 +725,6 @@
             </div>
 
             <div class="card">
-                <div class="card-header"><i class="fas fa-microchip"></i> Điều khiển chân IO </div>
-
-                <div class="card-header mt-2" style="font-size: 1rem;"><i class="fas fa-arrow-right"></i> NGÕ VÀO</div>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
-                    <div>
-                        <div class="control-row" style="margin-bottom: 10px;">
-                            <span>Ngõ vào 1</span>
-                            <label class="switch"><input type="checkbox" id="input1Toggle"
-                                    onchange="toggleInput1Details()"><span class="slider"></span></label>
-                        </div>
-                        <div id="input1Details"
-                            style="display: none; background: rgba(255,255,255,0.05); padding: 10px; border-radius: 8px;">
-                            <div style="font-size: 0.8rem; color: #bbb;">HIGH (phút):</div>
-                            <input type="number" id="input1OnInterval" min="0" max="1440" placeholder="0"
-                                style="width: 100%; padding: 5px; margin-bottom: 5px; border-radius: 4px;">
-                            <div style="font-size: 0.8rem; color: #bbb;">LOW (phút):</div>
-                            <input type="number" id="input1OffInterval" min="0" max="1440" placeholder="0"
-                                style="width: 100%; padding: 5px; border-radius: 4px;">
-                        </div>
-                    </div>
-                    <div>
-                        <div class="control-row" style="margin-bottom: 10px;">
-                            <span>Ngõ vào 2</span>
-                            <label class="switch"><input type="checkbox" id="input2Toggle"
-                                    onchange="toggleInput2Details()"><span class="slider"></span></label>
-                        </div>
-                        <div id="input2Details"
-                            style="display: none; background: rgba(255,255,255,0.05); padding: 10px; border-radius: 8px;">
-                            <div style="font-size: 0.8rem; color: #bbb;">HIGH (phút):</div>
-                            <input type="number" id="input2OnInterval" min="0" max="1440" placeholder="0"
-                                style="width: 100%; padding: 5px; margin-bottom: 5px; border-radius: 4px;">
-                            <div style="font-size: 0.8rem; color: #bbb;">LOW (phút):</div>
-                            <input type="number" id="input2OffInterval" min="0" max="1440" placeholder="0"
-                                style="width: 100%; padding: 5px; border-radius: 4px;">
-                        </div>
-                    </div>
-                </div>
-
-                <div class="card-header mt-2" style="font-size: 1rem;"><i class="fas fa-arrow-left"></i> NGÕ RA</div>
-                <div style="font-size: 0.85rem; color: #f39c12; margin-bottom: 10px; display: none;" id="outputLockWarning">
-                    <i class="fas fa-exclamation-triangle"></i> Nút bấm ngõ ra đã bị khoá do đang được cấu hình bởi bộ Hẹn Giờ (Timer).
-                </div>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-                    <div>
-                        <div class="control-row" style="margin-bottom: 10px;">
-                            <span>Ngõ ra 1</span>
-                            <label class="switch"><input type="checkbox" id="output1Toggle"
-                                    onchange="toggleOutput1Controls()"><span class="slider"></span></label>
-                        </div>
-                        <div id="output1Controls" style="display: none; display: flex; gap: 8px;">
-                            <button id="output1ToggleBtn" class="btn small" onclick="toggleOutput1()" data-state="0"
-                                style="background-color: #444; flex: 1;"><i class="fas fa-power-off"></i> TẮT</button>
-                        </div>
-                    </div>
-                    <div>
-                        <div class="control-row" style="margin-bottom: 10px;">
-                            <span>Ngõ ra 2</span>
-                            <label class="switch"><input type="checkbox" id="output2Toggle"
-                                    onchange="toggleOutput2Controls()"><span class="slider"></span></label>
-                        </div>
-                        <div id="output2Controls" style="display: none; display: flex; gap: 8px;">
-                            <button id="output2ToggleBtn" class="btn small" onclick="toggleOutput2()" data-state="0"
-                                style="background-color: #444; flex: 1;"><i class="fas fa-power-off"></i> TẮT</button>
-                        </div>
-                    </div>
-                </div>
-                <div style="display:flex; justify-content:flex-end; margin-top:10px;">
-                    <button class="btn" onclick="confirmGpios()" style="background-color: #27ae60;"><i
-                            class="fas fa-check"></i> Lưu GPIO</button>
-                </div>
-            </div>
-
-            <div class="card">
                 <div class="card-header">
                     <i class="fas fa-clock"></i> 4 Bộ Hẹn Giờ
                     <span id="clock" class="clock"
@@ -696,6 +750,8 @@
                             <span>Kích hoạt:</span>
                             <label class="checkbox-wrapper"><input type="checkbox" id="timer1_out1" onchange="handleTimerChange(1)"> Ngõ ra 1</label>
                             <label class="checkbox-wrapper"><input type="checkbox" id="timer1_out2" onchange="handleTimerChange(1)"> Ngõ ra 2</label>
+                            <label class="checkbox-wrapper"><input type="checkbox" id="timer1_out3" onchange="handleTimerChange(1)"> Ngõ ra 3</label>
+                            <label class="checkbox-wrapper"><input type="checkbox" id="timer1_out4" onchange="handleTimerChange(1)"> Ngõ ra 4</label>
                         </div>
                     </div>
                 </div>
@@ -719,6 +775,8 @@
                             <span>Kích hoạt:</span>
                             <label class="checkbox-wrapper"><input type="checkbox" id="timer2_out1" onchange="handleTimerChange(2)"> Ngõ ra 1</label>
                             <label class="checkbox-wrapper"><input type="checkbox" id="timer2_out2" onchange="handleTimerChange(2)"> Ngõ ra 2</label>
+                            <label class="checkbox-wrapper"><input type="checkbox" id="timer2_out3" onchange="handleTimerChange(2)"> Ngõ ra 3</label>
+                            <label class="checkbox-wrapper"><input type="checkbox" id="timer2_out4" onchange="handleTimerChange(2)"> Ngõ ra 4</label>
                         </div>
                     </div>
                 </div>
@@ -742,6 +800,8 @@
                             <span>Kích hoạt:</span>
                             <label class="checkbox-wrapper"><input type="checkbox" id="timer3_out1" onchange="handleTimerChange(3)"> Ngõ ra 1</label>
                             <label class="checkbox-wrapper"><input type="checkbox" id="timer3_out2" onchange="handleTimerChange(3)"> Ngõ ra 2</label>
+                            <label class="checkbox-wrapper"><input type="checkbox" id="timer3_out3" onchange="handleTimerChange(3)"> Ngõ ra 3</label>
+                            <label class="checkbox-wrapper"><input type="checkbox" id="timer3_out4" onchange="handleTimerChange(3)"> Ngõ ra 4</label>
                         </div>
                     </div>
                 </div>
@@ -765,6 +825,8 @@
                             <span>Kích hoạt:</span>
                             <label class="checkbox-wrapper"><input type="checkbox" id="timer4_out1" onchange="handleTimerChange(4)"> Ngõ ra 1</label>
                             <label class="checkbox-wrapper"><input type="checkbox" id="timer4_out2" onchange="handleTimerChange(4)"> Ngõ ra 2</label>
+                            <label class="checkbox-wrapper"><input type="checkbox" id="timer4_out3" onchange="handleTimerChange(4)"> Ngõ ra 3</label>
+                            <label class="checkbox-wrapper"><input type="checkbox" id="timer4_out4" onchange="handleTimerChange(4)"> Ngõ ra 4</label>
                         </div>
                     </div>
                 </div>
@@ -785,16 +847,13 @@
                 <button class="btn" onclick="saveWifi()">Lưu & Kết Nối Lại</button>
             </div>
             <div class="card">
-                <div class="card-header"><span>Cài đặt Access Point</span></div>
-                <div class="input-group">
-                    <input type="text" id="ap_name" placeholder="IP">
+                <div class="card-header"><span>Thông tin Access Point</span></div>
+                <div class="input-group">IP
+                    <input type="text" id="ap_name" disabled value="Access Point IP">
                 </div>
-                <div class="input-group">
-                    <input type="password" id="ap_pass" placeholder="Mật khẩu">
-                    <i class="fa fa-eye" onclick="togglePass('ap_pass')"></i>
+                <div class="input-group">Password
+                    <input type="text" id="ap_pass" disabled value="Access Point Password">
                 </div>
-                <button class="btn" onclick="saveIP()">Lưu & Kết Nối Lại</button>
-
             </div>
             <div class="card" style="border: 1px solid rgba(233, 69, 96, 0.3);">
                 <div class="card-header"><i class="fas fa-power-off"></i> Hệ Thống</div>
@@ -829,6 +888,8 @@ function handleTimerChange(id) {
 function refreshSystemTimerUI() {
     let out1Locked = false;
     let out2Locked = false;
+    let out3Locked = false;
+    let out4Locked = false;
     let dashboardHtml = '';
 
     for(let i = 1; i <= 4; i++) {
@@ -836,15 +897,21 @@ function refreshSystemTimerUI() {
         if(isEn) {
             let out1 = document.getElementById(`timer${i}_out1`).checked;
             let out2 = document.getElementById(`timer${i}_out2`).checked;
+            let out3 = document.getElementById(`timer${i}_out3`).checked;
+            let out4 = document.getElementById(`timer${i}_out4`).checked;
             let onTime = document.getElementById(`timer${i}_on`).value || '--:--';
             let offTime = document.getElementById(`timer${i}_off`).value || '--:--';
 
             if(out1) out1Locked = true;
             if(out2) out2Locked = true;
+            if(out3) out3Locked = true;
+            if(out4) out4Locked = true;
 
             let targets = [];
             if(out1) targets.push('Ra 1');
             if(out2) targets.push('Ra 2');
+            if(out3) targets.push('Ra 3');
+            if(out4) targets.push('Ra 4');
             let targetStr = targets.length > 0 ? targets.join(' & ') : '<span style="color:#e94560">Chưa gán</span>';
 
             dashboardHtml += `
@@ -870,8 +937,12 @@ function refreshSystemTimerUI() {
     // Khoá nút nếu đang dùng Timer
     let btn1 = document.getElementById('output1ToggleBtn');
     let btn2 = document.getElementById('output2ToggleBtn');
+    let btn3 = document.getElementById('output3ToggleBtn');
+    let btn4 = document.getElementById('output4ToggleBtn');
     let switch1 = document.getElementById('output1Toggle');
     let switch2 = document.getElementById('output2Toggle');
+    let switch3 = document.getElementById('output3Toggle');
+    let switch4 = document.getElementById('output4Toggle');
     let warning = document.getElementById('outputLockWarning');
     
     if(btn1) btn1.disabled = out1Locked;
@@ -880,7 +951,13 @@ function refreshSystemTimerUI() {
     if(btn2) btn2.disabled = out2Locked;
     if(switch2) switch2.disabled = out2Locked;
 
-    if(out1Locked || out2Locked) {
+    if(btn3) btn3.disabled = out3Locked;
+    if(switch3) switch3.disabled = out3Locked;
+
+    if(btn4) btn4.disabled = out4Locked;
+    if(switch4) switch4.disabled = out4Locked;
+
+    if(out1Locked || out2Locked || out3Locked || out4Locked) {
         warning.style.display = 'block';
     } else {
         warning.style.display = 'none';
@@ -927,47 +1004,76 @@ function updateOutputButton(btnId, state) {
     const btn = document.getElementById(btnId);
     btn.dataset.state = state ? '1' : '0';
     btn.innerHTML = state ? '<i class="fas fa-power-off"></i> BẬT' : '<i class="fas fa-power-off"></i> TẮT';
-    btn.style.backgroundColor = state ? '#2ecc71' : '#e94560';
+    btn.style.backgroundColor = '#e94560';
 }
 
 function toggleOutput1() {
     let btn = document.getElementById('output1ToggleBtn');
     if(btn.disabled) return; 
-    let s = btn.dataset.state === '1' ? 0 : 1;
-    fetch('/setOutput1?val=' + s).then(r => { 
-        if(r.ok) {
-            updateOutputButton('output1ToggleBtn', s); 
-            if (s === 0) {
-                let toggle = document.getElementById('output1Toggle');
-                toggle.checked = false;
-                toggleOutput1Controls();
-            }
-        } 
-    });
+    
+    // Auto toggle OFF immediately
+    let toggle = document.getElementById('output1Toggle');
+    toggle.checked = false;
+    toggleOutput1Controls();
+    updateOutputButton('output1ToggleBtn', 0);
+    
+    // Send to API
+    fetch('/setOutput1?val=0');
 }
 
 function toggleOutput2() {
     let btn = document.getElementById('output2ToggleBtn');
     if(btn.disabled) return; 
-    let s = btn.dataset.state === '1' ? 0 : 1;
-    fetch('/setOutput2?val=' + s).then(r => { 
-        if(r.ok) {
-            updateOutputButton('output2ToggleBtn', s); 
-            if (s === 0) {
-                let toggle = document.getElementById('output2Toggle');
-                toggle.checked = false;
-                toggleOutput2Controls();
-            }
-        } 
-    });
+    
+    // Auto toggle OFF immediately
+    let toggle = document.getElementById('output2Toggle');
+    toggle.checked = false;
+    toggleOutput2Controls();
+    updateOutputButton('output2ToggleBtn', 0);
+    
+    // Send to API
+    fetch('/setOutput2?val=0');
+}
+
+function toggleOutput3() {
+    let btn = document.getElementById('output3ToggleBtn');
+    if(btn.disabled) return; 
+    
+    // Auto toggle OFF immediately
+    let toggle = document.getElementById('output3Toggle');
+    toggle.checked = false;
+    toggleOutput3Controls();
+    updateOutputButton('output3ToggleBtn', 0);
+    
+    // Send to API
+    fetch('/setOutput3?val=0');
+}
+
+function toggleOutput4() {
+    let btn = document.getElementById('output4ToggleBtn');
+    if(btn.disabled) return; 
+    
+    // Auto toggle OFF immediately
+    let toggle = document.getElementById('output4Toggle');
+    toggle.checked = false;
+    toggleOutput4Controls();
+    updateOutputButton('output4ToggleBtn', 0);
+    
+    // Send to API
+    fetch('/setOutput4?val=0');
 }
 
 function computeGpioMask() {
     let m = 0;
     if (document.getElementById('input1Toggle').checked) m |= 1;
     if (document.getElementById('input2Toggle').checked) m |= 2;
-    if (document.getElementById('output1Toggle').checked) m |= 4;
-    if (document.getElementById('output2Toggle').checked) m |= 8;
+    if (document.getElementById('input3Toggle').checked) m |= 4;
+    if (document.getElementById('input4Toggle').checked) m |= 8;
+    if (document.getElementById('output1Toggle').checked) m |= 16;
+    if (document.getElementById('output2Toggle').checked) m |= 32;
+    if (document.getElementById('output3Toggle').checked) m |= 64;
+    if (document.getElementById('output4Toggle').checked) m |= 128;
+    
     return m;
 }
 
@@ -985,7 +1091,7 @@ function saveWifi() {
             headers: {'Content-Type': 'application/x-www-form-urlencoded'},
             body: `ssid=${encodeURIComponent(s)}&pass=${encodeURIComponent(p)}` 
         });
-    }
+    } 
 }
 
 // Note: The /saveIP endpoint is present in the HTML but was not documented in the API routing table. 
@@ -1023,8 +1129,12 @@ function togglePass(id) {
 }
 function toggleInput1Details() { document.getElementById('input1Details').style.display = document.getElementById('input1Toggle').checked ? 'block' : 'none'; }
 function toggleInput2Details() { document.getElementById('input2Details').style.display = document.getElementById('input2Toggle').checked ? 'block' : 'none'; }
+function toggleInput3Details() { document.getElementById('input3Details').style.display = document.getElementById('input3Toggle').checked ? 'block' : 'none'; }
+function toggleInput4Details() { document.getElementById('input4Details').style.display = document.getElementById('input4Toggle').checked ? 'block' : 'none'; }
 function toggleOutput1Controls() { document.getElementById('output1Controls').style.display = document.getElementById('output1Toggle').checked ? 'flex' : 'none'; }
 function toggleOutput2Controls() { document.getElementById('output2Controls').style.display = document.getElementById('output2Toggle').checked ? 'flex' : 'none'; }
+function toggleOutput3Controls() { document.getElementById('output3Controls').style.display = document.getElementById('output3Toggle').checked ? 'flex' : 'none'; }
+function toggleOutput4Controls() { document.getElementById('output4Controls').style.display = document.getElementById('output4Toggle').checked ? 'flex' : 'none'; }
 
 function updateBar(id, pct) {
     let bar = document.getElementById(id);
@@ -1072,6 +1182,8 @@ function fetchStatusOnce() {
         // Only update outputs if they are returned by the status endpoint
         if(d.output1 !== undefined) updateOutputButton('output1ToggleBtn', d.output1);
         if(d.output2 !== undefined) updateOutputButton('output2ToggleBtn', d.output2);
+        if(d.output3 !== undefined) updateOutputButton('output3ToggleBtn', d.output3);
+        if(d.output4 !== undefined) updateOutputButton('output4ToggleBtn', d.output4);
     })
     .catch(() => {
         document.getElementById('statusBadge').className = "badge offline";
@@ -1094,8 +1206,12 @@ window.onload = function() {
         let mask = d.gpios ? parseInt(d.gpios) : 0;
         document.getElementById('input1Toggle').checked = !!(mask & 1);
         document.getElementById('input2Toggle').checked = !!(mask & 2);
-        document.getElementById('output1Toggle').checked = !!(mask & 4);
-        document.getElementById('output2Toggle').checked = !!(mask & 8);
+        document.getElementById('input3Toggle').checked = !!(mask & 4);
+        document.getElementById('input4Toggle').checked = !!(mask & 8);
+        document.getElementById('output1Toggle').checked = !!(mask & 16);
+        document.getElementById('output2Toggle').checked = !!(mask & 32);
+        document.getElementById('output3Toggle').checked = !!(mask & 64);
+        document.getElementById('output4Toggle').checked = !!(mask & 128);
 
         // Updated keys to match the API (timer1_en instead of t1_en)
         for(let i=1; i<=4; i++) {
@@ -1106,12 +1222,14 @@ window.onload = function() {
             let out = d[`timer${i}_out`] || 0;
             document.getElementById(`timer${i}_out1`).checked = !!(out & 1);
             document.getElementById(`timer${i}_out2`).checked = !!(out & 2);
+            document.getElementById(`timer${i}_out3`).checked = !!(out & 4);
+            document.getElementById(`timer${i}_out4`).checked = !!(out & 8);
             
             handleTimerChange(i); 
         }
 
-        toggleInput1Details(); toggleInput2Details();
-        toggleOutput1Controls(); toggleOutput2Controls();
+        toggleInput1Details(); toggleInput2Details(); toggleInput3Details(); toggleInput4Details();
+        toggleOutput1Controls(); toggleOutput2Controls(); toggleOutput3Controls(); toggleOutput4Controls();
 
         refreshSystemTimerUI();
     }).catch(e => {
@@ -1121,8 +1239,9 @@ window.onload = function() {
         refreshSystemTimerUI();
     });
 
-    // 2. Fetch Status Once
+    // 2. Fetch Status Every 2 Seconds
     fetchStatusOnce();
+    setInterval(fetchStatusOnce, 2000);
 };
     </script>
 </body>
