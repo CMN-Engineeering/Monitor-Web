@@ -546,6 +546,13 @@
                     </div>
                 </div>
             </div>
+
+            <div class="status-bar" style="flex-direction: column; align-items: stretch;">
+                <div class="card-header" style="margin-bottom: 10px;"><i class="fas fa-stopwatch"></i> Bộ Hẹn Giờ Đang Hoạt Động</div>
+                <div id="activeTimersDisplay" style="display: flex; flex-direction: column; gap: 8px;">
+                    <div style="color:#aaa; text-align:center; font-size: 0.9rem; padding: 10px;">Không có bộ hẹn giờ nào được bật.</div>
+                </div>
+            </div>
             
             <div class="card" id="motorControlCard">
                 <div class="card-header"><i class="fas fa-fan"></i> Động cơ</div>
@@ -582,7 +589,7 @@
                         <div id="input1Details"
                         style="display: none; background: rgba(255,255,255,0.05); padding: 10px; border-radius: 8px;">
                         <!-- Header for Detail -->
-                        <div style="font-size: large; font-weight:bold; padding: 5px;">NGÕ VÀO 1</div>
+                        <div style="font-size: large; font-weight:bold; padding-bottom: 5px;">NGÕ VÀO 1</div>
                         <div style="font-size: 0.8rem; color: #bbb;">HIGH (phút):</div>
                         <input type="number" id="input1OnInterval" min="0" max="1440" placeholder="0"
                             style="width: 100%; padding: 5px; margin-bottom: 5px; border-radius: 4px;">
@@ -595,7 +602,7 @@
                     <div>
                     <div id="input2Details"
                         style="display: none; background: rgba(255,255,255,0.05); padding: 10px; border-radius: 8px;">
-                        <div style="font-size: large; font-weight:bold; padding: 5px;">NGÕ VÀO 2</div>
+                        <div style="font-size: large; font-weight:bold; padding-bottom: 5px;">NGÕ VÀO 2</div>
                         <div style="font-size: 0.8rem; color: #bbb;">HIGH (phút):</div>
                         <input type="number" id="input2OnInterval" min="0" max="1440" placeholder="0"
                             style="width: 100%; padding: 5px; margin-bottom: 5px; border-radius: 4px;">
@@ -609,7 +616,7 @@
                     <div>
                         <div id="input3Details"
                             style="display: none; background: rgba(255,255,255,0.05); padding: 10px; border-radius: 8px;">
-                            <div style="font-size: large; font-weight:bold; padding: 5px;">NGÕ VÀO 3</div>
+                            <div style="font-size: large; font-weight:bold; padding-bottom: 5px;">NGÕ VÀO 3</div>
                             <div style="font-size: 0.8rem; color: #bbb;">HIGH (phút):</div>
                             <input type="number" id="input3OnInterval" min="0" max="1440" placeholder="0"
                                 style="width: 100%; padding: 5px; margin-bottom: 5px; border-radius: 4px;">
@@ -621,7 +628,7 @@
                     <div>
                         <div id="input4Details"
                             style="display: none; background: rgba(255,255,255,0.05); padding: 10px; border-radius: 8px;">
-                            <div style="font-size: large; font-weight:bold; padding: 5px;">NGÕ VÀO 4</div>
+                            <div style="font-size: large; font-weight:bold; padding-bottom: 5px;">NGÕ VÀO 4</div>
                             <div style="font-size: 0.8rem; color: #bbb;">HIGH (phút):</div>
                             <input type="number" id="input4OnInterval" min="0" max="1440" placeholder="0"
                                 style="width: 100%; padding: 5px; margin-bottom: 5px; border-radius: 4px;">
@@ -669,6 +676,28 @@
                         <span class="slider"></span>
                     </label>
                 </div>
+            </div>
+            <div class="card">
+                <div class="card-header"><i class="fas fa-cogs"></i> Dòng biến tần</div>
+                <div style="display: flex; flex-direction: column; gap: 12px;">
+                    <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                        <input type="radio" name="inverterOption" value="A" style="cursor: pointer;">
+                        <span style="font-weight: 500;">Kaman KM20</span>
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                        <input type="radio" name="inverterOption" value="B" style="cursor: pointer;">
+                        <span style="font-weight: 500;">Tùy chọn B</span>
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                        <input type="radio" name="inverterOption" value="C" style="cursor: pointer;">
+                        <span style="font-weight: 500;">Tùy chọn C</span>
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                        <input type="radio" name="inverterOption" value="D" style="cursor: pointer;">
+                        <span style="font-weight: 500;">Tùy chọn D</span>
+                    </label>
+                </div>
+                <button class="btn mt-2" onclick="saveInverterOption()" style="background-color: #3498db;"><i class="fas fa-check"></i> Lưu Tùy chọn</button>
             </div>
             
             <div class="card">
@@ -785,7 +814,7 @@
 
             <div class="card">
                 <div class="card-header">
-                    <i class="fas fa-clock"></i> 4 Bộ Hẹn Giờ
+                    <i class="fas fa-clock"></i> Bộ Hẹn Giờ
                     <span id="clock" class="clock"
                         style="margin-left:auto; font-size: 1rem; color: var(--accent);">--:--:--</span>
                 </div>
@@ -1154,6 +1183,16 @@ function saveTimers() {
             fetch(`/setTimerEn?timer=${i}&en=${en}`);
         }
         alert("Đã gửi lệnh cập nhật các bộ hẹn giờ.");
+    }
+}
+
+function saveInverterOption() {
+    let selectedOption = document.querySelector('input[name="inverterOption"]:checked').value;
+    if(confirm(`Lưu tùy chọn: ${selectedOption}?`)) {
+        fetch(`/setInverterOption?option=${selectedOption}`).then(r => {
+            if(r.ok) alert(`Đã lưu tùy chọn: ${selectedOption}`);
+            else alert("Lỗi khi lưu tùy chọn");
+        }).catch(e => alert("Lỗi kết nối: " + e));
     }
 }
 
