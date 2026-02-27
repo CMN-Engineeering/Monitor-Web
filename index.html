@@ -567,9 +567,9 @@
                     </div>
                 </div>
             </div>
-            <div class="status-bar">
+            <div class="status-bar" id = "adcStatusBar">
                 <div style="width: 100%;">
-                    <div class="card-header" style="margin-bottom: 10px;"><i class="fa-solid fa-bolt"></i> Thông tin Nguồn:</div>
+                    <div class="card-header" style="margin-bottom: 10px;"><i class="fa-solid fa-bolt"></i> Thông tin ADC:</div>
                     <div class="progress-container">
                         <div class="progress-label"><span>Điện áp:</span><span><span id="voltage">0</span> V</span></div>
                     </div>
@@ -702,14 +702,49 @@
 
             <div class="card">
                 <div class="card-header"><i class="fas fa-cogs"></i> Chức năng hệ thống</div>
-                <div class="control-row" style="margin-bottom: 0;">
-                    <span style="font-weight: 500;">Hiển thị điều khiển Động cơ</span>
-                    <label class="switch">
-                        <input type="checkbox" id="motorEnableToggle" onchange="toggleMotorVisibility()">
-                        <span class="slider"></span>
-                    </label>
+                    <div class="control-row" style="margin-bottom: 0;">
+                        <span style="font-weight: 500;">Hiển thị điều khiển Động cơ</span>
+                        <label class="switch">
+                            <input type="checkbox" id="motorEnableToggle" onchange="toggleMotorVisibility()">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                </div>
+            <div class="card">
+                <div class="card-header"><i class="fas fa-cogs"></i> ADC</div>
+                    <div class="control-row" style="margin-bottom: 0;">
+                        <span style="font-weight: 500;">Hiển thị ADC</span>
+                        <label class="switch">
+                            <input type="checkbox" id="adcEnableToggle" onchange="toggleAdcVisibility()">
+                            <span class="slider"></span>
+                        </label>
                 </div>
             </div>
+
+            <div class="card"  id = "adcSettingsCard">
+                <div class="card-header" ><i class="fas fa-cogs"></i> Giới Hạn ADC</div>
+                    <!-- // Slider to set voltage and ampe limit -->
+                    <div style="display: flex; flex-direction: column; gap: 12px;">
+                        <div>
+                            <div class="card-header" style="font-size: 1rem;"><i class="fas fa-arrow-right"></i> Điện áp</div>
+                            <div class="control-row" style="gap: 10px;">
+                                <input type="range" min="0" max="50" value="0" class="range-slider" id="voltageLimitSlider"
+                                    oninput="document.getElementById('voltageLimitVal').innerText=this.value + ' V'" style="flex: 1;">
+                                <span id="voltageLimitVal" style="color: var(--accent); font-weight: bold; min-width: 40px;">0 V</span>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="card-header" style="font-size: 1rem;"><i class="fas fa-arrow-right"></i> Dòng điện</div>
+                            <div class="control-row" style="gap: 10px;">
+                                <input type="range" min="0" max="50" value="0" class="range-slider" id="currentLimitSlider"
+                                    oninput="document.getElementById('currentLimitVal').innerText=this.value + ' A'" style="flex: 1;">
+                                <span id="currentLimitVal" style="color: var(--accent); font-weight: bold; min-width: 40px;">0 A</span>
+                            </div>
+                        </div>
+                </div>
+                <button class="btn mt-2" onclick="saveAdcSettings()" style="background-color: #3498db;"><i class="fas fa-check"></i> Lưu Tùy chọn</button>
+            </div>
+
             <div class="card">
                 <div class="card-header"><i class="fas fa-cogs"></i> Dòng biến tần</div>
                 <div style="display: flex; flex-direction: column; gap: 12px;">
@@ -1053,6 +1088,14 @@
             let isEn = document.getElementById('motorEnableToggle').checked;
             document.getElementById('motorControlCard').style.display = isEn ? 'block' : 'none';
         }
+        function toggleAdcVisibility() {
+            let isEn = document.getElementById('adcEnableToggle').checked;
+            document.getElementById('adcStatusBar').style.display = isEn ? 'block' : 'none';
+            document.getElementById('adcSettingsCard').style.display = isEn ? 'block' : 'none';
+        }
+        
+        // ensure visibility set based on checkbox value
+        // called from initialization below
 
         function handleTimerChange(id) {
             let isEn = document.getElementById(`timer${id}_en`).checked;
@@ -1169,7 +1212,13 @@
             });
             freqVal.innerText = val;
         }
-
+        function saveAdcSettings() {
+            let voltageLimit = document.getElementById('voltageLimitSlider').value;
+            let currentLimit = document.getElementById('currentLimitSlider').value;
+            fetch('/setAdcLimits?voltage=' + voltageLimit + '&current=' + currentLimit).then(r => { 
+                if(r.ok) addNotification(`Đã lưu giới hạn ADC: ${voltageLimit} V, ${currentLimit} A`, "success"); 
+            });
+        }
         function toggleOutput1() {
             let sw = document.getElementById('output1Switch');
             if(sw.disabled) return; 
@@ -1402,6 +1451,7 @@
                 }
 
                 toggleMotorVisibility();
+                toggleAdcVisibility();
 
                 let mask = d.gpios ? parseInt(d.gpios) : 0;
                 document.getElementById('input1Toggle').checked = !!(mask & 1);

@@ -18,7 +18,7 @@ device_state = {
     "input3_on_interval": "0", "input3_off_interval": "0",
     "input4_on_interval": "0", "input4_off_interval": "0",
     "output1_level": True, "output2_level": False,
-    "output3_level": False, "output4_level": True,
+    "output3_level": False, "output4_level": False,
 
     # Config Variables
     "ssid": "CMNIoT_WiFi",
@@ -178,6 +178,14 @@ def set_out4():
 def save_wifi():
     print(f"📡 SAVE WIFI: {request.get_data(as_text=True)}")
     # Có thể extract ssid và pass ở đây để lưu vào device_state nếu cần
+    return "OK"
+@app.route('/setAdcLimits')
+def set_adc_limits():
+    voltage = request.args.get('voltage', type=float)
+    current = request.args.get('current', type=float)
+    device_state["adc_voltage_limit"] = voltage
+    device_state["adc_current_limit"] = current
+    print(f"👉 SET ADC LIMITS: Voltage={voltage}V, Current={current}A")
     return "OK"
 
 @app.route('/reboot')
