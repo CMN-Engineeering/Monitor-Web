@@ -582,9 +582,15 @@
                 </div>
             </div>
 
-            <div class="status-bar">
-                <div id="statusBadge" class="badge offline"><i class="fas fa-wifi"></i> Đang kết nối...</div>
-                <div id="ipDisplay" class="ip-addr">IP: ...</div>
+        <div class="status-bar" style="flex-direction: column; gap: 10px; align-items: stretch;">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <div id="statusBadge" class="badge offline"><i class="fas fa-wifi"></i> Station: Đang kết nối...</div>
+                    <div id="ipDisplay" class="ip-addr">IP: ...</div>
+                </div>
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <div id="mqttBadge" class="badge offline"><i class="fas fa-network-wired"></i> MQTT: Disconnected</div>
+                    <div id="mqttErrorText" style="font-size: 0.8rem; color: #e94560; font-style: italic;"></div>
+                </div>
             </div>
 
             <div class="status-bar">
@@ -991,25 +997,57 @@
             </div>
 
             <div class="card">
-                <div class="card-header"><span><i class="fas fa-wifi"></i> Cài đặt WiFi</span></div>
+                <div class="card-header"><span><i class="fas fa-wifi"></i> Cài đặt WiFi (Station)</span></div>
+                <div class="control-row" style="margin-bottom: 15px;">
+                    <span style="font-weight: 500;">Kích hoạt Station</span>
+                    <label class="switch">
+                        <input type="checkbox" id="sta_enable">
+                        <span class="slider"></span>
+                    </label>
+                </div>
                 <div class="input-group">
-                    <input type="text" id="wifi_name" placeholder="Tên WiFi">
+                    <input type="text" id="wifi_name" placeholder="Tên WiFi (SSID)">
                     <i class="fas fa-signal"></i>
                 </div>
                 <div class="input-group">
-                    <input type="password" id="wifi_pass" placeholder="Mật khẩu">
+                    <input type="password" id="wifi_pass" placeholder="Mật khẩu WiFi">
                     <i class="fa fa-eye" onclick="togglePass('wifi_pass')"></i>
                 </div>
-                <button class="btn" onclick="saveWifi()">Lưu & Kết Nối Lại</button>
+                
+                <div style="margin-bottom: 10px; display: flex; gap: 20px;">
+                    <label style="display: flex; align-items: center; gap: 5px; cursor: pointer;">
+                        <input type="radio" name="ipConfig" value="dhcp" checked onchange="toggleIpConfig()"> IP Động
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 5px; cursor: pointer;">
+                        <input type="radio" name="ipConfig" value="static" onchange="toggleIpConfig()"> IP Tĩnh
+                    </label>
+                </div>
+                <div class="input-group">
+                    <input type="text" id="static_ip" placeholder="Nhập IP Tĩnh (VD: 192.168.1.100)" disabled style="opacity: 0.5;">
+                </div>
+                <button class="btn" onclick="saveWifi()"><i class="fas fa-save"></i> Lưu & Kết Nối Lại Station</button>
             </div>
+
             <div class="card">
-                <div class="card-header"><span>Thông tin Access Point</span></div>
-                <div class="input-group">IP
-                    <input type="text" id="ap_name" disabled value="Access Point IP">
+                <div class="card-header"><span><i class="fas fa-broadcast-tower"></i> Cài đặt Access Point (Luôn mở)</span></div>
+                <div class="input-group">
+                    <input type="text" id="ap_name" placeholder="Tên Access Point mới">
                 </div>
-                <div class="input-group">Password
-                    <input type="text" id="ap_pass" disabled value="Access Point Password">
+                <div class="input-group">
+                    <input type="text" id="ap_pass" placeholder="Mật khẩu Access Point mới">
                 </div>
+                <button class="btn" onclick="saveAP()" style="background-color: #f39c12;"><i class="fas fa-sync"></i> Xác nhận & Reinit AP</button>
+            </div>
+
+            <div class="card">
+                <div class="card-header"><span><i class="fas fa-network-wired"></i> Cài đặt MQTT</span></div>
+                <div style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 15px;">
+                    * Trang cài đặt này đã được bảo mật bởi User/Password hệ thống.
+                </div>
+                <div class="input-group">
+                    <input type="text" id="mqtt_broker" placeholder="Link / IP Broker (VD: mqtt.example.com)">
+                </div>
+                <button class="btn" onclick="saveMQTT()" style="background-color: #9b59b6;"><i class="fas fa-save"></i> Lưu MQTT Broker</button>
             </div>
             <div class="card" style="border: 1px solid rgba(233, 69, 96, 0.3);">
                 <div class="card-header"><i class="fas fa-power-off"></i> Hệ Thống</div>
@@ -1423,8 +1461,55 @@
             bar.style.width = pct + '%';
             bar.className = pct > 80 ? 'progress-fill high' : (pct > 60 ? 'progress-fill warning' : 'progress-fill');
         }
+        // --- Xử lý giao diện IP Động/Tĩnh ---
+        function toggleIpConfig() {
+            let isStatic = document.querySelector('input[name="ipConfig"]:checked').value === 'static';
+            let staticIpInput = document.getElementById('static_ip');
+            staticIpInput.disabled = !isStatic;
+            staticIpInput.style.opacity = isStatic ? "1" : "0.5";
+        }
 
+        // --- Gửi dữ liệu cài đặt ---
+        function saveWifi() {
+            let en = document.getElementById('sta_enable').checked ? 1 : 0;
+            let s = document.getElementById('wifi_name').value;
+            let p = document.getElementById('wifi_pass').value;
+            let isStatic = document.querySelector('input[name="ipConfig"]:checked').value === 'static';
+            let staticIp = document.getElementById('static_ip').value;
+
+            if(confirm("Lưu cấu hình WiFi Station?")) {
+                fetch('/saveWifi', { 
+                    method: 'POST', 
+                    headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+                    body: `en=${en}&ssid=${encodeURIComponent(s)}&pass=${encodeURIComponent(p)}&isStatic=${isStatic ? 1 : 0}&ip=${encodeURIComponent(staticIp)}` 
+                }).then(()=> addNotification(`Đã lưu cấu hình WiFi. Đang kết nối lại...`, 'info'));
+            } 
+        }
+
+        function saveAP() {
+            let s = document.getElementById('ap_name').value;
+            let p = document.getElementById('ap_pass').value;
+            if(confirm("Xác nhận đổi thông tin AP và khởi tạo lại?")) {
+                fetch('/saveAP', { 
+                    method: 'POST', 
+                    headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+                    body: `ap_name=${encodeURIComponent(s)}&ap_pass=${encodeURIComponent(p)}` 
+                }).then(()=> addNotification('Đã lưu & Reinit Access Point', 'success'));
+            }
+        }
+
+        function saveMQTT() {
+            let broker = document.getElementById('mqtt_broker').value;
+            if(confirm("Lưu link/IP Broker MQTT?")) {
+                fetch('/saveMQTT', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+                    body: `broker=${encodeURIComponent(broker)}`
+                }).then(()=> addNotification('Đã lưu cấu hình MQTT', 'success'));
+            }
+        }
         let wasOffline = false;
+
         // --- Single Status Fetch ---
         function fetchStatusOnce() {
             fetch('/status')
@@ -1442,7 +1527,17 @@
                     document.getElementById('statusBadge').className = "badge online";
                     document.getElementById('statusBadge').innerHTML = '<i class="fas fa-check-circle"></i> Đã kết nối';
                 }
-
+                if (d.mqtt_connected !== undefined) {
+                    if(d.mqtt_connected) {
+                        document.getElementById('mqttBadge').className = "badge online";
+                        document.getElementById('mqttBadge').innerHTML = '<i class="fas fa-network-wired"></i> MQTT: Connected';
+                        document.getElementById('mqttErrorText').innerText = "";
+                    } else {
+                        document.getElementById('mqttBadge').className = "badge offline";
+                        document.getElementById('mqttBadge').innerHTML = '<i class="fas fa-network-wired"></i> MQTT: Disconnected';
+                        document.getElementById('mqttErrorText').innerText = d.mqtt_error || "Connection error/timeout";
+                    }
+                }
                 if(d.ip) document.getElementById('ipDisplay').innerText = "IP: " + d.ip;
                 if(d.time) document.getElementById('clock').innerText = d.time;
 
@@ -1520,7 +1615,22 @@
                     if(document.getElementById('freqSlider')) document.getElementById('freqSlider').value = f;
                     if(document.getElementById('freqSlider_val')) document.getElementById('freqSlider_val').innerText = f;
                 }
-
+                
+                if(d.sta_enable !== undefined) document.getElementById('sta_enable').checked = d.sta_enable;
+                if(d.is_static !== undefined) {
+                    if(d.is_static) {
+                        document.querySelector('input[name="ipConfig"][value="static"]').checked = true;
+                    } else {
+                        document.querySelector('input[name="ipConfig"][value="dhcp"]').checked = true;
+                    }
+                    toggleIpConfig();
+                }
+                if(d.static_ip) document.getElementById('static_ip').value = d.static_ip;
+                
+                if(d.ap_ssid) document.getElementById('ap_name').value = d.ap_ssid;
+                if(d.ap_pass) document.getElementById('ap_pass').value = d.ap_pass;
+                
+                if(d.mqtt_broker) document.getElementById('mqtt_broker').value = d.mqtt_broker;
                 toggleMotorVisibility();
                 toggleAdcVisibility();
 
@@ -1562,6 +1672,7 @@
             fetchStatusOnce();
             setInterval(fetchStatusOnce, 2000);
         };
+    
     </script>
 </body>
 </html>
