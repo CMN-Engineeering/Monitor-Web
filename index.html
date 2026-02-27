@@ -493,26 +493,62 @@
             animation: fadeIn 0.3s;
         }
 
-        .notification-item.error { border-left-color: var(--accent-red); }
+        .notification-item.error { 
+            border-left-color: var(--accent-red); 
+            font-weight: 600;
+            font-size: medium;
+            color: var(--accent-red);
+        }
+
         .notification-item.info { border-left-color: #3498db; }
         .notification-item.success { border-left-color: #2ecc71; }
         .notification-item.warning { border-left-color: #f39c12; }
 
         .notification-content { flex: 1; margin-right: 10px;}
         .notification-time { color: var(--text-secondary); font-size: 0.75rem; white-space: nowrap;}
+
+        /* notification bell and card positioning */
+        .bell-btn {
+            position: relative;
+            padding: 0 10px;
+            cursor: pointer;
+        }
+        .bell-btn .badge-count {
+            position: absolute;
+            top: 2px;
+            right: 2px;
+            background: var(--accent-red);
+            color: #fff;
+            font-size: 0.65rem;
+            padding: 2px 4px;
+            border-radius: 50%;
+            display: none;
+        }
+        #notificationCard {
+            position: absolute;
+            top: 50px;
+            right: 20px;
+            width: 300px;
+            display: none;
+            z-index: 1000;
+        }
     </style>
 </head>
 
 <body>
     <div class="container">
         <h1>CMNIoT SYSTEM</h1>
-
+        <!-- Align to left -->
+    
         <div class="nav-bar">
             <div id="nav-dash" class="nav-btn active" onclick="showTab('dashboard')">
                 <i class="fas fa-tachometer-alt"></i> Dashboard
             </div>
             <div id="nav-set" class="nav-btn disabled" onclick="showTab('settings')">
                 <i class="fas fa-cogs"></i> Cài đặt
+            </div>
+            <div id="notifBell" style="width: 40px; height: 40px; padding-top: 13px;" onclick="toggleNotifications()" title="Thông báo">
+                <i class="fas fa-bell"></i><span id="notifCount" class="badge-count">0</span>
             </div>
         </div>
 
@@ -535,6 +571,7 @@
                 </div>
             </div>
 
+            <!-- notification card will pop up under bell icon -->
             <div class="card" id="notificationCard">
                 <div class="card-header" style="justify-content: space-between;">
                     <div><i class="fas fa-bell"></i> Thông báo hệ thống</div>
@@ -621,10 +658,10 @@
                         <div id="input1Details"
                         style="display: none; background: rgba(255,255,255,0.05); padding: 10px; border-radius: 8px;">
                         <div style="font-size: large; font-weight:bold; padding-bottom: 5px;">NGÕ VÀO 1</div>
-                        <div style="font-size: 0.8rem; color: #bbb;">HIGH (phút):</div>
+                        <div style="font-size: 0.8rem; color: #bbb;">INACTIVE (Minutes):</div>
                         <input type="number" id="input1OnInterval" min="0" max="1440" placeholder="0"
                             style="width: 100%; padding: 5px; margin-bottom: 5px; border-radius: 4px;">
-                        <div style="font-size: 0.8rem; color: #bbb;">LOW (phút):</div>
+                        <div style="font-size: 0.8rem; color: #bbb;">ACTIVE (Minutes):</div>
                         <input type="number" id="input1OffInterval" min="0" max="1440" placeholder="0"
                             style="width: 100%; padding: 5px; border-radius: 4px;">
                         </div>
@@ -633,10 +670,10 @@
                         <div id="input2Details"
                             style="display: none; background: rgba(255,255,255,0.05); padding: 10px; border-radius: 8px;">
                             <div style="font-size: large; font-weight:bold; padding-bottom: 5px;">NGÕ VÀO 2</div>
-                            <div style="font-size: 0.8rem; color: #bbb;">HIGH (phút):</div>
+                            <div style="font-size: 0.8rem; color: #bbb;">INACTIVE (Minutes):</div>
                             <input type="number" id="input2OnInterval" min="0" max="1440" placeholder="0"
                                 style="width: 100%; padding: 5px; margin-bottom: 5px; border-radius: 4px;">
-                            <div style="font-size: 0.8rem; color: #bbb;">LOW (phút):</div>
+                            <div style="font-size: 0.8rem; color: #bbb;">ACTIVE (Minutes):</div>
                             <input type="number" id="input2OffInterval" min="0" max="1440" placeholder="0"
                                 style="width: 100%; padding: 5px; border-radius: 4px;">
                         </div>
@@ -647,10 +684,10 @@
                         <div id="input3Details"
                             style="display: none; background: rgba(255,255,255,0.05); padding: 10px; border-radius: 8px;">
                             <div style="font-size: large; font-weight:bold; padding-bottom: 5px;">NGÕ VÀO 3</div>
-                            <div style="font-size: 0.8rem; color: #bbb;">HIGH (phút):</div>
+                            <div style="font-size: 0.8rem; color: #bbb;">INACTIVE (Minutes):</div>
                             <input type="number" id="input3OnInterval" min="0" max="1440" placeholder="0"
                                 style="width: 100%; padding: 5px; margin-bottom: 5px; border-radius: 4px;">
-                            <div style="font-size: 0.8rem; color: #bbb;">LOW (phút):</div>
+                            <div style="font-size: 0.8rem; color: #bbb;">ACTIVE (Minutes):</div>
                             <input type="number" id="input3OffInterval" min="0" max="1440" placeholder="0"
                                 style="width: 100%; padding: 5px; border-radius: 4px;">
                         </div>
@@ -659,10 +696,10 @@
                         <div id="input4Details"
                             style="display: none; background: rgba(255,255,255,0.05); padding: 10px; border-radius: 8px;">
                             <div style="font-size: large; font-weight:bold; padding-bottom: 5px;">NGÕ VÀO 4</div>
-                            <div style="font-size: 0.8rem; color: #bbb;">HIGH (phút):</div>
+                            <div style="font-size: 0.8rem; color: #bbb;">INACTIVE (Minutes):</div>
                             <input type="number" id="input4OnInterval" min="0" max="1440" placeholder="0"
                                 style="width: 100%; padding: 5px; margin-bottom: 5px; border-radius: 4px;">
-                            <div style="font-size: 0.8rem; color: #bbb;">LOW (phút):</div>
+                            <div style="font-size: 0.8rem; color: #bbb;">ACTIVE (Minutes):</div>
                             <input type="number" id="input4OffInterval" min="0" max="1440" placeholder="0"
                                 style="width: 100%; padding: 5px; border-radius: 4px;">
                         </div>
@@ -1005,15 +1042,49 @@
             if (list.children.length > 20) {
                 list.removeChild(list.lastChild);
             }
+
+            // update badge count
+            let countElem = document.getElementById('notifCount');
+            if(countElem) {
+                let count = parseInt(countElem.innerText) || 0;
+                count++;
+                countElem.innerText = count;
+                countElem.style.display = 'inline';
+            }
         }
 
         function clearNotifications() {
             const list = document.getElementById('notificationList');
             list.innerHTML = '<div style="color:#aaa; text-align:center; font-size: 0.9rem; padding: 10px;" id="noNotifMsg">Chưa có thông báo nào.</div>';
+            // reset badge
+            let countElem = document.getElementById('notifCount');
+            if(countElem) {
+                countElem.innerText = '0';
+                countElem.style.display = 'none';
+            }
         }
 
         // --- Authentication state ---
         let isAuthenticated = false;
+
+        // --- Notification panel state ---
+        let notifVisible = false;
+
+        function toggleNotifications() {
+            notifVisible = !notifVisible;
+            const card = document.getElementById('notificationCard');
+            if(card) card.style.display = notifVisible ? 'block' : 'none';
+        }
+
+        // hide notifications if click outside
+        document.addEventListener('click', function(e) {
+            const bell = document.getElementById('notifBell');
+            const card = document.getElementById('notificationCard');
+            if(card && notifVisible && !bell.contains(e.target) && !card.contains(e.target)) {
+                notifVisible = false;
+                card.style.display = 'none';
+            }
+        });
 
         function checkStoredAuth() {
             if(sessionStorage.getItem('auth') === '1') {
