@@ -91,6 +91,18 @@ def set_out2():
     device_state["output2"] = val
     print(f"👉 OUTPUT 2: {val}")
     return "OK"
+@app.route('/setOutput3')
+def set_out3():
+    val = request.args.get('val', type=int)
+    device_state["output3"] = val
+    print(f"👉 OUTPUT 3: {val}")
+    return "OK"
+@app.route('/setOutput4')
+def set_out4():
+    val = request.args.get('val', type=int)
+    device_state["output4"] = val
+    print(f"👉 OUTPUT 4: {val}")
+    return "OK"
 
 @app.route('/saveWifi', methods=['POST'])
 def save_wifi():

@@ -644,25 +644,25 @@
                 <div class="card-header" style="margin-bottom: 10px;"><i class="fa-solid fa-clock"></i> NGÕ RA</div>
                 <!-- Nếu slider của ngõ ra nào ON => Hiện ngõ ra đó + Nút tắt -->
                     <div id="output1Controls" style="display: none; gap: 8px; padding: 8px;">
-                        <div style="font-weight: 900; padding: 15px 0;">NGÕ RA 1</div>
-                        <button id="output1ToggleBtn" class="btn small" onclick="toggleOutput1()" data-state="0"
-                            style="background-color: #444; flex: 1;"><i class="fas fa-power-off"></i>TẮT</button>
+                        <div style="font-weight: 900">NGÕ RA 1</div>
+                            <label class="switch"><input type="checkbox" id="output1Switch"
+                                    onchange="toggleOutput1()"><span class="slider"></span></label>
                     </div>
                     <div id="output2Controls" style="display: none; gap: 8px; padding: 8px;">
-                        <div style="font-weight: 900; padding: 15px 0;">NGÕ RA 2</div>
-                        <button id="output2ToggleBtn" class="btn small" onclick="toggleOutput2()" data-state="0"
-                            style="background-color: #444; flex: 1;"><i class="fas fa-power-off"></i> TẮT</button>
+                        <div style="font-weight: 900;">NGÕ RA 2</div>
+                        <label class="switch"><input type="checkbox" id="output2Switch"
+                                    onchange="toggleOutput2()"><span class="slider"></span></label>
                     </div>
                     <div id="output3Controls" style="display: none; gap: 8px; padding: 8px;">
-                        <div style="font-weight: 900; padding: 15px 0;">NGÕ RA 3</div>
-                        <button id="output3ToggleBtn" class="btn small" onclick="toggleOutput3()" data-state="0"
-                            style="background-color: #444; flex: 1;"><i class="fas fa-power-off"></i> TẮT</button>
+                        <div style="font-weight: 900;">NGÕ RA 3</div>
+                        <label class="switch"><input type="checkbox" id="output3Switch"
+                                    onchange="toggleOutput3()"><span class="slider"></span></label>
                     </div>
                     <div id="output4Controls" style="display: none; gap: 8px; padding: 8px;">
-                        <div style="font-weight: 900; padding: 15px 0;">NGÕ RA 4</div>
-                        <button id="output4ToggleBtn" class="btn small" onclick="toggleOutput4()" data-state="0"
-                            style="background-color: #444; flex: 1;"><i class="fas fa-power-off"></i> TẮT</button>
-            </div>
+                        <div style="font-weight: 900;">NGÕ RA 4</div>
+                        <label class="switch"><input type="checkbox" id="output4Switch"
+                                    onchange="toggleOutput4()"><span class="slider"></span></label>
+                    </div>
             </div>
         </div>
         <div id="view-settings" class="view-section">
@@ -672,7 +672,7 @@
                 <div class="control-row" style="margin-bottom: 0;">
                     <span style="font-weight: 500;">Hiển thị điều khiển Động cơ</span>
                     <label class="switch">
-                        <input type="checkbox" id="motorEnableToggle" onchange="toggleMotorVisibility()" checked>
+                        <input type="checkbox" id="motorEnableToggle" onchange="toggleMotorVisibility()">
                         <span class="slider"></span>
                     </label>
                 </div>
@@ -766,10 +766,6 @@
                             <span>Ngõ ra 1</span>
                             <label class="switch"><input type="checkbox" id="output1Toggle"
                                     onchange="toggleOutput1Controls()"><span class="slider"></span></label>
-                        </div>
-                        <div id="output1Controls" style="display: none; gap: 8px;">
-                            <button id="output1ToggleBtn" class="btn small" onclick="toggleOutput1()" data-state="0"
-                                style="background-color: #444; flex: 1;"><i class="fas fa-power-off"></i> TẮT</button>
                         </div>
                     </div>
                     <div>
@@ -1096,35 +1092,34 @@ function updateOutputButton(btnId, state) {
 }
 
 function toggleOutput1() {
-    let btn = document.getElementById('output1ToggleBtn');
-    if(btn.disabled) return; 
+    let sw = document.getElementById('output1Switch');
+    if(sw.disabled) return; 
     
     // Send to API
-    fetch('/setOutput1?val=0');
+    fetch('/setOutput1?val=' + (sw.checked ? 1 : 0));
 }
-
 function toggleOutput2() {
-    let btn = document.getElementById('output2ToggleBtn');
-    if(btn.disabled) return; 
+    let sw = document.getElementById('output2Switch');
+    if(sw.disabled) return; 
 
     // Send to API
-    fetch('/setOutput2?val=0');
+    fetch('/setOutput2?val=' + (sw.checked ? 1 : 0));
 }
 
 function toggleOutput3() {
-    let btn = document.getElementById('output3ToggleBtn');
-    if(btn.disabled) return; 
+    let sw = document.getElementById('output3Switch');
+    if(sw.disabled) return; 
   
     // Send to API
-    fetch('/setOutput3?val=0');
+    fetch('/setOutput3?val=' + (sw.checked ? 1 : 0));
 }
 
 function toggleOutput4() {
-    let btn = document.getElementById('output4ToggleBtn');
-    if(btn.disabled) return; 
+    let sw = document.getElementById('output4Switch');
+    if(sw.disabled) return; 
 
     // Send to API
-    fetch('/setOutput4?val=0');
+    fetch('/setOutput4?val=' + (sw.checked ? 1 : 0));
 }
 
 function computeGpioMask() {
