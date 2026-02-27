@@ -71,11 +71,29 @@ def set_freq():
     print(f"👉 SET FREQ: {val} Hz")
     return "OK"
 
+@app.route('/setTimer')
+def set_timer():
+    timer_id = request.args.get('timer', type=int)
+    on_time = request.args.get('on', default="00:00")
+    off_time = request.args.get('off', default="00:00")
+    mask= request.args.get('mask', type=int, default=0)
+    device_state[f"t{timer_id}_on"] = on_time
+    device_state[f"t{timer_id}_off"] = off_time
+    device_state[f"t{timer_id}_mask"] = mask
+    
+    print(f"👉 SET TIMER {timer_id}: ON={on_time}, OFF={off_time}, OUTPUT_MASK={mask}")
+    return "OK"
+
 @app.route('/setDir')
 def set_dir():
     val = request.args.get('val', type=int)
     device_state["dir"] = val
     print(f"👉 SET DIR: {'THUẬN' if val else 'NGHỊCH'}")
+    return "OK"
+@app.route('/setGpios')
+def set_gpios():
+    mask = request.args.get('m', default="")
+    print(f"👉 SET GPIOs with Mask = {mask}")
     return "OK"
 
 @app.route('/setOutput1')

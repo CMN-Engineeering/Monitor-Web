@@ -1172,10 +1172,16 @@ function saveTimers() {
             let en = document.getElementById(`timer${i}_en`).checked ? 1 : 0;
             let on = document.getElementById(`timer${i}_on`).value || "00:00";
             let off = document.getElementById(`timer${i}_off`).value || "00:00";
-            
-            // Sending sequential GET requests as per the API table
-            fetch(`/setTimer?timer=${i}&on=${on}&off=${off}`);
-            fetch(`/setTimerEn?timer=${i}&en=${en}`);
+            // Collecting list of checked outputs into a bitmask with numbers like in function computeGpioMask()
+            let m = 0;
+            if (document.getElementById(`timer${i}_out1`).checked) m |= 16;
+            if (document.getElementById(`timer${i}_out2`).checked) m |= 32;
+            if (document.getElementById(`timer${i}_out3`).checked) m |= 64;
+            if (document.getElementById(`timer${i}_out4`).checked) m |= 128;
+            // Sending sequential GET requests as per the API table if the time is enabled, otherwise just send en = 0
+            fetch(`/setTimer?timer=${i}&on=${on}&off=${off}&mask=${m}`);
+            fetch(`/setTimeren?timer=${i}&en=${en}`);
+
         }
         alert("Đã gửi lệnh cập nhật các bộ hẹn giờ.");
     }
