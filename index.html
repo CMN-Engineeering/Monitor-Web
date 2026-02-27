@@ -1402,6 +1402,15 @@
             for(let i=1; i<=4; i++) {
                 let isEn = document.getElementById(`timer${i}_en`).checked;
                 if(isEn) {
+                    let on = document.getElementById(`timer${i}_on`).value || "00:00";
+                    let off = document.getElementById(`timer${i}_off`).value || "00:00";
+                    
+                    // Nếu giờ on >= off, không cho phép lưu
+                    if(on >= off) {
+                        alert(`Bộ Hẹn giờ ${i}: Thời gian BẬT (${on}) phải nhỏ hơn thời gian TẮT (${off}). Vui lòng điều chỉnh.`);
+                        return;
+                    }
+                    
                     let out1 = document.getElementById(`timer${i}_out1`).checked;
                     let out2 = document.getElementById(`timer${i}_out2`).checked;
                     let out3 = document.getElementById(`timer${i}_out3`).checked;
@@ -1419,6 +1428,7 @@
                     let en = document.getElementById(`timer${i}_en`).checked ? 1 : 0;
                     let on = document.getElementById(`timer${i}_on`).value || "00:00";
                     let off = document.getElementById(`timer${i}_off`).value || "00:00";
+
                     let m = 0;
                     if (document.getElementById(`timer${i}_out1`).checked) m |= 16;
                     if (document.getElementById(`timer${i}_out2`).checked) m |= 32;
