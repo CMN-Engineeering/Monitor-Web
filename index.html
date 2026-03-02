@@ -289,36 +289,6 @@
             box-shadow: 0 0 15px rgba(233, 69, 96, 0.8);
         }
 
-        .input-indicator {
-            width: 15px;
-            height: 15px;
-            border-radius: 50%;
-            border: 2px solid #888;
-            transition: all 0.3s ease;
-            display: inline-block;
-            vertical-align: middle;
-            margin-right: 8px;
-        }
-
-        .input-indicator.active {
-            background-color: #2ecc71;
-            border-color: #27ae60;
-            box-shadow: 0 0 15px rgba(46, 204, 113, 0.8);
-            animation: pulse-green 1.5s infinite;
-        }
-
-        .input-indicator.inactive {
-            background-color: #e94560;
-            border-color: #c73a50;
-            box-shadow: 0 0 15px rgba(233, 69, 96, 0.8);
-            animation: pulse-red 1.5s infinite;
-        }
-
-        @keyframes pulse-red {
-            0%, 100% { box-shadow: 0 0 15px rgba(233, 69, 96, 0.8); }
-            50% { box-shadow: 0 0 25px rgba(233, 69, 96, 1); }
-        }
-
         @keyframes pulse-green {
             0%, 100% { box-shadow: 0 0 15px rgba(46, 204, 113, 0.8); }
             50% { box-shadow: 0 0 25px rgba(46, 204, 113, 1); }
@@ -574,7 +544,7 @@
             <div id="nav-dash" class="nav-btn active" onclick="showTab('dashboard')">
                 <i class="fas fa-tachometer-alt"></i> Dashboard
             </div>
-            <div id="nav-set" class="nav-btn disabled" onclick="showTab('settings')">
+            <div id="nav-set" class="nav-btn" onclick="showTab('settings')">
                 <i class="fas fa-cogs"></i> Cài đặt
             </div>
             <div id="notifBell" style="width: 40px; height: 40px; padding-top: 13px;" onclick="toggleNotifications()" title="Thông báo">
@@ -596,23 +566,7 @@
                     <div id="mqttErrorText" style="font-size: 0.8rem; color: #e94560; font-style: italic;"></div>
                 </div>
             </div>
-            <div class="card" id="loginCard">
-                <div class="card-header"><i class="fas fa-user"></i> <span id="loginHeader">Đăng nhập</span></div>
-                <div id="loginForm">
-                    <div class="input-group">Tên tài khoản
-                        <input type="text" id="usernameInput" placeholder="Username">
-                    </div>
-                    <div class="input-group">Mật khẩu
-                        <input type="password" id="passwordInput" placeholder="Password">
-                    </div>
-                    <button class="btn mt-2" onclick="attemptLogin()"><i class="fas fa-sign-in-alt"></i> Đăng nhập</button>
-                    <div id="loginMessage" style="margin-top:10px;color:#e94560;display:none;"></div>
-                </div>
-                <div id="loginStatus" style="display:none; margin-top:10px;">
-                    <span id="welcomeText" style="font-weight:600;"></span>
-                    <button class="btn mt-2" onclick="logout()" style="background-color:#cc4562ff;"><i class="fas fa-sign-out-alt"></i> Đăng xuất</button>
-                </div>
-            </div>
+        
 
             <!-- notification card will pop up under bell icon -->
             <div class="card" id="notificationCard">
@@ -698,10 +652,9 @@
                         <div id="input1Details"
                         style="display: none; background: rgba(255,255,255,0.05); padding: 10px; border-radius: 8px;">
                         <div style="font-size: large; font-weight:bold; padding-bottom: 5px;">NGÕ VÀO 1</div>
-                        <div style="display: flex; align-items: center; margin-bottom: 10px;">
-                            <div class="input-indicator inactive" id="input1Indicator"></div>
-                            <span id="input1State" style="color: #e94560; font-weight: bold; font-size: 0.95rem;">INACTIVE</span>
-                        </div>
+                        <!-- Text with Circle to show state -->
+                        <span id="input1StateCircle" style="display: inline-block; width: 10px; height: 10px; border-radius: 50%; background-color: #e94560; margin-right: 5px;"></span>
+                        <span id="input1State" style="color: #e94560; font-weight: bold;">INACTIVE</span>
                         <div style="font-size: 0.8rem; color: #bbb;">INACTIVE (Minutes):</div>
                         <input type="number" id="input1OnInterval" min="0" max="1440" placeholder="0"
                             style="width: 100%; padding: 5px; margin-bottom: 5px; border-radius: 4px;">
@@ -714,10 +667,8 @@
                         <div id="input2Details"
                             style="display: none; background: rgba(255,255,255,0.05); padding: 10px; border-radius: 8px;">
                             <div style="font-size: large; font-weight:bold; padding-bottom: 5px;">NGÕ VÀO 2</div>
-                            <div style="display: flex; align-items: center; margin-bottom: 10px;">
-                                <div class="input-indicator inactive" id="input2Indicator"></div>
-                                <span id="input2State" style="color: #e94560; font-weight: bold; font-size: 0.95rem;">INACTIVE</span>
-                            </div>
+                            <span id="input2StateCircle" style="display: inline-block; width: 10px; height: 10px; border-radius: 50%; background-color: #e94560; margin-right: 5px;"></span>
+                            <span id="input2State" style="color: #e94560; font-weight: bold;">INACTIVE</span>
                             <div style="font-size: 0.8rem; color: #bbb;">INACTIVE (Minutes):</div>
                             <input type="number" id="input2OnInterval" min="0" max="1440" placeholder="0"
                                 style="width: 100%; padding: 5px; margin-bottom: 5px; border-radius: 4px;">
@@ -732,10 +683,8 @@
                         <div id="input3Details"
                             style="display: none; background: rgba(255,255,255,0.05); padding: 10px; border-radius: 8px;">
                             <div style="font-size: large; font-weight:bold; padding-bottom: 5px;">NGÕ VÀO 3</div>
-                            <div style="display: flex; align-items: center; margin-bottom: 10px;">
-                                <div class="input-indicator inactive" id="input3Indicator"></div>
-                                <span id="input3State" style="color: #e94560; font-weight: bold; font-size: 0.95rem;">INACTIVE</span>
-                            </div>
+                            <span id="input3StateCircle" style="display: inline-block; width: 10px; height: 10px; border-radius: 50%; background-color: #e94560; margin-right: 5px;"></span>
+                            <span id="input3State" style="color: #e94560; font-weight: bold;">INACTIVE</span>
                             <div style="font-size: 0.8rem; color: #bbb;">INACTIVE (Minutes):</div>
                             <input type="number" id="input3OnInterval" min="0" max="1440" placeholder="0"
                                 style="width: 100%; padding: 5px; margin-bottom: 5px; border-radius: 4px;">
@@ -748,10 +697,8 @@
                         <div id="input4Details"
                             style="display: none; background: rgba(255,255,255,0.05); padding: 10px; border-radius: 8px;">
                             <div style="font-size: large; font-weight:bold; padding-bottom: 5px;">NGÕ VÀO 4</div>
-                            <div style="display: flex; align-items: center; margin-bottom: 10px;">
-                                <div class="input-indicator inactive" id="input4Indicator"></div>
-                                <span id="input4State" style="color: #e94560; font-weight: bold; font-size: 0.95rem;">INACTIVE</span>
-                            </div>
+                            <span id="input4StateCircle" style="display: inline-block; width: 10px; height: 10px; border-radius: 50%; background-color: #e94560; margin-right: 5px;"></span>
+                            <span id="input4State" style="color: #e94560; font-weight: bold;">INACTIVE</span>
                             <div style="font-size: 0.8rem; color: #bbb;">INACTIVE (Minutes):</div>
                             <input type="number" id="input4OnInterval" min="0" max="1440" placeholder="0"
                                 style="width: 100%; padding: 5px; margin-bottom: 5px; border-radius: 4px;">
@@ -792,7 +739,25 @@
         </div>
         
         <div id="view-settings" class="view-section">
-
+            <div class="card" id="loginCard">
+                <div class="card-header"><i class="fas fa-user"></i> <span id="loginHeader">Đăng nhập</span></div>
+                <div id="loginForm">
+                    <div class="input-group">Tên tài khoản
+                        <input type="text" id="usernameInput" placeholder="Username">
+                    </div>
+                    <div class="input-group">Mật khẩu
+                        <input type="password" id="passwordInput" placeholder="Password">
+                    </div>
+                    <button class="btn mt-2" onclick="attemptLogin()"><i class="fas fa-sign-in-alt"></i> Đăng nhập</button>
+                    <div id="loginMessage" style="margin-top:10px;color:#e94560;display:none;"></div>
+                </div>
+                <div id="loginStatus" style="display:none; margin-top:10px;">
+                    <span id="welcomeText" style="font-weight:600;"></span>
+                    <button class="btn mt-2" onclick="logout()" style="background-color:#cc4562ff;"><i class="fas fa-sign-out-alt"></i> Đăng xuất</button>
+                </div>
+            </div>
+            <!-- admin-only settings container starts -->
+            <div id="adminSettings" style="display:none;">
             <div class="card">
                 <div class="card-header"><i class="fas fa-cogs"></i> Chức năng hệ thống</div>
                     <div class="control-row" style="margin-bottom: 0;">
@@ -1101,6 +1066,7 @@
                 <div class="card-header"><i class="fas fa-power-off"></i> Hệ Thống</div>
                 <button class="btn" onclick="if(confirm('Reboot?')) fetch('/reboot')">Khởi động lại</button>
             </div>
+            </div> <!-- end adminSettings -->
         </div>
     </div>
 
@@ -1151,7 +1117,7 @@
         }
 
         // --- Authentication state ---
-        let isAuthenticated = false;
+        let isAuthenticated = false; // default to logged out
 
         // --- Notification panel state ---
         let notifVisible = false;
@@ -1172,27 +1138,31 @@
             }
         });
 
+        function updateSettingsVisibility() {
+            // show only login card when not authenticated, show whole admin area when authenticated
+            const adminSection = document.getElementById('adminSettings');
+            if(adminSection) adminSection.style.display = isAuthenticated ? 'block' : 'none';
+        }
+
         function checkStoredAuth() {
             if(sessionStorage.getItem('auth') === '1') {
                 isAuthenticated = true;
-                document.getElementById('nav-set').classList.remove('disabled');
                 showLoggedInState();
             }
+            updateSettingsVisibility();
         }
 
         // --- Navigation Logic ---
         function showTab(tabName) {
-            if(tabName === 'settings' && !isAuthenticated) {
-                alert('Chỉ người dùng admin mới được truy cập cài đặt. Vui lòng đăng nhập.');
-                return;
-            }
-
+            // always allow settings tab, but control visibility of contents
             document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
             document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
             document.getElementById('view-' + tabName).classList.add('active');
             
             if(tabName === 'dashboard') document.getElementById('nav-dash').classList.add('active');
             else document.getElementById('nav-set').classList.add('active');
+
+            if(tabName === 'settings') updateSettingsVisibility();
         }
 
         // --- Login logic ---
@@ -1201,6 +1171,7 @@
             document.getElementById('loginForm').style.display = 'none';
             document.getElementById('loginStatus').style.display = 'block';
             document.getElementById('welcomeText').innerText = 'Xin chào, admin';
+            updateSettingsVisibility();
         }
 
         function showLoggedOutState() {
@@ -1208,6 +1179,7 @@
             document.getElementById('loginForm').style.display = 'block';
             document.getElementById('loginStatus').style.display = 'none';
             document.getElementById('loginMessage').style.display = 'none';
+            updateSettingsVisibility();
         }
 
         function attemptLogin() {
@@ -1216,7 +1188,7 @@
             if(u === 'admin' && p === '8888') {
                 isAuthenticated = true;
                 sessionStorage.setItem('auth','1');
-                document.getElementById('nav-set').classList.remove('disabled');
+                // document.getElementById('nav-set').classList.remove('disabled');
                 showLoggedInState();
                 addNotification('Admin đã đăng nhập', 'success');
                 showTab('settings');
@@ -1230,7 +1202,7 @@
         function logout() {
             isAuthenticated = false;
             sessionStorage.removeItem('auth');
-            document.getElementById('nav-set').classList.add('disabled');
+            // document.getElementById('nav-set').classList.add('disabled');
             showLoggedOutState();
             addNotification('Admin đã đăng xuất', 'info');
             showTab('dashboard');
@@ -1652,25 +1624,30 @@
                 if(d.input4_on_interval !== undefined) document.getElementById('input4OnInterval').value = d.input4_on_interval;
                 if(d.input4_off_interval !== undefined) document.getElementById('input4OffInterval').value = d.input4_off_interval;
 
+                // update input state indicators
                 if(d.input1_state !== undefined) {
-                    document.getElementById('input1State').textContent = d.input1_state ? 'ACTIVE' : 'INACTIVE';
-                    document.getElementById('input1State').style.color = d.input1_state ? '#2ecc71' : '#e94560';
-                    document.getElementById('input1Indicator').className = d.input1_state ? 'input-indicator active' : 'input-indicator inactive';
+                    document.getElementById('input1State').innerText = d.input1_state ? 'ACTIVE' : 'INACTIVE';
+                    document.getElementById('input1State').style.color = d.input1_state ? '#00c853' : '#e94560';
+                    document.getElementById('input1StateCircle').style.backgroundColor = d.input1_state ? '#00c853' : '#e94560';
+                    document.getElementById('input1StateCircle').style.boxShadow = d.input1_state ? '0 0 8px #00c853' : 'none';
                 }
                 if(d.input2_state !== undefined) {
-                    document.getElementById('input2State').textContent = d.input2_state ? 'ACTIVE' : 'INACTIVE';
-                    document.getElementById('input2State').style.color = d.input2_state ? '#2ecc71' : '#e94560';
-                    document.getElementById('input2Indicator').className = d.input2_state ? 'input-indicator active' : 'input-indicator inactive';
+                    document.getElementById('input2State').innerText = d.input2_state ? 'ACTIVE' : 'INACTIVE';
+                    document.getElementById('input2State').style.color = d.input2_state ? '#00c853' : '#e94560';
+                    document.getElementById('input2StateCircle').style.backgroundColor = d.input2_state ? '#00c853' : '#e94560';
+                    document.getElementById('input2StateCircle').style.boxShadow = d.input2_state ? '0 0 8px #00c853' : 'none';
                 }
                 if(d.input3_state !== undefined) {
-                    document.getElementById('input3State').textContent = d.input3_state ? 'ACTIVE' : 'INACTIVE';
-                    document.getElementById('input3State').style.color = d.input3_state ? '#2ecc71' : '#e94560';
-                    document.getElementById('input3Indicator').className = d.input3_state ? 'input-indicator active' : 'input-indicator inactive';
+                    document.getElementById('input3State').innerText = d.input3_state ? 'ACTIVE' : 'INACTIVE';
+                    document.getElementById('input3State').style.color = d.input3_state ? '#00c853' : '#e94560';
+                    document.getElementById('input3StateCircle').style.backgroundColor = d.input3_state ? '#00c853' : '#e94560';
+                    document.getElementById('input3StateCircle').style.boxShadow = d.input3_state ? '0 0 8px #00c853' : 'none';
                 }
                 if(d.input4_state !== undefined) {
-                    document.getElementById('input4State').textContent = d.input4_state ? 'ACTIVE' : 'INACTIVE';
-                    document.getElementById('input4State').style.color = d.input4_state ? '#2ecc71' : '#e94560';
-                    document.getElementById('input4Indicator').className = d.input4_state ? 'input-indicator active' : 'input-indicator inactive';
+                    document.getElementById('input4State').innerText = d.input4_state ? 'ACTIVE' : 'INACTIVE';
+                    document.getElementById('input4State').style.color = d.input4_state ? '#00c853' : '#e94560';
+                    document.getElementById('input4StateCircle').style.backgroundColor = d.input4_state ? '#00c853' : '#e94560';
+                    document.getElementById('input4StateCircle').style.boxShadow = d.input4_state ? '0 0 8px #00c853' : 'none';
                 }
             })
             .catch(() => {
@@ -1712,6 +1689,12 @@
                 if(d.mqtt_broker) document.getElementById('mqtt_broker').value = d.mqtt_broker;
                 toggleMotorVisibility();
                 toggleAdcVisibility();
+
+                // populate input state indicators from config response
+                if(d.input1_state !== undefined) document.getElementById('input1State').innerText = d.input1_state ? 'ACTIVE' : 'INACTIVE';
+                if(d.input2_state !== undefined) document.getElementById('input2State').innerText = d.input2_state ? 'ACTIVE' : 'INACTIVE';
+                if(d.input3_state !== undefined) document.getElementById('input3State').innerText = d.input3_state ? 'ACTIVE' : 'INACTIVE';
+                if(d.input4_state !== undefined) document.getElementById('input4State').innerText = d.input4_state ? 'ACTIVE' : 'INACTIVE';
 
                 let mask = d.gpios ? parseInt(d.gpios) : 0;
                 document.getElementById('input1Toggle').checked = !!(mask & 1);
