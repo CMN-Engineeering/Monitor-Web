@@ -289,6 +289,36 @@
             box-shadow: 0 0 15px rgba(233, 69, 96, 0.8);
         }
 
+        .input-indicator {
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            border: 2px solid #888;
+            transition: all 0.3s ease;
+            display: inline-block;
+            vertical-align: middle;
+            margin-right: 8px;
+        }
+
+        .input-indicator.active {
+            background-color: #2ecc71;
+            border-color: #27ae60;
+            box-shadow: 0 0 15px rgba(46, 204, 113, 0.8);
+            animation: pulse-green 1.5s infinite;
+        }
+
+        .input-indicator.inactive {
+            background-color: #e94560;
+            border-color: #c73a50;
+            box-shadow: 0 0 15px rgba(233, 69, 96, 0.8);
+            animation: pulse-red 1.5s infinite;
+        }
+
+        @keyframes pulse-red {
+            0%, 100% { box-shadow: 0 0 15px rgba(233, 69, 96, 0.8); }
+            50% { box-shadow: 0 0 25px rgba(233, 69, 96, 1); }
+        }
+
         @keyframes pulse-green {
             0%, 100% { box-shadow: 0 0 15px rgba(46, 204, 113, 0.8); }
             50% { box-shadow: 0 0 25px rgba(46, 204, 113, 1); }
@@ -551,8 +581,21 @@
                 <i class="fas fa-bell"></i><span id="notifCount" class="badge-count">0</span>
             </div>
         </div>
-
+         <div class="status-bar" style="flex-direction: column; gap: 10px; align-items: stretch;">
+                <span id="clock" class="clock"
+                        style="margin-left:auto; font-size: 1rem; color: var(--accent);">--:--:--</span>         
+        </div>
         <div id="view-dashboard" class="view-section active">
+                    <div class="status-bar" style="flex-direction: column; gap: 10px; align-items: stretch;">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <div id="statusBadge" class="badge offline"><i class="fas fa-wifi"></i> Station: Đang kết nối...</div>
+                    <div id="ipDisplay" class="ip-addr">IP: ...</div>
+                </div>
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <div id="mqttBadge" class="badge offline"><i class="fas fa-network-wired"></i> MQTT: Disconnected</div>
+                    <div id="mqttErrorText" style="font-size: 0.8rem; color: #e94560; font-style: italic;"></div>
+                </div>
+            </div>
             <div class="card" id="loginCard">
                 <div class="card-header"><i class="fas fa-user"></i> <span id="loginHeader">Đăng nhập</span></div>
                 <div id="loginForm">
@@ -582,16 +625,7 @@
                 </div>
             </div>
 
-        <div class="status-bar" style="flex-direction: column; gap: 10px; align-items: stretch;">
-                <div style="display: flex; justify-content: space-between; align-items: center;">
-                    <div id="statusBadge" class="badge offline"><i class="fas fa-wifi"></i> Station: Đang kết nối...</div>
-                    <div id="ipDisplay" class="ip-addr">IP: ...</div>
-                </div>
-                <div style="display: flex; justify-content: space-between; align-items: center;">
-                    <div id="mqttBadge" class="badge offline"><i class="fas fa-network-wired"></i> MQTT: Disconnected</div>
-                    <div id="mqttErrorText" style="font-size: 0.8rem; color: #e94560; font-style: italic;"></div>
-                </div>
-            </div>
+
 
             <div class="status-bar">
                 <div style="width: 100%;">
@@ -664,6 +698,10 @@
                         <div id="input1Details"
                         style="display: none; background: rgba(255,255,255,0.05); padding: 10px; border-radius: 8px;">
                         <div style="font-size: large; font-weight:bold; padding-bottom: 5px;">NGÕ VÀO 1</div>
+                        <div style="display: flex; align-items: center; margin-bottom: 10px;">
+                            <div class="input-indicator inactive" id="input1Indicator"></div>
+                            <span id="input1State" style="color: #e94560; font-weight: bold; font-size: 0.95rem;">INACTIVE</span>
+                        </div>
                         <div style="font-size: 0.8rem; color: #bbb;">INACTIVE (Minutes):</div>
                         <input type="number" id="input1OnInterval" min="0" max="1440" placeholder="0"
                             style="width: 100%; padding: 5px; margin-bottom: 5px; border-radius: 4px;">
@@ -676,6 +714,10 @@
                         <div id="input2Details"
                             style="display: none; background: rgba(255,255,255,0.05); padding: 10px; border-radius: 8px;">
                             <div style="font-size: large; font-weight:bold; padding-bottom: 5px;">NGÕ VÀO 2</div>
+                            <div style="display: flex; align-items: center; margin-bottom: 10px;">
+                                <div class="input-indicator inactive" id="input2Indicator"></div>
+                                <span id="input2State" style="color: #e94560; font-weight: bold; font-size: 0.95rem;">INACTIVE</span>
+                            </div>
                             <div style="font-size: 0.8rem; color: #bbb;">INACTIVE (Minutes):</div>
                             <input type="number" id="input2OnInterval" min="0" max="1440" placeholder="0"
                                 style="width: 100%; padding: 5px; margin-bottom: 5px; border-radius: 4px;">
@@ -690,6 +732,10 @@
                         <div id="input3Details"
                             style="display: none; background: rgba(255,255,255,0.05); padding: 10px; border-radius: 8px;">
                             <div style="font-size: large; font-weight:bold; padding-bottom: 5px;">NGÕ VÀO 3</div>
+                            <div style="display: flex; align-items: center; margin-bottom: 10px;">
+                                <div class="input-indicator inactive" id="input3Indicator"></div>
+                                <span id="input3State" style="color: #e94560; font-weight: bold; font-size: 0.95rem;">INACTIVE</span>
+                            </div>
                             <div style="font-size: 0.8rem; color: #bbb;">INACTIVE (Minutes):</div>
                             <input type="number" id="input3OnInterval" min="0" max="1440" placeholder="0"
                                 style="width: 100%; padding: 5px; margin-bottom: 5px; border-radius: 4px;">
@@ -702,6 +748,10 @@
                         <div id="input4Details"
                             style="display: none; background: rgba(255,255,255,0.05); padding: 10px; border-radius: 8px;">
                             <div style="font-size: large; font-weight:bold; padding-bottom: 5px;">NGÕ VÀO 4</div>
+                            <div style="display: flex; align-items: center; margin-bottom: 10px;">
+                                <div class="input-indicator inactive" id="input4Indicator"></div>
+                                <span id="input4State" style="color: #e94560; font-weight: bold; font-size: 0.95rem;">INACTIVE</span>
+                            </div>
                             <div style="font-size: 0.8rem; color: #bbb;">INACTIVE (Minutes):</div>
                             <input type="number" id="input4OnInterval" min="0" max="1440" placeholder="0"
                                 style="width: 100%; padding: 5px; margin-bottom: 5px; border-radius: 4px;">
@@ -889,8 +939,6 @@
             <div class="card">
                 <div class="card-header">
                     <i class="fas fa-clock"></i> Bộ Hẹn Giờ
-                    <span id="clock" class="clock"
-                        style="margin-left:auto; font-size: 1rem; color: var(--accent);">--:--:--</span>
                 </div>
 
                 <div class="timer-block" id="timerBlock1">
@@ -1603,6 +1651,27 @@
                 if(d.input3_off_interval !== undefined) document.getElementById('input3OffInterval').value = d.input3_off_interval;
                 if(d.input4_on_interval !== undefined) document.getElementById('input4OnInterval').value = d.input4_on_interval;
                 if(d.input4_off_interval !== undefined) document.getElementById('input4OffInterval').value = d.input4_off_interval;
+
+                if(d.input1_state !== undefined) {
+                    document.getElementById('input1State').textContent = d.input1_state ? 'ACTIVE' : 'INACTIVE';
+                    document.getElementById('input1State').style.color = d.input1_state ? '#2ecc71' : '#e94560';
+                    document.getElementById('input1Indicator').className = d.input1_state ? 'input-indicator active' : 'input-indicator inactive';
+                }
+                if(d.input2_state !== undefined) {
+                    document.getElementById('input2State').textContent = d.input2_state ? 'ACTIVE' : 'INACTIVE';
+                    document.getElementById('input2State').style.color = d.input2_state ? '#2ecc71' : '#e94560';
+                    document.getElementById('input2Indicator').className = d.input2_state ? 'input-indicator active' : 'input-indicator inactive';
+                }
+                if(d.input3_state !== undefined) {
+                    document.getElementById('input3State').textContent = d.input3_state ? 'ACTIVE' : 'INACTIVE';
+                    document.getElementById('input3State').style.color = d.input3_state ? '#2ecc71' : '#e94560';
+                    document.getElementById('input3Indicator').className = d.input3_state ? 'input-indicator active' : 'input-indicator inactive';
+                }
+                if(d.input4_state !== undefined) {
+                    document.getElementById('input4State').textContent = d.input4_state ? 'ACTIVE' : 'INACTIVE';
+                    document.getElementById('input4State').style.color = d.input4_state ? '#2ecc71' : '#e94560';
+                    document.getElementById('input4Indicator').className = d.input4_state ? 'input-indicator active' : 'input-indicator inactive';
+                }
             })
             .catch(() => {
                 if(!wasOffline) {
@@ -1649,6 +1718,7 @@
                 document.getElementById('input2Toggle').checked = !!(mask & 2);
                 document.getElementById('input3Toggle').checked = !!(mask & 4);
                 document.getElementById('input4Toggle').checked = !!(mask & 8);
+            
                 document.getElementById('output1Toggle').checked = !!(mask & 16);
                 document.getElementById('output2Toggle').checked = !!(mask & 32);
                 document.getElementById('output3Toggle').checked = !!(mask & 64);

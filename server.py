@@ -13,10 +13,10 @@ device_state = {
     "pwr": False,
     "dir": True,
     "freq": 58,
-    "input1_on_interval": "58", "input1_off_interval": "68",
-    "input2_on_interval": "75", "input2_off_interval": "90",
-    "input3_on_interval": "0", "input3_off_interval": "0",
-    "input4_on_interval": "0", "input4_off_interval": "0",
+    "input1_on_interval": "58", "input1_off_interval": "68","input1_state": False,
+    "input2_on_interval": "75", "input2_off_interval": "90", "input2_state" : True,
+    "input3_on_interval": "88", "input3_off_interval": "36","input3_state": True,
+    "input4_on_interval": "15", "input4_off_interval": "75","input4_state": False,
     "output1_level": True, "output2_level": False,
     "output3_level": False, "output4_level": False,
 
@@ -55,12 +55,16 @@ def get_status():
         "freq": str(device_state["freq"]),
         "input1_on_interval": device_state["input1_on_interval"],
         "input1_off_interval": device_state["input1_off_interval"],
+        "input1_state": device_state["input1_state"],
         "input2_on_interval": device_state["input2_on_interval"],
         "input2_off_interval": device_state["input2_off_interval"],
+        "input2_state": device_state["input2_state"],
         "input3_on_interval": device_state["input3_on_interval"],
         "input3_off_interval": device_state["input3_off_interval"],
+        "input3_state": device_state["input3_state"],
         "input4_on_interval": device_state["input4_on_interval"],
         "input4_off_interval": device_state["input4_off_interval"],
+        "input4_state": device_state["input4_state"],
         "output1_level": device_state["output1_level"],
         "output2_level": device_state["output2_level"],
         "output3_level": device_state["output3_level"],
@@ -76,6 +80,10 @@ def get_config():
         "pass": device_state["pass"],
         "freq": str(device_state["freq"]),
         "gpios": str(device_state["gpios"]),
+        "input1_state": device_state["input1_state"],
+        "input2_state": device_state["input2_state"],
+        "input3_state": device_state["input3_state"],
+        "input4_state": device_state["input4_state"],
         "timer1_en": device_state["timer1_en"],
         "timer1_on": device_state["timer1_on"],
         "timer1_off": device_state["timer1_off"],
@@ -94,6 +102,8 @@ def get_config():
         "timer4_mask": device_state["timer4_mask"]
     }
     print("👉 GET CONFIG CALLED")
+    for key, value in config_data.items():
+        print(f"   {key}: {value}")
     return jsonify(config_data)
 
 @app.route('/setPower')
