@@ -1036,8 +1036,11 @@
                     </label>
                 </div>
                 <div class="input-group">
-                    <input type="text" id="static_ip" placeholder="Nhập IP Tĩnh (VD: 192.168.1.100)" disabled style="opacity: 0.5;">
+                    <input type="text" id="static_ip" placeholder="IP Tĩnh (VD: 192.168.1.100)" disabled style="opacity: 0.5;">
+                    <input type="text" id="gateway" placeholder="Gateway (VD: 192.168.1.1)" disabled style="opacity: 0.5;">
+                    <input type="text" id="netmask" placeholder="Netmask (VD: 255.255.255.0)" disabled style="opacity: 0.5;">
                 </div>
+
                 <button class="btn" onclick="saveWifi()"><i class="fas fa-save"></i> Lưu & Kết Nối Lại Station</button>
             </div>
 
@@ -1393,18 +1396,6 @@
             }
         }
 
-        function saveWifi() {
-            let s = document.getElementById('wifi_name').value;
-            let p = document.getElementById('wifi_pass').value;
-            if(confirm("Lưu WiFi: " + s)) {
-                fetch('/saveWifi', { 
-                    method: 'POST', 
-                    headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-                    body: `ssid=${encodeURIComponent(s)}&pass=${encodeURIComponent(p)}` 
-                }).then(()=> addNotification(`Đã lưu cấu hình WiFi: ${s}`, 'info'));
-            } 
-        }
-
         function saveIP() {
             let s = document.getElementById('ap_name').value;
             let p = document.getElementById('ap_pass').value;
@@ -1495,8 +1486,14 @@
         function toggleIpConfig() {
             let isStatic = document.querySelector('input[name="ipConfig"]:checked').value === 'static';
             let staticIpInput = document.getElementById('static_ip');
+            let gatewayInput = document.getElementById('gateway');
+            let netmaskInput = document.getElementById('netmask');
             staticIpInput.disabled = !isStatic;
+            gatewayInput.disabled = !isStatic;
+            netmaskInput.disabled = !isStatic;
             staticIpInput.style.opacity = isStatic ? "1" : "0.5";
+            gatewayInput.style.opacity = isStatic ? "1" : "0.5";
+            netmaskInput.style.opacity = isStatic ? "1" : "0.5";
         }
 
         // --- Gửi dữ liệu cài đặt ---
@@ -1506,12 +1503,16 @@
             let p = document.getElementById('wifi_pass').value;
             let isStatic = document.querySelector('input[name="ipConfig"]:checked').value === 'static';
             let staticIp = document.getElementById('static_ip').value;
-
+            let gateway = document.getElementById('gateway').value;
+            let netmask = document.getElementById('netmask').value;
             if(confirm("Lưu cấu hình WiFi Station?")) {
+                let body = isStatic 
+                    ? `sta_enable=${en}&wifi_name=${encodeURIComponent(s)}&wifi_pass=${encodeURIComponent(p)}&ip_config=static&static_ip=${encodeURIComponent(staticIp)}&gateway=${encodeURIComponent(gateway)}&netmask=${encodeURIComponent(netmask)}`
+                    : `sta_enable=${en}&wifi_name=${encodeURIComponent(s)}&wifi_pass=${encodeURIComponent(p)}&ip_config=dhcp`;
                 fetch('/saveWifi', { 
                     method: 'POST', 
                     headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-                    body: `en=${en}&ssid=${encodeURIComponent(s)}&pass=${encodeURIComponent(p)}&isStatic=${isStatic ? 1 : 0}&ip=${encodeURIComponent(staticIp)}` 
+                    body: body
                 }).then(()=> addNotification(`Đã lưu cấu hình WiFi. Đang kết nối lại...`, 'info'));
             } 
         }
