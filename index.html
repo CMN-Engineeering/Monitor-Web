@@ -764,7 +764,7 @@
                         <!-- Always checked -->
                         <span style="font-weight: 500;">Hiển thị điều khiển Động cơ</span>
                         <label class="switch">
-                            <input type="checkbox" id="motorEnableToggle" onchange="toggleMotorVisibility()" checked>
+                            <input type="checkbox" id="inverterEnabaleToggle" onchange="toggleMotorVisibility()" checked>
                             <span class="slider"></span>
                         </label>
                     </div>
@@ -1240,7 +1240,7 @@
 
         // --- Logic Ẩn/Hiện Motor ---
         function toggleMotorVisibility() {
-            let isEn = document.getElementById('motorEnableToggle').checked;
+            let isEn = document.getElementById('inverterEnabaleToggle').checked;
             document.getElementById('inverterSettingsCard').style.display = isEn ? 'block' : 'none';
             document.getElementById('motorControlCard').style.display = isEn ? 'block' : 'none';
             document.getElementById('timer1_inverter_wraper').style.display = isEn ? 'block' : 'none';
@@ -1272,6 +1272,7 @@
             let out2Locked = false;
             let out3Locked = false;
             let out4Locked = false;
+            let inverterLocked = false;
             let dashboardHtml = '';
 
             for(let i = 1; i <= 4; i++) {
@@ -1289,6 +1290,7 @@
                     if(out2) out2Locked = true;
                     if(out3) out3Locked = true;
                     if(out4) out4Locked = true;
+                    if(inverter) inverterLocked = true;
 
                     let targets = [];
                     if(out1) targets.push('Ra 1');
@@ -1296,7 +1298,7 @@
                     if(out3) targets.push('Ra 3');
                     if(out4) targets.push('Ra 4');
                     if(inverter) targets.push('Inverter');
-                    let targetStr = targets.length > 0 ? targets.join(' & ') : '<span style="color:#e94560">Chưa gán</span>';
+                    let targetStr = targets.length > 0 ? targets.join(' + ') : '<span style="color:#e94560">Chưa gán</span>';
 
                     dashboardHtml += `
                         <div class="timer-item-dash">
@@ -1318,7 +1320,7 @@
             }
             document.getElementById('activeTimersDisplay').innerHTML = dashboardHtml;
 
-            // Khoá công tắc ngõ ra ở Dashboard nếu đang dùng Timer
+            // Lock output switches if controlled by timer
             let dashSwitch1 = document.getElementById('output1Switch');
             let dashSwitch2 = document.getElementById('output2Switch');
             let dashSwitch3 = document.getElementById('output3Switch');
@@ -1336,6 +1338,17 @@
                 } else {
                     warning.style.display = 'none';
                 }
+            }
+
+            // Lock inverter control if controlled by timer
+            let inverterCard = document.getElementById('motorControlCard');
+            if(inverterCard) {
+                let startBtn = inverterCard.querySelector('button.btn[onclick="startMotor()"]');
+                let stopBtn = inverterCard.querySelector('button.btn[onclick="stopMotor()"]');
+                if(startBtn) startBtn.disabled = inverterLocked;
+                if(stopBtn) stopBtn.disabled = inverterLocked;
+                if(startBtn) startBtn.style.opacity = inverterLocked ? '0.5' : '1';
+                if(stopBtn) stopBtn.style.opacity = inverterLocked ? '0.5' : '1';
             }
         }
 
@@ -1595,6 +1608,95 @@
         }
         let wasOffline = false;
 
+        // --- Load Configuration from Server ---
+
+        function loadConfig() {
+            fetch('/get-config').then(r=>r.json()).then(d => {
+                document.getElementById('wifi_name').value = d.ssid || "";
+                document.getElementById('wifi_pass').value = d.pass || "";
+                document.getElementById('gateway').value = d.gateway || "";
+                document.getElementById('netmask').value = d.netmask || "";
+
+                if(document.getElementById('inverterEnabaleToggle')) {
+                    document.getElementById('inverterEnabaleToggle').checked = d.Inv_enable;
+                }
+                if(d.Inv_model !== undefined) {
+                    let modelChar = String.fromCharCode(65 + parseInt(d.Inv_model || 0));
+                    let radioBtn = document.querySelector(`input[name="inverterOption"][value="${modelChar}"]`);
+                    if(radioBtn) radioBtn.checked = true;
+                }
+                if(document.getElementById('inverterAddress')) document.getElementById('inverterAddress').value = d.Inv_addr || "0";
+                if(document.getElementById('inverterBaudrate')) document.getElementById('inverterBaudrate').value = d.Inv_baudrate || "0";
+                
+                if(d.freq !== undefined) {
+                    let f = parseInt(d.freq);
+                    if(document.getElementById('freqSlider')) document.getElementById('freqSlider').value = f;
+                    if(document.getElementById('freqSlider_val')) document.getElementById('freqSlider_val').innerText = f;
+                }
+                
+                if(d.sta_enable !== undefined) document.getElementById('sta_enable').checked = d.sta_enable;
+                if(d.is_static !== undefined) {
+                    if(d.is_static) {
+                        document.querySelector('input[name="ipConfig"][value="static"]').checked = true;
+                    } else {
+                        document.querySelector('input[name="ipConfig"][value="dhcp"]').checked = true;
+                    }
+                    toggleIpConfig();
+                }
+
+                document.getElementById('static_ip').value = d.static_ip || "";
+                
+                document.getElementById('ap_name').value = d.ap_ssid || "";
+                document.getElementById('ap_pass').value = d.ap_pass || "";
+                
+                toggleMotorVisibility();
+                toggleAdcVisibility();
+
+                // populate input state indicators from config response
+                if(d.input1_state !== undefined) document.getElementById('input1State').innerText = d.input1_state ? 'ACTIVE' : 'INACTIVE';
+                if(d.input2_state !== undefined) document.getElementById('input2State').innerText = d.input2_state ? 'ACTIVE' : 'INACTIVE';
+                if(d.input3_state !== undefined) document.getElementById('input3State').innerText = d.input3_state ? 'ACTIVE' : 'INACTIVE';
+                if(d.input4_state !== undefined) document.getElementById('input4State').innerText = d.input4_state ? 'ACTIVE' : 'INACTIVE';
+
+                let mask = d.gpios ? parseInt(d.gpios) : 0;
+                if(document.getElementById('input1Toggle')) document.getElementById('input1Toggle').checked = !!(mask & 1);
+                if(document.getElementById('input2Toggle')) document.getElementById('input2Toggle').checked = !!(mask & 2);
+                if(document.getElementById('input3Toggle')) document.getElementById('input3Toggle').checked = !!(mask & 4);
+                if(document.getElementById('input4Toggle')) document.getElementById('input4Toggle').checked = !!(mask & 8);
+            
+                if(document.getElementById('output1Toggle')) document.getElementById('output1Toggle').checked = !!(mask & 16);
+                if(document.getElementById('output2Toggle')) document.getElementById('output2Toggle').checked = !!(mask & 32);
+                if(document.getElementById('output3Toggle')) document.getElementById('output3Toggle').checked = !!(mask & 64);
+                if(document.getElementById('output4Toggle')) document.getElementById('output4Toggle').checked = !!(mask & 128);
+
+                for(let i=1; i<=4; i++) {
+                    if(d[`timer${i}_en`] !== undefined) document.getElementById(`timer${i}_en`).checked = d[`timer${i}_en`];
+                    if(d[`timer${i}_on`]) document.getElementById(`timer${i}_on`).value = d[`timer${i}_on`];
+                    if(d[`timer${i}_off`]) document.getElementById(`timer${i}_off`).value = d[`timer${i}_off`];
+                    
+                    let tMask = d[`timer${i}_mask`] ? parseInt(d[`timer${i}_mask`]) : 0;
+                    console.log(`Timer ${i} mask:`, tMask);
+                    if(document.getElementById(`timer${i}_out1`)) document.getElementById(`timer${i}_out1`).checked = !!(tMask & 1);
+                    if(document.getElementById(`timer${i}_out2`)) document.getElementById(`timer${i}_out2`).checked = !!(tMask & 2);
+                    if(document.getElementById(`timer${i}_out3`)) document.getElementById(`timer${i}_out3`).checked = !!(tMask & 4);
+                    if(document.getElementById(`timer${i}_out4`)) document.getElementById(`timer${i}_out4`).checked = !!(tMask & 8);
+                    if(document.getElementById(`timer${i}_inverter`)) document.getElementById(`timer${i}_inverter`).checked = !!(tMask & 16);
+
+                    handleTimerChange(i); 
+                }
+
+                toggleInput1Details(); toggleInput2Details(); toggleInput3Details(); toggleInput4Details();
+                toggleOutput1Controls(); toggleOutput2Controls(); toggleOutput3Controls(); toggleOutput4Controls();
+
+                refreshSystemTimerUI();
+            }).catch(e => {
+                console.warn("Could not load config", e);
+                for(let i=1; i<=4; i++) handleTimerChange(i);
+                toggleMotorVisibility();
+                refreshSystemTimerUI();
+            });
+        }
+
         // --- Single Status Fetch ---
         function fetchStatusOnce() {
             fetch('/status')
@@ -1717,80 +1819,10 @@
 
         // --- Init (Run on Startup) ---
         window.onload = function() {
-            fetch('/get-config').then(r=>r.json()).then(d => {
-                if(document.getElementById('wifi_name')) document.getElementById('wifi_name').value = d.ssid || "";
-                if(document.getElementById('wifi_pass')) document.getElementById('wifi_pass').value = d.pass || "";
-                
-                if(d.freq !== undefined) {
-                    let f = parseInt(d.freq);
-                    if(document.getElementById('freqSlider')) document.getElementById('freqSlider').value = f;
-                    if(document.getElementById('freqSlider_val')) document.getElementById('freqSlider_val').innerText = f;
-                }
-                
-                if(d.sta_enable !== undefined) document.getElementById('sta_enable').checked = d.sta_enable;
-                if(d.is_static !== undefined) {
-                    if(d.is_static) {
-                        document.querySelector('input[name="ipConfig"][value="static"]').checked = true;
-                    } else {
-                        document.querySelector('input[name="ipConfig"][value="dhcp"]').checked = true;
-                    }
-                    toggleIpConfig();
-                }
-                if(d.static_ip) document.getElementById('static_ip').value = d.static_ip;
-                
-                if(d.ap_ssid) document.getElementById('ap_name').value = d.ap_ssid;
-                if(d.ap_pass) document.getElementById('ap_pass').value = d.ap_pass;
-                
-                if(d.mqtt_broker) document.getElementById('mqtt_broker').value = d.mqtt_broker;
-                toggleMotorVisibility();
-                toggleAdcVisibility();
-
-                // populate input state indicators from config response
-                if(d.input1_state !== undefined) document.getElementById('input1State').innerText = d.input1_state ? 'ACTIVE' : 'INACTIVE';
-                if(d.input2_state !== undefined) document.getElementById('input2State').innerText = d.input2_state ? 'ACTIVE' : 'INACTIVE';
-                if(d.input3_state !== undefined) document.getElementById('input3State').innerText = d.input3_state ? 'ACTIVE' : 'INACTIVE';
-                if(d.input4_state !== undefined) document.getElementById('input4State').innerText = d.input4_state ? 'ACTIVE' : 'INACTIVE';
-
-                let mask = d.gpios ? parseInt(d.gpios) : 0;
-                document.getElementById('input1Toggle').checked = !!(mask & 1);
-                document.getElementById('input2Toggle').checked = !!(mask & 2);
-                document.getElementById('input3Toggle').checked = !!(mask & 4);
-                document.getElementById('input4Toggle').checked = !!(mask & 8);
-            
-                document.getElementById('output1Toggle').checked = !!(mask & 16);
-                document.getElementById('output2Toggle').checked = !!(mask & 32);
-                document.getElementById('output3Toggle').checked = !!(mask & 64);
-                document.getElementById('output4Toggle').checked = !!(mask & 128);
-
-                for(let i=1; i<=4; i++) {
-                    if(d[`timer${i}_en`] !== undefined) document.getElementById(`timer${i}_en`).checked = d[`timer${i}_en`];
-                    if(d[`timer${i}_on`]) document.getElementById(`timer${i}_on`).value = d[`timer${i}_on`];
-                    if(d[`timer${i}_off`]) document.getElementById(`timer${i}_off`).value = d[`timer${i}_off`];
-                    
-                    let tMask = d[`timer${i}_mask`] ? parseInt(d[`timer${i}_mask`]) : 0;
-                    if(document.getElementById(`timer${i}_out1`)) document.getElementById(`timer${i}_out1`).checked = !!(tMask & 16);
-                    if(document.getElementById(`timer${i}_out2`)) document.getElementById(`timer${i}_out2`).checked = !!(tMask & 32);
-                    if(document.getElementById(`timer${i}_out3`)) document.getElementById(`timer${i}_out3`).checked = !!(tMask & 64);
-                    if(document.getElementById(`timer${i}_out4`)) document.getElementById(`timer${i}_out4`).checked = !!(tMask & 128);
-
-                    handleTimerChange(i); 
-                }
-
-                toggleInput1Details(); toggleInput2Details(); toggleInput3Details(); toggleInput4Details();
-                toggleOutput1Controls(); toggleOutput2Controls(); toggleOutput3Controls(); toggleOutput4Controls();
-
-                refreshSystemTimerUI();
-            }).catch(e => {
-                console.warn("Could not load config on init", e);
-                for(let i=1; i<=4; i++) handleTimerChange(i);
-                toggleMotorVisibility();
-                refreshSystemTimerUI();
-            });
-
-            fetchStatusOnce();
-            setInterval(fetchStatusOnce, 2000);
+            loadConfig();
         };
-    
+        setInterval(fetchStatusOnce, 2000);
+        
     </script>
 </body>
 </html>

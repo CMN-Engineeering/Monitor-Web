@@ -12,11 +12,7 @@ device_state = {
     "ip": "192.168.1.100",
     "pwr": False,
     "dir": True,
-    "freq": 58,
-    "model" : 0,
-    "model_address" : 1,
-    "model_baudrate" : 9600,
-    "inverter_enabled": False,
+    "freq": "58",
     "input1_on_interval": "58", "input1_off_interval": "68","input1_state": False,
     "input2_on_interval": "75", "input2_off_interval": "90", "input2_state" : True,
     "input3_on_interval": "88", "input3_off_interval": "36","input3_state": True,
@@ -24,14 +20,29 @@ device_state = {
     "output1_level": True, "output2_level": False,
     "output3_level": False, "output4_level": False,
 
-    # Config Variables
+    # WiFi Config Variables
     "ssid": "CMNIoT_WiFi",
     "pass": "12345678",
+    "sta_enable": True,
+    "is_static": False,
+    "static_ip": "192.168.1.100",
+    "gateway": "192.168.1.1",
+    "netmask": "255.255.255.0",
+    "ap_ssid": "ESP32_AP",
+    "ap_pass": "12345678",
+    
+    # GPIO & Timer Config Variables
     "gpios": "0",
-    "timer1_en": False, "timer1_on": "00:00", "timer1_off": "00:00", "timer1_mask": "0",
-    "timer2_en": False, "timer2_on": "00:00", "timer2_off": "00:00", "timer2_mask": "0",
+    "timer1_en": True, "timer1_on": "00:00", "timer1_off": "08:00", "timer1_mask": "18",
+    "timer2_en": True, "timer2_on": "05:00", "timer2_off": "13:00", "timer2_mask": "12",
     "timer3_en": False, "timer3_on": "00:00", "timer3_off": "00:00", "timer3_mask": "0",
-    "timer4_en": False, "timer4_on": "00:00", "timer4_off": "00:00", "timer4_mask": "0"
+    "timer4_en": False, "timer4_on": "00:00", "timer4_off": "00:00", "timer4_mask": "0",
+    
+    # Inverter Config Variables
+    "Inv_enable": True,
+    "Inv_baudrate": "9600",
+    "Inv_model": "0",
+    "Inv_addr": "1"
 }
 
 # --- ROUTE CHO GIAO DIỆN WEB ---
@@ -82,8 +93,15 @@ def get_config():
     config_data = {
         "ssid": device_state["ssid"],
         "pass": device_state["pass"],
-        "freq": str(device_state["freq"]),
-        "gpios": str(device_state["gpios"]),
+        "sta_enable": device_state["sta_enable"],
+        "is_static": device_state["is_static"],
+        "static_ip": device_state["static_ip"],
+        "gateway": device_state["gateway"],
+        "netmask": device_state["netmask"],
+        "ap_ssid": device_state["ap_ssid"],
+        "ap_pass": device_state["ap_pass"],
+        "freq": device_state["freq"],
+        "gpios": device_state["gpios"],
         "input1_state": device_state["input1_state"],
         "input2_state": device_state["input2_state"],
         "input3_state": device_state["input3_state"],
@@ -103,7 +121,11 @@ def get_config():
         "timer4_en": device_state["timer4_en"],
         "timer4_on": device_state["timer4_on"],
         "timer4_off": device_state["timer4_off"],
-        "timer4_mask": device_state["timer4_mask"]
+        "timer4_mask": device_state["timer4_mask"],
+        "Inv_enable": device_state["Inv_enable"],
+        "Inv_baudrate": device_state["Inv_baudrate"],
+        "Inv_model": device_state["Inv_model"],
+        "Inv_addr": device_state["Inv_addr"]
     }
     print("👉 GET CONFIG CALLED")
     for key, value in config_data.items():
@@ -129,16 +151,16 @@ def set_inv_cfg():
     model = request.args.get('inverterOption', default="None")
     address = request.args.get('inverterAddress', default="0")
     baud = request.args.get('inverterBaudrate', default="9600")
-    device_state["model"] = model
-    device_state["model_address"] = address
-    device_state["model_baudrate"] = baud
+    device_state["Inv_model"] = model
+    device_state["Inv_addr"] = address
+    device_state["Inv_baudrate"] = baud
     print(f"👉 SET INVERTER CONFIG: Model={model}, Address={address}, Baudrate={baud}")
     return "OK"
 
 @app.route('/InvEn')
 def set_inv_en():
     val = request.args.get('val', type=int)
-    device_state["inverter_enabled"] = bool(val)
+    device_state["Inv_enable"] = bool(val)
     print(f"👉 INVERTER ENABLE: {'ON' if val else 'OFF'}")
     return "OK"
 
