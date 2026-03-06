@@ -1538,9 +1538,26 @@
             let s = document.getElementById('wifi_name').value;
             let p = document.getElementById('wifi_pass').value;
             let isStatic = document.querySelector('input[name="ipConfig"]:checked').value === 'static';
+            isStatic = isStatic ? 1 : 0;
             let staticIp = document.getElementById('static_ip').value;
             let gateway = document.getElementById('gateway').value;
             let netmask = document.getElementById('netmask').value;
+            //Validate staticIP, gateway, netmask if isStatic
+            if(isStatic) {
+                const ipRegex = /^(25[0-5]|2[0-4]\d|1\d{2}|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d{2}|[1-9]?\d)){3}$/;
+                if(!ipRegex.test(staticIp)) {
+                    alert("Địa chỉ IP tĩnh không hợp lệ. Vui lòng nhập lại.");
+                    return;
+                }
+                if(!ipRegex.test(gateway)) {
+                    alert("Gateway không hợp lệ. Vui lòng nhập lại.");
+                    return;
+                }
+                if(!ipRegex.test(netmask)) {
+                    alert("Netmask không hợp lệ. Vui lòng nhập lại.");
+                    return;
+                }
+            }
             if(confirm("Lưu cấu hình WiFi Station?")) {
                 let body = `sta_enable=${en}&ssid=${encodeURIComponent(s)}&pass=${encodeURIComponent(p)}&isStatic=${isStatic}&ip=${encodeURIComponent(staticIp)}&gateway=${encodeURIComponent(gateway)}&netmask=${encodeURIComponent(netmask)}&`;
                 fetch('/saveWifi', { 
