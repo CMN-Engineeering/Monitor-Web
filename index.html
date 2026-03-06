@@ -758,12 +758,13 @@
             </div>
             <!-- admin-only settings container starts -->
             <div id="adminSettings" style="display:none;">
-            <div class="card">
+            <div class="card" id = "systemControlCard">
                 <div class="card-header"><i class="fas fa-cogs"></i> Chức năng hệ thống</div>
                     <div class="control-row" style="margin-bottom: 0;">
+                        <!-- Always checked -->
                         <span style="font-weight: 500;">Hiển thị điều khiển Động cơ</span>
                         <label class="switch">
-                            <input type="checkbox" id="motorEnableToggle" onchange="toggleMotorVisibility()">
+                            <input type="checkbox" id="motorEnableToggle" onchange="toggleMotorVisibility()" checked>
                             <span class="slider"></span>
                         </label>
                     </div>
@@ -775,9 +776,9 @@
                         </label>
                     </div>                    
                     <div class="control-row" style="margin-top: 10px;">
-                        <span style="font-weight: 500;">Điều khiền chân IO</span>
+                        <span style="font-weight: 500;">Điều khiển chân IO</span>
                         <label class="switch">
-                            <input type="checkbox" id="ioEnableToggle" onchange="toggleIoVisibility()">
+                            <input type="checkbox" id="ioEnableToggle" onchange="toggleIoVisibility()" checked>
                             <span class="slider"></span>
                         </label>
                     </div>
@@ -947,6 +948,7 @@
                             <label class="checkbox-wrapper"><input type="checkbox" id="timer1_out2" onchange="handleTimerChange(1)"> Ngõ ra 2</label>
                             <label class="checkbox-wrapper"><input type="checkbox" id="timer1_out3" onchange="handleTimerChange(1)"> Ngõ ra 3</label>
                             <label class="checkbox-wrapper"><input type="checkbox" id="timer1_out4" onchange="handleTimerChange(1)"> Ngõ ra 4</label>
+                            <label class="checkbox-wrapper"><input type="checkbox" id="timer1_inverter" onchange="handleTimerChange(1)"> Inverter</label>
                         </div>
                     </div>
                 </div>
@@ -972,6 +974,7 @@
                             <label class="checkbox-wrapper"><input type="checkbox" id="timer2_out2" onchange="handleTimerChange(2)"> Ngõ ra 2</label>
                             <label class="checkbox-wrapper"><input type="checkbox" id="timer2_out3" onchange="handleTimerChange(2)"> Ngõ ra 3</label>
                             <label class="checkbox-wrapper"><input type="checkbox" id="timer2_out4" onchange="handleTimerChange(2)"> Ngõ ra 4</label>
+                            <label class="checkbox-wrapper"><input type="checkbox" id="timer2_inverter" onchange="handleTimerChange(2)"> Inverter</label>
                         </div>
                     </div>
                 </div>
@@ -997,6 +1000,7 @@
                             <label class="checkbox-wrapper"><input type="checkbox" id="timer3_out2" onchange="handleTimerChange(3)"> Ngõ ra 2</label>
                             <label class="checkbox-wrapper"><input type="checkbox" id="timer3_out3" onchange="handleTimerChange(3)"> Ngõ ra 3</label>
                             <label class="checkbox-wrapper"><input type="checkbox" id="timer3_out4" onchange="handleTimerChange(3)"> Ngõ ra 4</label>
+                            <label class="checkbox-wrapper"><input type="checkbox" id="timer3_inverter" onchange="handleTimerChange(3)"> Inverter</label>
                         </div>
                     </div>
                 </div>
@@ -1022,6 +1026,7 @@
                             <label class="checkbox-wrapper"><input type="checkbox" id="timer4_out2" onchange="handleTimerChange(4)"> Ngõ ra 2</label>
                             <label class="checkbox-wrapper"><input type="checkbox" id="timer4_out3" onchange="handleTimerChange(4)"> Ngõ ra 3</label>
                             <label class="checkbox-wrapper"><input type="checkbox" id="timer4_out4" onchange="handleTimerChange(4)"> Ngõ ra 4</label>
+                            <label class="checkbox-wrapper"><input type="checkbox" id="timer4_inverter" onchange="handleTimerChange(4)"> Inverter</label>
                         </div>
                     </div>
                 </div>
@@ -1274,6 +1279,7 @@
                     let out2 = document.getElementById(`timer${i}_out2`).checked;
                     let out3 = document.getElementById(`timer${i}_out3`).checked;
                     let out4 = document.getElementById(`timer${i}_out4`).checked;
+                    let inverter = document.getElementById(`timer${i}_inverter`).checked;
                     let onTime = document.getElementById(`timer${i}_on`).value || '--:--';
                     let offTime = document.getElementById(`timer${i}_off`).value || '--:--';
 
@@ -1287,6 +1293,7 @@
                     if(out2) targets.push('Ra 2');
                     if(out3) targets.push('Ra 3');
                     if(out4) targets.push('Ra 4');
+                    if(inverter) targets.push('Inverter');
                     let targetStr = targets.length > 0 ? targets.join(' & ') : '<span style="color:#e94560">Chưa gán</span>';
 
                     dashboardHtml += `
@@ -1443,7 +1450,7 @@
             }
         }
 
-        
+
 
         function saveTimers() {
             // Kiểm tra tính hợp lệ trước khi lưu
@@ -1463,8 +1470,9 @@
                     let out2 = document.getElementById(`timer${i}_out2`).checked;
                     let out3 = document.getElementById(`timer${i}_out3`).checked;
                     let out4 = document.getElementById(`timer${i}_out4`).checked;
+                    let inverter = document.getElementById(`timer${i}_inverter`).checked;
                     
-                    if (!out1 && !out2 && !out3 && !out4) {
+                    if (!out1 && !out2 && !out3 && !out4 && !inverter) {
                         alert(`Bộ Hẹn giờ ${i} đang được bật nhưng chưa chọn ngõ ra nào. Vui lòng chọn ít nhất 1 ngõ ra hoặc tắt Hẹn giờ ${i} để tiếp tục.`);
                         return; 
                     }
@@ -1478,10 +1486,11 @@
                     let off = document.getElementById(`timer${i}_off`).value || "00:00";
 
                     let m = 0;
-                    if (document.getElementById(`timer${i}_out1`).checked) m |= 16;
-                    if (document.getElementById(`timer${i}_out2`).checked) m |= 32;
-                    if (document.getElementById(`timer${i}_out3`).checked) m |= 64;
-                    if (document.getElementById(`timer${i}_out4`).checked) m |= 128;
+                    if (document.getElementById(`timer${i}_out1`).checked) m |= 1;
+                    if (document.getElementById(`timer${i}_out2`).checked) m |= 2;
+                    if (document.getElementById(`timer${i}_out3`).checked) m |= 4;
+                    if (document.getElementById(`timer${i}_out4`).checked) m |= 8;
+                    if (document.getElementById(`timer${i}_inverter`).checked) m |= 16;
                     
                     fetch(`/setTimer?timer=${i}&on=${on}&off=${off}&mask=${m}`);
                     fetch(`/setTimeren?timer=${i}&en=${en}`);
@@ -1533,9 +1542,7 @@
             let gateway = document.getElementById('gateway').value;
             let netmask = document.getElementById('netmask').value;
             if(confirm("Lưu cấu hình WiFi Station?")) {
-                let body = isStatic 
-                    ? `sta_enable=${en}&wifi_name=${encodeURIComponent(s)}&wifi_pass=${encodeURIComponent(p)}&ip_config=static&static_ip=${encodeURIComponent(staticIp)}&gateway=${encodeURIComponent(gateway)}&netmask=${encodeURIComponent(netmask)}`
-                    : `sta_enable=${en}&wifi_name=${encodeURIComponent(s)}&wifi_pass=${encodeURIComponent(p)}&ip_config=dhcp`;
+                let body = `sta_enable=${en}&ssid=${encodeURIComponent(s)}&pass=${encodeURIComponent(p)}&isStatic=${isStatic}&ip=${encodeURIComponent(staticIp)}&gateway=${encodeURIComponent(gateway)}&netmask=${encodeURIComponent(netmask)}&`;
                 fetch('/saveWifi', { 
                     method: 'POST', 
                     headers: {'Content-Type': 'application/x-www-form-urlencoded'},
@@ -1551,7 +1558,7 @@
                 fetch('/saveAP', { 
                     method: 'POST', 
                     headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-                    body: `ap_name=${encodeURIComponent(s)}&ap_pass=${encodeURIComponent(p)}` 
+                    body: `ap_name=${encodeURIComponent(s)}&ap_pass=${encodeURIComponent(p)}&` 
                 }).then(()=> addNotification('Đã lưu & Reinit Access Point', 'success'));
             }
         }
