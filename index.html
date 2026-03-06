@@ -948,7 +948,7 @@
                             <label class="checkbox-wrapper"><input type="checkbox" id="timer1_out2" onchange="handleTimerChange(1)"> Ngõ ra 2</label>
                             <label class="checkbox-wrapper"><input type="checkbox" id="timer1_out3" onchange="handleTimerChange(1)"> Ngõ ra 3</label>
                             <label class="checkbox-wrapper"><input type="checkbox" id="timer1_out4" onchange="handleTimerChange(1)"> Ngõ ra 4</label>
-                            <label class="checkbox-wrapper"><input type="checkbox" id="timer1_inverter" onchange="handleTimerChange(1)"> Inverter</label>
+                            <label class="checkbox-wrapper" id="timer1_inverter_wraper" style = "display:none;"><input type="checkbox" id="timer1_inverter" onchange="handleTimerChange(1)"> Inverter</label>
                         </div>
                     </div>
                 </div>
@@ -974,7 +974,7 @@
                             <label class="checkbox-wrapper"><input type="checkbox" id="timer2_out2" onchange="handleTimerChange(2)"> Ngõ ra 2</label>
                             <label class="checkbox-wrapper"><input type="checkbox" id="timer2_out3" onchange="handleTimerChange(2)"> Ngõ ra 3</label>
                             <label class="checkbox-wrapper"><input type="checkbox" id="timer2_out4" onchange="handleTimerChange(2)"> Ngõ ra 4</label>
-                            <label class="checkbox-wrapper"><input type="checkbox" id="timer2_inverter" onchange="handleTimerChange(2)"> Inverter</label>
+                            <label class="checkbox-wrapper" id="timer2_inverter_wraper" style = "display:none;"><input type="checkbox" id="timer2_inverter" onchange="handleTimerChange(2)"> Inverter</label>
                         </div>
                     </div>
                 </div>
@@ -1000,7 +1000,7 @@
                             <label class="checkbox-wrapper"><input type="checkbox" id="timer3_out2" onchange="handleTimerChange(3)"> Ngõ ra 2</label>
                             <label class="checkbox-wrapper"><input type="checkbox" id="timer3_out3" onchange="handleTimerChange(3)"> Ngõ ra 3</label>
                             <label class="checkbox-wrapper"><input type="checkbox" id="timer3_out4" onchange="handleTimerChange(3)"> Ngõ ra 4</label>
-                            <label class="checkbox-wrapper"><input type="checkbox" id="timer3_inverter" onchange="handleTimerChange(3)"> Inverter</label>
+                            <label class="checkbox-wrapper" id="timer3_inverter_wraper" style = "display:none;"><input type="checkbox" id="timer3_inverter" onchange="handleTimerChange(3)"> Inverter</label>
                         </div>
                     </div>
                 </div>
@@ -1026,7 +1026,7 @@
                             <label class="checkbox-wrapper"><input type="checkbox" id="timer4_out2" onchange="handleTimerChange(4)"> Ngõ ra 2</label>
                             <label class="checkbox-wrapper"><input type="checkbox" id="timer4_out3" onchange="handleTimerChange(4)"> Ngõ ra 3</label>
                             <label class="checkbox-wrapper"><input type="checkbox" id="timer4_out4" onchange="handleTimerChange(4)"> Ngõ ra 4</label>
-                            <label class="checkbox-wrapper"><input type="checkbox" id="timer4_inverter" onchange="handleTimerChange(4)"> Inverter</label>
+                            <label class="checkbox-wrapper" id="timer4_inverter_wraper" style = "display:none;"><input type="checkbox" id="timer4_inverter" onchange="handleTimerChange(4)"> Inverter</label>
                         </div>
                     </div>
                 </div>
@@ -1243,7 +1243,11 @@
             let isEn = document.getElementById('motorEnableToggle').checked;
             document.getElementById('inverterSettingsCard').style.display = isEn ? 'block' : 'none';
             document.getElementById('motorControlCard').style.display = isEn ? 'block' : 'none';
-            fetch('/InvEn?val=' + (isEn ? '1' : '0')); // inform backend of visibility change
+            document.getElementById('timer1_inverter_wraper').style.display = isEn ? 'block' : 'none';
+            document.getElementById('timer2_inverter_wraper').style.display = isEn ? 'block' : 'none';
+            document.getElementById('timer3_inverter_wraper').style.display = isEn ? 'block' : 'none'; 
+            document.getElementById('timer4_inverter_wraper').style.display = isEn ? 'block' : 'none';
+            fetch('/InvEn?val=' + (isEn ? '1' : '0'));
         }
         function toggleAdcVisibility() {
             let isEn = document.getElementById('adcEnableToggle').checked;
