@@ -212,6 +212,12 @@ def save_wifi():
     # Có thể extract ssid và pass ở đây để lưu vào device_state nếu cần
     return "OK"
 
+@app.route('/saveMQTT', methods=['POST'])
+def save_mqtt():
+    print(f"📡 SAVE MQTT: {request.get_data(as_text=True)}")
+    # Có thể extract broker, username, pass ở đây để lưu vào device_state nếu cần
+    return "OK"
+
 @app.route('/setAdcLimits')
 def set_adc_limits():
     voltage = request.args.get('voltage', type=float)

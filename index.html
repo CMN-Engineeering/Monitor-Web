@@ -1080,13 +1080,11 @@
                 <button class="btn" onclick="saveAP()" style="background-color: #f39c12;"><i class="fas fa-sync"></i> Xác nhận & Reinit AP</button>
             </div>
 
-            <div class="card">
+            <div class="card" id = "MQTT_Setting">
                 <div class="card-header"><span><i class="fas fa-network-wired"></i> Cài đặt MQTT</span></div>
-                <div style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 15px;">
-                    * Trang cài đặt này đã được bảo mật bởi User/Password hệ thống.
-                </div>
                 <div class="input-group">
-                    <input type="text" id="mqtt_broker" placeholder="Link / IP Broker (VD: mqtt.example.com)">
+                    <input type="text" id="mqtt_username" placeholder="SSID">
+                    <input type="password" id="mqtt_password" placeholder="Mật khẩu MQTT">
                 </div>
                 <button class="btn" onclick="saveMQTT()" style="background-color: #9b59b6;"><i class="fas fa-save"></i> Lưu MQTT Broker</button>
             </div>
@@ -1581,12 +1579,13 @@
         }
 
         function saveMQTT() {
-            let broker = document.getElementById('mqtt_broker').value;
-            if(confirm("Lưu link/IP Broker MQTT?")) {
+            let username = document.getElementById('mqtt_username').value;
+            let password = document.getElementById('mqtt_password').value;
+            if(confirm("Lưu cấu hình MQTT?")) {
                 fetch('/saveMQTT', {
                     method: 'POST',
                     headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-                    body: `broker=${encodeURIComponent(broker)}`
+                    body: `mqtt_name=${encodeURIComponent(username)}&mqtt_pass=${encodeURIComponent(password)}`
                 }).then(()=> addNotification('Đã lưu cấu hình MQTT', 'success'));
             }
         }
