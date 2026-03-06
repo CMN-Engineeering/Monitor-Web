@@ -13,6 +13,10 @@ device_state = {
     "pwr": False,
     "dir": True,
     "freq": 58,
+    "model" : 0,
+    "model_address" : 1,
+    "model_baudrate" : 9600,
+    "inverter_enabled": False,
     "input1_on_interval": "58", "input1_off_interval": "68","input1_state": False,
     "input2_on_interval": "75", "input2_off_interval": "90", "input2_state" : True,
     "input3_on_interval": "88", "input3_off_interval": "36","input3_state": True,
@@ -106,18 +110,36 @@ def get_config():
         print(f"   {key}: {value}")
     return jsonify(config_data)
 
-@app.route('/setPower')
+@app.route('/InvSetStart')
 def set_power():
     val = request.args.get('val', type=int)
     device_state["pwr"] = bool(val)
     print(f"👉 MOTOR POWER: {'ON' if val else 'OFF'}")
     return "OK"
 
-@app.route('/setFreq')
+@app.route('/InvSetFreq')
 def set_freq():
     val = request.args.get('val', type=int)
     device_state["freq"] = str(val)
     print(f"👉 SET FREQ: {val} Hz")
+    return "OK"
+
+@app.route('/InvCfg')
+def set_inv_cfg():
+    model = request.args.get('inverterOption', default="None")
+    address = request.args.get('inverterAddress', default="0")
+    baud = request.args.get('inverterBaudrate', default="9600")
+    device_state["model"] = model
+    device_state["model_address"] = address
+    device_state["model_baudrate"] = baud
+    print(f"👉 SET INVERTER CONFIG: Model={model}, Address={address}, Baudrate={baud}")
+    return "OK"
+
+@app.route('/InvEn')
+def set_inv_en():
+    val = request.args.get('val', type=int)
+    device_state["inverter_enabled"] = bool(val)
+    print(f"👉 INVERTER ENABLE: {'ON' if val else 'OFF'}")
     return "OK"
 
 @app.route('/setTimer')
@@ -142,7 +164,7 @@ def set_timer_en():
     print(f"👉 SET TIMER {timer_id} ENABLE: {bool(en)}")
     return "OK"
 
-@app.route('/setDir')
+@app.route('/InvSetDir')
 def set_dir():
     val = request.args.get('val', type=int)
     device_state["dir"] = bool(val)
@@ -189,6 +211,7 @@ def save_wifi():
     print(f"📡 SAVE WIFI: {request.get_data(as_text=True)}")
     # Có thể extract ssid và pass ở đây để lưu vào device_state nếu cần
     return "OK"
+
 @app.route('/setAdcLimits')
 def set_adc_limits():
     voltage = request.args.get('voltage', type=float)

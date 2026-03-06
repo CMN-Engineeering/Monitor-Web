@@ -767,19 +767,63 @@
                             <span class="slider"></span>
                         </label>
                     </div>
-                </div>
-            <div class="card">
-                <div class="card-header"><i class="fas fa-cogs"></i> ADC</div>
-                    <div class="control-row" style="margin-bottom: 0;">
+                    <div class="control-row" style="margin-top: 10px;">
                         <span style="font-weight: 500;">Hiển thị ADC</span>
                         <label class="switch">
                             <input type="checkbox" id="adcEnableToggle" onchange="toggleAdcVisibility()">
                             <span class="slider"></span>
                         </label>
-                </div>
-            </div>
+                    </div>                    
+                    <div class="control-row" style="margin-top: 10px;">
+                        <span style="font-weight: 500;">Điều khiền chân IO</span>
+                        <label class="switch">
+                            <input type="checkbox" id="ioEnableToggle" onchange="toggleIoVisibility()">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
 
-            <div class="card"  id = "adcSettingsCard">
+                </div>
+
+            <div class="card" id = "inverterSettingsCard" style="display:none;">
+                <div class="card-header"><i class="fas fa-cogs"></i> Cấu hình biến tần</div>
+                <div style="display: flex; flex-direction: column; gap: 12px;">
+                    <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                        <input type="radio" id="inverterOption" name="inverterOption" value="A" style="cursor: pointer;" checked> 
+                        <span style="font-weight: 500;">Kaman KM20</span>
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                        <input type="radio" name="inverterOption" value="B" style="cursor: pointer;">
+                        <span style="font-weight: 500;">Tùy chọn B</span>
+                        
+
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                        <input type="radio" name="inverterOption" value="C" style="cursor: pointer;">
+                        <span style="font-weight: 500;">Tùy chọn C</span>
+                        
+
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                        <input type="radio" name="inverterOption" value="D" style="cursor: pointer;">
+                        <span style="font-weight: 500;">Tùy chọn D</span>
+                        
+                    </label>
+                </div>
+                <div id = "inverterSettingsDetails" style = "margin-top: 10px;">
+                    <input type="text" id="inverterAddress" name="inverterAddress" placeholder="Địa chỉ" style="margin-left: auto; padding: 5px; border-radius: 4px; width: 150px;">
+                        <select id="inverterBaudrate" name="inverterBaudrate" style="margin-left: auto; padding: 5px; border-radius: 4px; width: 150px;">
+                            <option value="" disabled selected>Baudrate</option>
+                            <option value="2400">2400</option>
+                            <option value="4800">4800</option>
+                            <option value="7200">7200</option>
+                            <option value="9600">9600</option>
+                            <option value="14400">14400</option>
+                            <option value="19200">19200</option>
+                        </select>
+                </div>
+                <button class="btn mt-2" onclick="saveInverterOption()" style="background-color: #3498db;"><i class="fas fa-check"></i> Lưu Tùy chọn</button>
+            </div>
+            <div class="card"  id = "adcSettingsCard"  style="display:none;">
                 <div class="card-header" ><i class="fas fa-cogs"></i> Giới Hạn ADC</div>
                     <!-- // Slider to set voltage and ampe limit -->
                     <div style="display: flex; flex-direction: column; gap: 12px;">
@@ -802,31 +846,7 @@
                 </div>
                 <button class="btn mt-2" onclick="saveAdcSettings()" style="background-color: #3498db;"><i class="fas fa-check"></i> Lưu Tùy chọn</button>
             </div>
-
-            <div class="card">
-                <div class="card-header"><i class="fas fa-cogs"></i> Dòng biến tần</div>
-                <div style="display: flex; flex-direction: column; gap: 12px;">
-                    <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
-                        <input type="radio" name="inverterOption" value="A" style="cursor: pointer;">
-                        <span style="font-weight: 500;">Kaman KM20</span>
-                    </label>
-                    <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
-                        <input type="radio" name="inverterOption" value="B" style="cursor: pointer;">
-                        <span style="font-weight: 500;">Tùy chọn B</span>
-                    </label>
-                    <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
-                        <input type="radio" name="inverterOption" value="C" style="cursor: pointer;">
-                        <span style="font-weight: 500;">Tùy chọn C</span>
-                    </label>
-                    <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
-                        <input type="radio" name="inverterOption" value="D" style="cursor: pointer;">
-                        <span style="font-weight: 500;">Tùy chọn D</span>
-                    </label>
-                </div>
-                <button class="btn mt-2" onclick="saveInverterOption()" style="background-color: #3498db;"><i class="fas fa-check"></i> Lưu Tùy chọn</button>
-            </div>
-            
-            <div class="card">
+            <div class="card" id = "ioSettingsCard" style="display:none;">
                 <div class="card-header"><i class="fas fa-microchip"></i> Điều khiển chân IO </div>
 
                 <div class="card-header mt-2" style="font-size: 1rem;"><i class="fas fa-arrow-right"></i> NGÕ VÀO</div>
@@ -1218,14 +1238,19 @@
         // --- Logic Ẩn/Hiện Motor ---
         function toggleMotorVisibility() {
             let isEn = document.getElementById('motorEnableToggle').checked;
+            document.getElementById('inverterSettingsCard').style.display = isEn ? 'block' : 'none';
             document.getElementById('motorControlCard').style.display = isEn ? 'block' : 'none';
+            fetch('/InvEn?val=' + (isEn ? '1' : '0')); // inform backend of visibility change
         }
         function toggleAdcVisibility() {
             let isEn = document.getElementById('adcEnableToggle').checked;
             document.getElementById('adcStatusBar').style.display = isEn ? 'block' : 'none';
             document.getElementById('adcSettingsCard').style.display = isEn ? 'block' : 'none';
         }
-        
+        function toggleIoVisibility() {
+            let isEn = document.getElementById('ioEnableToggle').checked;
+            document.getElementById('ioSettingsCard').style.display = isEn ? 'block' : 'none';
+        }
         // ensure visibility set based on checkbox value
         // called from initialization below
 
@@ -1309,7 +1334,7 @@
         let isFwd = true;
 
         function startMotor() { 
-            fetch('/setPower?val=1').then(r => { 
+            fetch('/InvSetStart?val=1').then(r => { 
                 if(r.ok) {
                     document.getElementById('motorStatusLight').className = 'indicator-light running';
                     document.getElementById('motorStatusText').innerText = 'Đang Chạy';
@@ -1318,7 +1343,7 @@
             }).catch(() => addNotification("Lỗi kết nối: Không thể bật động cơ", "error")); 
         }
         function stopMotor() { 
-            fetch('/setPower?val=0').then(r => { 
+            fetch('/InvSetStart?val=0').then(r => { 
                 if(r.ok) {
                     document.getElementById('motorStatusLight').className = 'indicator-light stopped';
                     document.getElementById('motorStatusText').innerText = 'DỪNG';
@@ -1332,14 +1357,14 @@
             document.getElementById('dirLabel').innerText = isFwd ? "Quay Thuận" : "Quay Nghịch";
             const btn = document.getElementById('dirBtn');
             btn.className = isFwd ? "btn mt-2 medium dir-fwd" : "btn mt-2 medium dir-rev";
-            fetch('/setDir?val=' + (isFwd ? 1 : 0)).then(()=> {
+            fetch('/InvSetDir?val=' + (isFwd ? 1 : 0)).then(()=> {
                 addNotification(`Đã chuyển hướng: ${isFwd ? "Quay Thuận" : "Quay Nghịch"}`, "info");
             });
         }
 
         function setFrequency() {
             let val = document.getElementById('freqSlider').value;
-            fetch('/setFreq?val=' + val).then(r => { 
+            fetch('/InvSetFreq?val=' + val).then(r => { 
                 if(r.ok) addNotification(`Đã cập nhật tần số: ${val} Hz`, "success"); 
             });
             freqVal.innerText = val;
@@ -1349,6 +1374,16 @@
             let currentLimit = document.getElementById('currentLimitSlider').value;
             fetch('/setAdcLimits?voltage=' + voltageLimit + '&current=' + currentLimit).then(r => { 
                 if(r.ok) addNotification(`Đã lưu giới hạn ADC: ${voltageLimit} V, ${currentLimit} A`, "success"); 
+            });
+        }
+
+        function saveInverterOption() {
+            let inverterOption = document.querySelector('input[name="inverterOption"]:checked').value;
+            inverterOption = parseInt(inverterOption.charCodeAt(0) - 'A'.charCodeAt(0));
+            let inverterAddress = document.getElementById('inverterAddress').value;
+            let inverterBaudrate = document.getElementById('inverterBaudrate').value;
+            fetch('/InvCfg?inverterOption=' + inverterOption + '&inverterAddress=' + inverterAddress + '&inverterBaudrate=' + inverterBaudrate).then(r => { 
+                if(r.ok) addNotification(`Đã lưu cấu hình biến tần: ${inverterOption}, Địa chỉ: ${inverterAddress}, Baudrate: ${inverterBaudrate}`, "success"); 
             });
         }
         function toggleOutput1() {
@@ -1408,6 +1443,8 @@
             }
         }
 
+        
+
         function saveTimers() {
             // Kiểm tra tính hợp lệ trước khi lưu
             for(let i=1; i<=4; i++) {
@@ -1450,16 +1487,6 @@
                     fetch(`/setTimeren?timer=${i}&en=${en}`);
                 }
                 addNotification("Đã cập nhật các bộ hẹn giờ", "success");
-            }
-        }
-
-        function saveInverterOption() {
-            let selectedOption = document.querySelector('input[name="inverterOption"]:checked').value;
-            if(confirm(`Lưu tùy chọn: ${selectedOption}?`)) {
-                fetch(`/setInverterOption?option=${selectedOption}`).then(r => {
-                    if(r.ok) addNotification(`Đã lưu tùy chọn dòng biến tần: ${selectedOption}`, "success");
-                    else addNotification("Lỗi khi lưu tùy chọn dòng biến tần", "error");
-                }).catch(e => addNotification("Lỗi kết nối: " + e, "error"));
             }
         }
 
