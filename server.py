@@ -86,6 +86,7 @@ def get_status():
         "output4_level": device_state["output4_level"],
         "error_code": random.choice(["0", "1", "2", "3"])
     }
+
     return jsonify(status_data)
     
 @app.route('/get-config')

@@ -539,7 +539,9 @@
     <div class="container">
         <h1>CMNIoT SYSTEM</h1>
         <!-- Align to left -->
-    
+        <div class = "status-bar" id ="errorBadge" style="display: block;" >
+            
+        </div>
         <div class="nav-bar">
             <div id="nav-dash" class="nav-btn active" onclick="showTab('dashboard')">
                 <i class="fas fa-tachometer-alt"></i> Dashboard
@@ -1632,6 +1634,8 @@
                     let f = parseInt(d.Inv_freq);
                     if(document.getElementById('freqSlider')) document.getElementById('freqSlider').value = f;
                     if(document.getElementById('freqSlider_val')) document.getElementById('freqSlider_val').innerText = f;
+                    if(document.getElementById('freqVal')) document.getElementById('freqVal').innerText = f;
+                
                 }
                 
                 if(d.sta_enable !== undefined) document.getElementById('sta_enable').checked = d.sta_enable;
@@ -1720,19 +1724,19 @@
                 if (d.error_code){
                     if (d.error_code === 1) {
                         document.getElementById('errorBadge').style.display = 'block';
-                        document.getElementById('errorBadge').innerHTML = '<i class="fas fa-exclamation-triangle"></i> Đổi chiều động cơ thất bại';
+                        document.getElementById('errorBadge').innerText = '<i class="fas fa-exclamation-triangle"></i> Đổi chiều động cơ thất bại';
                     } else if (d.error_code === 2) {
                         document.getElementById('errorBadge').style.display = 'block';
-                        document.getElementById('errorBadge').innerHTML = `<i class="fas fa-exclamation-triangle"></i> Đổi tần số động cơ thất bại`;
+                        document.getElementById('errorBadge').innerText = `<i class="fas fa-exclamation-triangle"></i> Đổi tần số động cơ thất bại`;
                     } else if (d.error_code === 3) {
                         document.getElementById('errorBadge').style.display = 'block';
-                        document.getElementById('errorBadge').innerHTML = `<i class="fas fa-exclamation-triangle"></i> Khởi động động cơ thất bại`;
+                        document.getElementById('errorBadge').innerText = `<i class="fas fa-exclamation-triangle"></i> Khởi động động cơ thất bại`;
                     } else if (d.error_code === 4) {
                         document.getElementById('errorBadge').style.display = 'block';
-                        document.getElementById('errorBadge').innerHTML = `<i class="fas fa-exclamation-triangle"></i> Dừng động cơ thất bại`;
+                        document.getElementById('errorBadge').innerText = `<i class="fas fa-exclamation-triangle"></i> Dừng động cơ thất bại`;
                     } else if (d.error_code === 5) {
                         document.getElementById('errorBadge').style.display = 'block';
-                        document.getElementById('errorBadge').innerHTML = `<i class="fas fa-exclamation-triangle"></i> Đổi giá trị ngõ ra thất bại`;
+                        document.getElementById('errorBadge').innerText = `<i class="fas fa-exclamation-triangle"></i> Đổi giá trị ngõ ra thất bại`;
                     }
 
                 }
@@ -1840,8 +1844,35 @@
         window.onload = function() {
             loadConfig();
         };
-        setInterval(fetchStatusOnce, 2000);
         
+        function config_test_state(time){
+            fetch('/InvSetStart?val=' + (time < 60000 ? 1:2));
+        }
+        function config_test_dir(time){
+            fetch('/InvSetDir?val=' + (time < 40000 ? 1:2));
+            
+        }
+        function config_test_freq(time){
+            if (time >= 20000 && time < 40000)
+                fetch('/InvSetFreq?val=50');
+            if (time >= 40000 && time < 60000)
+                fetch('/InvSetFreq?val=40');
+            if (time >= 60000 && time < 80000)
+                fetch('/InvSetFreq?val=30');
+            if (time >= 80000 && time < 100000)
+                fetch('/InvSetFreq?val=20');
+            if (time >= 100000 && time < 120000)
+                fetch('/InvSetFreq?val=10');
+        }
+        function config_test(start_time){
+            amount = (Math.floor(Date.now() - start_time)) % 120000;
+            config_test_state(amount);
+            config_test_dir(amount);
+            config_test_freq(amount)
+        }
+        setInterval(fetchStatusOnce, 2000);
+        config_test(Date.now());
+        setInterval(config_test(Date.now()), 120000);
     </script>
 </body>
 </html>
