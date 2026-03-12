@@ -645,7 +645,7 @@
                         class="fas fa-check"></i> Xác nhận Tần số</button>
             </div>
             
-            <div class="status-bar" style="flex-direction: column; align-items: stretch;">
+            <div class="status-bar" id = "inputCard" style="flex-direction: column; align-items: stretch;display:none;">
                 <div class="card-header" style="margin-bottom: 10px;"><i class="fa-solid fa-clock"></i> NGÕ VÀO</div>
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">    
                     <div>
@@ -710,7 +710,7 @@
                 </div>
             </div>
 
-            <div class="status-bar" style="flex-direction: column; align-items: stretch;">
+            <div class="status-bar" id = "outputCard" style="flex-direction: column; align-items: stretch;display:none;">
                 <div class="card-header" style="margin-bottom: 10px;"><i class="fa-solid fa-clock"></i> NGÕ RA</div>
                 <div style="font-size: 0.85rem; color: #f39c12; margin-bottom: 10px; display: none; padding: 0 8px;" id="outputLockWarning">
                     <i class="fas fa-exclamation-triangle"></i> Nút bấm ngõ ra đã bị khoá do đang được cấu hình bởi bộ Hẹn Giờ (Timer).
@@ -778,7 +778,7 @@
                     <div class="control-row" style="margin-top: 10px;">
                         <span style="font-weight: 500;">Điều khiển chân IO</span>
                         <label class="switch">
-                            <input type="checkbox" id="ioEnableToggle" onchange="toggleIoVisibility()" checked>
+                            <input type="checkbox" id="ioEnableToggle" onchange="toggleIoVisibility()">
                             <span class="slider"></span>
                         </label>
                     </div>
@@ -1257,6 +1257,9 @@
         function toggleIoVisibility() {
             let isEn = document.getElementById('ioEnableToggle').checked;
             document.getElementById('ioSettingsCard').style.display = isEn ? 'block' : 'none';
+            document.getElementById('inputCard').style.display = isEn ? 'block' : 'none';
+            document.getElementById('outputCard').style.display = isEn ? 'block' : 'none';
+            
         }
         // ensure visibility set based on checkbox value
         // called from initialization below
@@ -1668,7 +1671,14 @@
                 if(document.getElementById('output2Toggle')) document.getElementById('output2Toggle').checked = !!(mask & 32);
                 if(document.getElementById('output3Toggle')) document.getElementById('output3Toggle').checked = !!(mask & 64);
                 if(document.getElementById('output4Toggle')) document.getElementById('output4Toggle').checked = !!(mask & 128);
-
+                
+                if (mask == 0) {
+                    // if no gpios enabled, toggle io settings visibility to disable
+                    document.getElementById('ioEnableToggle').checked = false;
+                }
+                else {
+                    document.getElementById('ioEnableToggle').checked = true;
+                }
                 for(let i=1; i<=4; i++) {
                     if(d[`timer${i}_en`] !== undefined) document.getElementById(`timer${i}_en`).checked = d[`timer${i}_en`];
                     if(d[`timer${i}_on`]) document.getElementById(`timer${i}_on`).value = d[`timer${i}_on`];
@@ -1684,6 +1694,7 @@
 
                     handleTimerChange(i); 
                 }
+                // if none outputs and inputs are enabled, toggle iot button visibility to disable
 
                 toggleInput1Details(); toggleInput2Details(); toggleInput3Details(); toggleInput4Details();
                 toggleOutput1Controls(); toggleOutput2Controls(); toggleOutput3Controls(); toggleOutput4Controls();
@@ -1821,6 +1832,7 @@
         window.onload = function() {
             loadConfig();
         };
+
         setInterval(fetchStatusOnce, 2000);
         
     </script>
