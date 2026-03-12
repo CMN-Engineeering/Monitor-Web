@@ -1,5 +1,3 @@
-from tokenize import String
-
 from flask import Flask, send_file, jsonify, request
 import random
 import time
@@ -12,9 +10,9 @@ device_state = {
     # Status Variables
     "connected": True,
     "ip": "192.168.1.100",
-    "pwr": False,
-    "dir": True,
-    "freq": "58",
+    "Inv_state": True,
+    "Inv_dir": True,
+    "Inv_freq": "46",
     "input1_on_interval": "58", "input1_off_interval": "68","input1_state": False,
     "input2_on_interval": "75", "input2_off_interval": "90", "input2_state" : True,
     "input3_on_interval": "88", "input3_off_interval": "36","input3_state": True,
@@ -41,10 +39,6 @@ device_state = {
     "timer4_en": False, "timer4_on": "00:00", "timer4_off": "00:00", "timer4_mask": "0",
     
     # Inverter Config Variables
-    "Inv_freq": "58",
-    "Inv_dir": False,
-    "Inv_state": True,
-    
     "Inv_enable": True,
     "Inv_baudrate": "9600",
     "Inv_model": "0",
@@ -69,11 +63,11 @@ def get_status():
         "time": current_time,
         "connected": device_state["connected"],
         "ip": device_state["ip"],
-        "pwr": device_state["pwr"],
-        "dir": device_state["dir"],
+        "Inv_state": device_state["Inv_state"],
+        "Inv_dir": device_state["Inv_dir"],
         "ram_usage": str(random.randint(30, 60)), # Sinh ngẫu nhiên RAM %
         "cpu_load": str(random.randint(5, 25)),   # Sinh ngẫu nhiên CPU %
-        "freq": str(device_state["freq"]),
+        "Inv_freq": str(device_state["Inv_freq"]),
         "input1_on_interval": device_state["input1_on_interval"],
         "input1_off_interval": device_state["input1_off_interval"],
         "input1_state": device_state["input1_state"],
@@ -106,7 +100,9 @@ def get_config():
         "netmask": device_state["netmask"],
         "ap_ssid": device_state["ap_ssid"],
         "ap_pass": device_state["ap_pass"],
-        "freq": device_state["freq"],
+        "Inv_state": device_state["Inv_state"],
+        "Inv_dir": device_state["Inv_dir"],
+        "Inv_freq": device_state["Inv_freq"],
         "gpios": device_state["gpios"],
         "input1_state": device_state["input1_state"],
         "input2_state": device_state["input2_state"],
@@ -141,14 +137,14 @@ def get_config():
 @app.route('/InvSetStart')
 def set_power():
     val = request.args.get('val', type=int)
-    device_state["pwr"] = bool(val)
+    device_state["Inv_state"] = bool(val)
     print(f"👉 MOTOR POWER: {'ON' if val else 'OFF'}")
     return "OK"
 
 @app.route('/InvSetFreq')
 def set_freq():
     val = request.args.get('val', type=int)
-    device_state["freq"] = str(val)
+    device_state["Inv_freq"] = str(val)
     print(f"👉 SET FREQ: {val} Hz")
     return "OK"
 
@@ -195,7 +191,7 @@ def set_timer_en():
 @app.route('/InvSetDir')
 def set_dir():
     val = request.args.get('val', type=int)
-    device_state["dir"] = bool(val)
+    device_state["Inv_dir"] = bool(val)
     print(f"👉 SET DIR: {'THUẬN' if val else 'NGHỊCH'}")
     return "OK"
 

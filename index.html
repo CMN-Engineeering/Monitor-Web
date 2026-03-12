@@ -645,7 +645,7 @@
                         class="fas fa-check"></i> Xác nhận Tần số</button>
             </div>
             
-            <div class="status-bar" id = "inputCard" style="flex-direction: column; align-items: stretch;display:none;">
+            <div class="status-bar" style="flex-direction: column; align-items: stretch;">
                 <div class="card-header" style="margin-bottom: 10px;"><i class="fa-solid fa-clock"></i> NGÕ VÀO</div>
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">    
                     <div>
@@ -710,7 +710,7 @@
                 </div>
             </div>
 
-            <div class="status-bar" id = "outputCard" style="flex-direction: column; align-items: stretch;display:none;">
+            <div class="status-bar" style="flex-direction: column; align-items: stretch;">
                 <div class="card-header" style="margin-bottom: 10px;"><i class="fa-solid fa-clock"></i> NGÕ RA</div>
                 <div style="font-size: 0.85rem; color: #f39c12; margin-bottom: 10px; display: none; padding: 0 8px;" id="outputLockWarning">
                     <i class="fas fa-exclamation-triangle"></i> Nút bấm ngõ ra đã bị khoá do đang được cấu hình bởi bộ Hẹn Giờ (Timer).
@@ -778,7 +778,7 @@
                     <div class="control-row" style="margin-top: 10px;">
                         <span style="font-weight: 500;">Điều khiển chân IO</span>
                         <label class="switch">
-                            <input type="checkbox" id="ioEnableToggle" onchange="toggleIoVisibility()">
+                            <input type="checkbox" id="ioEnableToggle" onchange="toggleIoVisibility()" checked>
                             <span class="slider"></span>
                         </label>
                     </div>
@@ -1257,9 +1257,6 @@
         function toggleIoVisibility() {
             let isEn = document.getElementById('ioEnableToggle').checked;
             document.getElementById('ioSettingsCard').style.display = isEn ? 'block' : 'none';
-            document.getElementById('inputCard').style.display = isEn ? 'block' : 'none';
-            document.getElementById('outputCard').style.display = isEn ? 'block' : 'none';
-            
         }
         // ensure visibility set based on checkbox value
         // called from initialization below
@@ -1361,8 +1358,8 @@
         function startMotor() { 
             fetch('/InvSetStart?val=1').then(r => { 
                 if(r.ok) {
-                    //document.getElementById('motorStatusLight').className = 'indicator-light running';
-                    //document.getElementById('motorStatusText').innerText = 'Đang Chạy';
+//                    document.getElementById('motorStatusLight').className = 'indicator-light running';
+//                    document.getElementById('motorStatusText').innerText = 'Đang Chạy';
                     addNotification("Đã BẬT Nguồn động cơ", "success"); 
                 }
             }).catch(() => addNotification("Lỗi kết nối: Không thể bật động cơ", "error")); 
@@ -1370,8 +1367,8 @@
         function stopMotor() { 
             fetch('/InvSetStart?val=0').then(r => { 
                 if(r.ok) {
-                    //document.getElementById('motorStatusLight').className = 'indicator-light stopped';
-                    //document.getElementById('motorStatusText').innerText = 'DỪNG';
+//                    document.getElementById('motorStatusLight').className = 'indicator-light stopped';
+//                    document.getElementById('motorStatusText').innerText = 'DỪNG';
                     addNotification("Đã TẮT Nguồn động cơ", "warning"); 
                 }
             }).catch(() => addNotification("Lỗi kết nối: Không thể tắt động cơ", "error")); 
@@ -1619,37 +1616,22 @@
                 document.getElementById('wifi_pass').value = d.pass || "";
                 document.getElementById('gateway').value = d.gateway || "";
                 document.getElementById('netmask').value = d.netmask || "";
-                
+
                 if(document.getElementById('inverterEnabaleToggle')) {
                     document.getElementById('inverterEnabaleToggle').checked = d.Inv_enable;
-                    toggleInverterVisibility();
                 }
-            
                 if(d.Inv_model !== undefined) {
                     let modelChar = String.fromCharCode(65 + parseInt(d.Inv_model || 0));
                     let radioBtn = document.querySelector(`input[name="inverterOption"][value="${modelChar}"]`);
                     if(radioBtn) radioBtn.checked = true;
                 }
-                document.getElementById('inverterAddress').value = d.Inv_addr || "0";
-                document.getElementById('inverterBaudrate').value = d.Inv_baudrate || "0";
-
-                if (d.Inv_state){
-                    document.getElementById('motorStatusLight').className = 'indicator-light running';
-                    document.getElementById('motorStatusText').innerText = 'Đang Chạy';
-                } else {
-                    document.getElementById('motorStatusLight').className = 'indicator-light stopped';
-                    document.getElementById('motorStatusText').innerText = 'DỪNG';
-                }                
+                if(document.getElementById('inverterAddress')) document.getElementById('inverterAddress').value = d.Inv_addr || "0";
+                if(document.getElementById('inverterBaudrate')) document.getElementById('inverterBaudrate').value = d.Inv_baudrate || "0";
+                
                 if(d.Inv_freq !== undefined) {
                     let f = parseInt(d.Inv_freq);
                     if(document.getElementById('freqSlider')) document.getElementById('freqSlider').value = f;
                     if(document.getElementById('freqSlider_val')) document.getElementById('freqSlider_val').innerText = f;
-                }
-                if(d.Inv_dir !== undefined) {
-                    isFwd = d.Inv_dir == 1;
-                    document.getElementById('dirLabel').innerText = isFwd ? "Quay Thuận" : "Quay Nghịch";
-                    const btn = document.getElementById('dirBtn');
-                    btn.className = isFwd ? "btn mt-2 medium dir-fwd" : "btn mt-2 medium dir-rev";
                 }
                 
                 if(d.sta_enable !== undefined) document.getElementById('sta_enable').checked = d.sta_enable;
@@ -1668,6 +1650,17 @@
                 document.getElementById('ap_pass').value = d.ap_pass || "";
                 
                 toggleMotorVisibility();
+                
+                if(d.Inv_state !== undefined) {
+                    if(d.Inv_state) {
+                        document.getElementById('motorStatusLight').className = 'indicator-light running';
+                        document.getElementById('motorStatusText').innerText = 'CHẠY';
+                    } else {
+                        document.getElementById('motorStatusLight').className = 'indicator-light stopped';
+                        document.getElementById('motorStatusText').innerText = 'DỪNG';
+                    }
+                }
+                
                 toggleAdcVisibility();
 
                 // populate input state indicators from config response
@@ -1686,14 +1679,7 @@
                 if(document.getElementById('output2Toggle')) document.getElementById('output2Toggle').checked = !!(mask & 32);
                 if(document.getElementById('output3Toggle')) document.getElementById('output3Toggle').checked = !!(mask & 64);
                 if(document.getElementById('output4Toggle')) document.getElementById('output4Toggle').checked = !!(mask & 128);
-                
-                if (mask == 0) {
-                    // if no gpios enabled, toggle io settings visibility to disable
-                    document.getElementById('ioEnableToggle').checked = false;
-                }
-                else {
-                    document.getElementById('ioEnableToggle').checked = true;
-                }
+
                 for(let i=1; i<=4; i++) {
                     if(d[`timer${i}_en`] !== undefined) document.getElementById(`timer${i}_en`).checked = d[`timer${i}_en`];
                     if(d[`timer${i}_on`]) document.getElementById(`timer${i}_on`).value = d[`timer${i}_on`];
@@ -1709,7 +1695,6 @@
 
                     handleTimerChange(i); 
                 }
-                // if none outputs and inputs are enabled, toggle iot button visibility to disable
 
                 toggleInput1Details(); toggleInput2Details(); toggleInput3Details(); toggleInput4Details();
                 toggleOutput1Controls(); toggleOutput2Controls(); toggleOutput3Controls(); toggleOutput4Controls();
@@ -1753,24 +1738,14 @@
                 }
                 if(d.ip) document.getElementById('ipDisplay').innerText = "IP: " + d.ip;
                 if(d.time) document.getElementById('clock').innerText = d.time;
-
-                if(d.pwr !== undefined) {
-                    if(d.pwr) {
-                        document.getElementById('motorStatusLight').className = 'indicator-light running';
-                        document.getElementById('motorStatusText').innerText = 'CHẠY';
-                    } else {
-                        document.getElementById('motorStatusLight').className = 'indicator-light stopped';
-                        document.getElementById('motorStatusText').innerText = 'DỪNG';
-                    }
-                }
                 
-                if(d.dir !== undefined) {
-                    isFwd = d.dir;
+                if(d.Inv_dir !== undefined) {
+                    isFwd = d.Inv_dir;
                     document.getElementById('dirLabel').innerText = isFwd ? "Quay Thuận" : "Quay Nghịch";
                     document.getElementById('dirBtn').className = isFwd ? "btn mt-2 medium dir-fwd" : "btn mt-2 medium dir-rev";
                 }
                 
-                if(d.freq !== undefined) document.getElementById('freqVal').innerText = d.freq;
+                if(d.Inv_freq !== undefined) document.getElementById('freqVal').innerText = d.Inv_freq;
                 
                 if(d.ram_usage !== undefined) {
                     document.getElementById('memoryPercent').innerText = " " + d.ram_usage + " %";
@@ -1847,7 +1822,6 @@
         window.onload = function() {
             loadConfig();
         };
-
         setInterval(fetchStatusOnce, 2000);
         
     </script>
