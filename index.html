@@ -1361,8 +1361,8 @@
         function startMotor() { 
             fetch('/InvSetStart?val=1').then(r => { 
                 if(r.ok) {
-                    document.getElementById('motorStatusLight').className = 'indicator-light running';
-                    document.getElementById('motorStatusText').innerText = 'Đang Chạy';
+                    //document.getElementById('motorStatusLight').className = 'indicator-light running';
+                    //document.getElementById('motorStatusText').innerText = 'Đang Chạy';
                     addNotification("Đã BẬT Nguồn động cơ", "success"); 
                 }
             }).catch(() => addNotification("Lỗi kết nối: Không thể bật động cơ", "error")); 
@@ -1370,8 +1370,8 @@
         function stopMotor() { 
             fetch('/InvSetStart?val=0').then(r => { 
                 if(r.ok) {
-                    document.getElementById('motorStatusLight').className = 'indicator-light stopped';
-                    document.getElementById('motorStatusText').innerText = 'DỪNG';
+                    //document.getElementById('motorStatusLight').className = 'indicator-light stopped';
+                    //document.getElementById('motorStatusText').innerText = 'DỪNG';
                     addNotification("Đã TẮT Nguồn động cơ", "warning"); 
                 }
             }).catch(() => addNotification("Lỗi kết nối: Không thể tắt động cơ", "error")); 
@@ -1619,22 +1619,37 @@
                 document.getElementById('wifi_pass').value = d.pass || "";
                 document.getElementById('gateway').value = d.gateway || "";
                 document.getElementById('netmask').value = d.netmask || "";
-
+                
                 if(document.getElementById('inverterEnabaleToggle')) {
                     document.getElementById('inverterEnabaleToggle').checked = d.Inv_enable;
+                    toggleInverterVisibility();
                 }
+            
                 if(d.Inv_model !== undefined) {
                     let modelChar = String.fromCharCode(65 + parseInt(d.Inv_model || 0));
                     let radioBtn = document.querySelector(`input[name="inverterOption"][value="${modelChar}"]`);
                     if(radioBtn) radioBtn.checked = true;
                 }
-                if(document.getElementById('inverterAddress')) document.getElementById('inverterAddress').value = d.Inv_addr || "0";
-                if(document.getElementById('inverterBaudrate')) document.getElementById('inverterBaudrate').value = d.Inv_baudrate || "0";
-                
-                if(d.freq !== undefined) {
-                    let f = parseInt(d.freq);
+                document.getElementById('inverterAddress').value = d.Inv_addr || "0";
+                document.getElementById('inverterBaudrate').value = d.Inv_baudrate || "0";
+
+                if (d.Inv_state){
+                    document.getElementById('motorStatusLight').className = 'indicator-light running';
+                    document.getElementById('motorStatusText').innerText = 'Đang Chạy';
+                } else {
+                    document.getElementById('motorStatusLight').className = 'indicator-light stopped';
+                    document.getElementById('motorStatusText').innerText = 'DỪNG';
+                }                
+                if(d.Inv_freq !== undefined) {
+                    let f = parseInt(d.Inv_freq);
                     if(document.getElementById('freqSlider')) document.getElementById('freqSlider').value = f;
                     if(document.getElementById('freqSlider_val')) document.getElementById('freqSlider_val').innerText = f;
+                }
+                if(d.Inv_dir !== undefined) {
+                    isFwd = d.Inv_dir == 1;
+                    document.getElementById('dirLabel').innerText = isFwd ? "Quay Thuận" : "Quay Nghịch";
+                    const btn = document.getElementById('dirBtn');
+                    btn.className = isFwd ? "btn mt-2 medium dir-fwd" : "btn mt-2 medium dir-rev";
                 }
                 
                 if(d.sta_enable !== undefined) document.getElementById('sta_enable').checked = d.sta_enable;

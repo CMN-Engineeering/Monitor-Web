@@ -1,3 +1,5 @@
+from tokenize import String
+
 from flask import Flask, send_file, jsonify, request
 import random
 import time
@@ -39,6 +41,10 @@ device_state = {
     "timer4_en": False, "timer4_on": "00:00", "timer4_off": "00:00", "timer4_mask": "0",
     
     # Inverter Config Variables
+    "Inv_freq": "58",
+    "Inv_dir": False,
+    "Inv_state": True,
+    
     "Inv_enable": True,
     "Inv_baudrate": "9600",
     "Inv_model": "0",
