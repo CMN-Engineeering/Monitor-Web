@@ -1660,7 +1660,7 @@
                         document.getElementById('motorStatusText').innerText = 'DỪNG';
                     }
                 }
-                
+
                 toggleAdcVisibility();
 
                 // populate input state indicators from config response
@@ -1717,7 +1717,25 @@
                     addNotification("Đã kết nối lại với hệ thống", "success");
                     wasOffline = false;
                 }
+                if (d.error_code){
+                    if (d.error_code === 1) {
+                        document.getElementById('errorBadge').style.display = 'block';
+                        document.getElementById('errorBadge').innerHTML = '<i class="fas fa-exclamation-triangle"></i> Đổi chiều động cơ thất bại';
+                    } else if (d.error_code === 2) {
+                        document.getElementById('errorBadge').style.display = 'block';
+                        document.getElementById('errorBadge').innerHTML = `<i class="fas fa-exclamation-triangle"></i> Đổi tần số động cơ thất bại`;
+                    } else if (d.error_code === 3) {
+                        document.getElementById('errorBadge').style.display = 'block';
+                        document.getElementById('errorBadge').innerHTML = `<i class="fas fa-exclamation-triangle"></i> Khởi động động cơ thất bại`;
+                    } else if (d.error_code === 4) {
+                        document.getElementById('errorBadge').style.display = 'block';
+                        document.getElementById('errorBadge').innerHTML = `<i class="fas fa-exclamation-triangle"></i> Dừng động cơ thất bại`;
+                    } else if (d.error_code === 5) {
+                        document.getElementById('errorBadge').style.display = 'block';
+                        document.getElementById('errorBadge').innerHTML = `<i class="fas fa-exclamation-triangle"></i> Đổi giá trị ngõ ra thất bại`;
+                    }
 
+                }
                 if (d.connected === false) {
                     document.getElementById('statusBadge').className = "badge offline";
                     document.getElementById('statusBadge').innerHTML = '<i class="fas fa-exclamation-circle"></i> Ngoại tuyến';
