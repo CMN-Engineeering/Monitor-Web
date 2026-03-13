@@ -782,7 +782,7 @@
                     <div class="control-row" style="margin-top: 10px;">
                         <span style="font-weight: 500;">Điều khiển chân IO</span>
                         <label class="switch">
-                            <input type="checkbox" id="ioEnableToggle" onchange="toggleIoVisibility()" checked>
+                            <input type="checkbox" id="ioEnableToggle" onchange="toggleIoVisibility()">
                             <span class="slider"></span>
                         </label>
                     </div>
@@ -1621,8 +1621,7 @@
                 document.getElementById('gateway').value = d.gateway || "";
                 document.getElementById('netmask').value = d.netmask || "";
                 document.getElementById('mqtt_username').value = d.mqtt_name || "";
-                document.getElementById('mqtt_pass').value = d.mqtt_pass || "";
-                
+                document.getElementById('mqtt_password').value = d.mqtt_pass || "";
 
                 if(document.getElementById('inverterEnabaleToggle')) {
                     document.getElementById('inverterEnabaleToggle').checked = d.Inv_enable;
