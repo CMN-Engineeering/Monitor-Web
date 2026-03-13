@@ -1846,68 +1846,87 @@
         window.onload = function() {
             loadConfig();
         };
+        let testSequenceInterval = null;
+        let testStep = 0;
+
         function testInvConfig() {
-            if(!confirm('Bắt đầu chạy kịch bản Test?')) return;
+            // Nếu test đang chạy thì nhấn nút sẽ Dừng lại
+            if (testSequenceInterval) {
+                clearInterval(testSequenceInterval);
+                testSequenceInterval = null;
+                addNotification("Đã DỪNG kịch bản test biến tần.", "warning");
+                
+                // Khôi phục giao diện nút
+                let btn = document.querySelector('button[onclick="testInvConfig()"]');
+                if(btn) {
+                    btn.innerHTML = '<i class="fas fa-check"></i> Testing';
+                    btn.style.backgroundColor = '#34db47';
+                }
+                return;
+            }
+
+            if(!confirm('Bắt đầu chạy kịch bản Test lặp lại vô tận?')) return;
             
-            addNotification("Bắt đầu kịch bản test biến tần (30s)...", "info");
+            addNotification("Bắt đầu kịch bản test biến tần (Vô tận)...", "info");
+            
+            // Đổi giao diện nút thành nút Stop
+            let btn = document.querySelector('button[onclick="testInvConfig()"]');
+            if(btn) {
+                btn.innerHTML = '<i class="fas fa-stop"></i> Dừng Test';
+                btn.style.backgroundColor = '#e94560';
+            }
 
-            // T = 0s (Cell 1)
-            // Dir = Quay thuận (1), Start (1)
-            setTimeout(() => {
-                fetch('/InvSetDir?val=1');
-                fetch('/InvSetStart?val=1');
-                addNotification("Test [0s]: Quay Thuận, Bắt đầu", "info");
-            }, 0);
-
-            // T = 5s (Cell 2)
-            // Freq = 50
-            setTimeout(() => {
-                fetch('/InvSetFreq?val=50');
-                // Update slider UI optionally to match
-                document.getElementById('freqSlider').value = 50;
-                document.getElementById('freqSlider_val').innerText = 50;
-                addNotification("Test [5s]: Tần số = 50Hz", "info");
-            }, 5000);
-
-            // T = 10s (Cell 3)
-            // Freq = 40, Dir = Quay Ngược (0)
-            setTimeout(() => {
-                fetch('/InvSetFreq?val=40');
-                fetch('/InvSetDir?val=0');
-                document.getElementById('freqSlider').value = 40;
-                document.getElementById('freqSlider_val').innerText = 40;
-                addNotification("Test [10s]: Tần số = 40Hz, Quay Ngược", "info");
-            }, 10000);
-
-            // T = 15s (Cell 4)
-            // Freq = 30, Stop (0)
-            setTimeout(() => {
-                fetch('/InvSetFreq?val=30');
-                fetch('/InvSetStart?val=0');
-                document.getElementById('freqSlider').value = 30;
-                document.getElementById('freqSlider_val').innerText = 30;
-                addNotification("Test [15s]: Tần số = 30Hz, Dừng động cơ", "warning");
-            }, 15000);
-
-            // T = 20s (Cell 5)
-            // Freq = 20
-            setTimeout(() => {
-                fetch('/InvSetFreq?val=20');
-                document.getElementById('freqSlider').value = 20;
-                document.getElementById('freqSlider_val').innerText = 20;
-                addNotification("Test [20s]: Tần số = 20Hz", "info");
-            }, 20000);
-
-            // T = 25s (Cell 6)
-            // Freq = 10
-            setTimeout(() => {
-                fetch('/InvSetFreq?val=10');
-                document.getElementById('freqSlider').value = 10;
-                document.getElementById('freqSlider_val').innerText = 10;
-                addNotification("Test [25s]: Tần số = 10Hz. Kịch bản hoàn tất.", "success");
-            }, 25000);
+            testStep = 0;
+            executeTestStep(); // Chạy bước đầu tiên ngay lập tức
+            
+            // Thiết lập vòng lặp mỗi 5 giây (1 cell = 5s)
+            testSequenceInterval = setInterval(() => {
+                testStep = (testStep + 1) % 6; // Chuyển bước từ 0 đến 5, sau đó quay lại 0
+                executeTestStep();
+            }, 5000); 
         }
-   
+
+        function executeTestStep() {
+            switch (testStep) {
+                case 0:
+                    fetch('/InvSetDir?val=1');
+                    fetch('/InvSetStart?val=1');
+                    addNotification("Test [0s]: Quay Thuận, Bắt đầu", "info");
+                    break;
+                case 1:
+                    fetch('/InvSetFreq?val=50');
+                    document.getElementById('freqSlider').value = 50;
+                    document.getElementById('freqSlider_val').innerText = 50;
+                    addNotification("Test [5s]: Tần số = 50Hz", "info");
+                    break;
+                case 2:
+                    fetch('/InvSetFreq?val=40');
+                    fetch('/InvSetDir?val=0');
+                    document.getElementById('freqSlider').value = 40;
+                    document.getElementById('freqSlider_val').innerText = 40;
+                    addNotification("Test [10s]: Tần số = 40Hz, Quay Ngược", "info");
+                    break;
+                case 3:
+                    fetch('/InvSetFreq?val=30');
+                    fetch('/InvSetStart?val=0');
+                    document.getElementById('freqSlider').value = 30;
+                    document.getElementById('freqSlider_val').innerText = 30;
+                    addNotification("Test [15s]: Tần số = 30Hz, Dừng động cơ", "warning");
+                    break;
+                case 4:
+                    fetch('/InvSetFreq?val=20');
+                    document.getElementById('freqSlider').value = 20;
+                    document.getElementById('freqSlider_val').innerText = 20;
+                    addNotification("Test [20s]: Tần số = 20Hz", "info");
+                    break;
+                case 5:
+                    fetch('/InvSetFreq?val=10');
+                    document.getElementById('freqSlider').value = 10;
+                    document.getElementById('freqSlider_val').innerText = 10;
+                    addNotification("Test [25s]: Tần số = 10Hz. Chuẩn bị lặp lại...", "success");
+                    break;
+            }
+        }
         setInterval(fetchStatusOnce, 2000)
 
     </script>
