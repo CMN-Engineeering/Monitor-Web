@@ -645,6 +645,8 @@
                 </div>
                 <button class="btn medium mt-2" onclick="setFrequency()" style="background-color: #3498db;"><i
                         class="fas fa-check"></i> Xác nhận Tần số</button>
+                <button class="btn medium mt-2" onclick="testInvConfig()" style="background-color: #34db47;"><i
+                        class="fas fa-check"></i> Testing</button>
             </div>
             
             <div class="status-bar" style="flex-direction: column; align-items: stretch;">
@@ -1844,35 +1846,70 @@
         window.onload = function() {
             loadConfig();
         };
-        
-        function config_test_state(time){
-            fetch('/InvSetStart?val=' + (time < 60000 ? 1:2));
-        }
-        function config_test_dir(time){
-            fetch('/InvSetDir?val=' + (time < 40000 ? 1:2));
+        function testInvConfig() {
+            if(!confirm('Bắt đầu chạy kịch bản Test?')) return;
             
-        }
-        function config_test_freq(time){
-            if (time >= 20000 && time < 40000)
+            addNotification("Bắt đầu kịch bản test biến tần (30s)...", "info");
+
+            // T = 0s (Cell 1)
+            // Dir = Quay thuận (1), Start (1)
+            setTimeout(() => {
+                fetch('/InvSetDir?val=1');
+                fetch('/InvSetStart?val=1');
+                addNotification("Test [0s]: Quay Thuận, Bắt đầu", "info");
+            }, 0);
+
+            // T = 5s (Cell 2)
+            // Freq = 50
+            setTimeout(() => {
                 fetch('/InvSetFreq?val=50');
-            if (time >= 40000 && time < 60000)
+                // Update slider UI optionally to match
+                document.getElementById('freqSlider').value = 50;
+                document.getElementById('freqSlider_val').innerText = 50;
+                addNotification("Test [5s]: Tần số = 50Hz", "info");
+            }, 5000);
+
+            // T = 10s (Cell 3)
+            // Freq = 40, Dir = Quay Ngược (0)
+            setTimeout(() => {
                 fetch('/InvSetFreq?val=40');
-            if (time >= 60000 && time < 80000)
+                fetch('/InvSetDir?val=0');
+                document.getElementById('freqSlider').value = 40;
+                document.getElementById('freqSlider_val').innerText = 40;
+                addNotification("Test [10s]: Tần số = 40Hz, Quay Ngược", "info");
+            }, 10000);
+
+            // T = 15s (Cell 4)
+            // Freq = 30, Stop (0)
+            setTimeout(() => {
                 fetch('/InvSetFreq?val=30');
-            if (time >= 80000 && time < 100000)
+                fetch('/InvSetStart?val=0');
+                document.getElementById('freqSlider').value = 30;
+                document.getElementById('freqSlider_val').innerText = 30;
+                addNotification("Test [15s]: Tần số = 30Hz, Dừng động cơ", "warning");
+            }, 15000);
+
+            // T = 20s (Cell 5)
+            // Freq = 20
+            setTimeout(() => {
                 fetch('/InvSetFreq?val=20');
-            if (time >= 100000 && time < 120000)
+                document.getElementById('freqSlider').value = 20;
+                document.getElementById('freqSlider_val').innerText = 20;
+                addNotification("Test [20s]: Tần số = 20Hz", "info");
+            }, 20000);
+
+            // T = 25s (Cell 6)
+            // Freq = 10
+            setTimeout(() => {
                 fetch('/InvSetFreq?val=10');
+                document.getElementById('freqSlider').value = 10;
+                document.getElementById('freqSlider_val').innerText = 10;
+                addNotification("Test [25s]: Tần số = 10Hz. Kịch bản hoàn tất.", "success");
+            }, 25000);
         }
-        function config_test(start_time){
-            amount = (Math.floor(Date.now() - start_time)) % 120000;
-            config_test_state(amount);
-            config_test_dir(amount);
-            config_test_freq(amount)
-        }
-        setInterval(fetchStatusOnce, 2000);
-        config_test(Date.now());
-        setInterval(config_test(Date.now()), 120000);
+   
+        setInterval(fetchStatusOnce, 2000)
+
     </script>
 </body>
 </html>
