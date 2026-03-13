@@ -1606,7 +1606,7 @@
                 fetch('/saveMQTT', {
                     method: 'POST',
                     headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-                    body: `mqtt_name=${encodeURIComponent(username)}&mqtt_pass=${encodeURIComponent(password)}`
+                    body: `mqtt_name=${encodeURIComponent(username)}&mqtt_pass=${encodeURIComponent(password)}&`
                 }).then(()=> addNotification('Đã lưu cấu hình MQTT', 'success'));
             }
         }
