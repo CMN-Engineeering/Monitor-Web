@@ -30,6 +30,8 @@ device_state = {
     "netmask": "255.255.255.0",
     "ap_ssid": "ESP32_AP",
     "ap_pass": "12345678",
+    "mqtt_name" : "cmn01",
+    "mqtt_pass" : "1234",
     
     # GPIO & Timer Config Variables
     "gpios": "0",
@@ -129,7 +131,9 @@ def get_config():
         "Inv_enable": device_state["Inv_enable"],
         "Inv_baudrate": device_state["Inv_baudrate"],
         "Inv_model": device_state["Inv_model"],
-        "Inv_addr": device_state["Inv_addr"]
+        "Inv_addr": device_state["Inv_addr"],
+        "mqtt_name" : device_state["mqtt_name"],
+        "mqtt_pass" : device_state["mqtt_pass"]
     }
     print("👉 GET CONFIG CALLED")
     for key, value in config_data.items():
