@@ -12,7 +12,7 @@ device_state = {
     "ip": "192.168.1.100",
     "factory_id" : "1233213",
     "Inv_state": True,
-    "Inv_dir": True,
+    "Inv_dir": False,
     "Inv_freq": "46",
     "input1_on_interval": "58", "input1_off_interval": "68","input1_state": False,
     "input2_on_interval": "75", "input2_off_interval": "90", "input2_state" : True,
@@ -33,11 +33,15 @@ device_state = {
     "ap_pass": "12345678",
     "mqtt_name" : "cmn01",
     "mqtt_pass" : "1234",
+    "mqtt_link" : "http:/12.332.32.21",
+    "mqtt_id" : "asc",
+    "mqtt_port" : "192.168.1.12",
+    "factory_id" : "CS0CMV",
     
     # GPIO & Timer Config Variables
     "gpios": "0",
-    "timer1_en": True, "timer1_on": "00:00", "timer1_off": "08:00", "timer1_mask": "18",
-    "timer2_en": True, "timer2_on": "05:00", "timer2_off": "13:00", "timer2_mask": "12",
+    "timer1_en": False, "timer1_on": "00:00", "timer1_off": "08:00", "timer1_mask": "18",
+    "timer2_en": False, "timer2_on": "05:00", "timer2_off": "13:00", "timer2_mask": "12",
     "timer3_en": False, "timer3_on": "00:00", "timer3_off": "00:00", "timer3_mask": "0",
     "timer4_en": False, "timer4_on": "00:00", "timer4_off": "00:00", "timer4_mask": "0",
     
@@ -88,9 +92,9 @@ def get_status():
         "output2_level": device_state["output2_level"],
         "output3_level": device_state["output3_level"],
         "output4_level": device_state["output4_level"],
-        "error_code": random.choice(["0", "1", "2", "3"])
+        "error_code": random.choice(["0", "1", "2", "3", "4","5"])
     }
-
+    print(f"Error Code : {status_data["error_code"]}")
     return jsonify(status_data)
     
 @app.route('/get-config')
@@ -135,7 +139,11 @@ def get_config():
         "Inv_model": device_state["Inv_model"],
         "Inv_addr": device_state["Inv_addr"],
         "mqtt_name" : device_state["mqtt_name"],
-        "mqtt_pass" : device_state["mqtt_pass"]
+        "mqtt_pass" : device_state["mqtt_pass"],
+        "mqtt_link" : device_state["mqtt_link"],
+        "mqtt_id" : device_state["mqtt_id"],
+        "mqtt_port" : device_state["mqtt_port"],
+        "factory_id" : device_state["factory_id"]
     }
     print("👉 GET CONFIG CALLED")
     for key, value in config_data.items():
