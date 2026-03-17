@@ -1089,6 +1089,9 @@
                 <div class="input-group">
                     <input type="text" id="mqtt_username" placeholder="SSID">
                     <input type="password" id="mqtt_password" placeholder="Mật khẩu MQTT">
+                    <input type="text" id="mqtt_link" placeholder="Linh kết nối MQTT">
+                    <input type="text" id="mqtt_port" placeholder="Port MQTT">
+                    <input type="text" id="mqtt_id" placeholder="Board ID">
                 </div>
                 <button class="btn" onclick="saveMQTT()" style="background-color: #9b59b6;"><i class="fas fa-save"></i> Lưu MQTT Broker</button>
             </div>
@@ -1602,11 +1605,15 @@
         function saveMQTT() {
             let username = document.getElementById('mqtt_username').value;
             let password = document.getElementById('mqtt_password').value;
+            let link = document.getElementById('mqtt_link').value;
+            let id = document.getElementById('mqtt_id').value;
+            let port = document.getElementById('mqtt_port').value;
+            
             if(confirm("Lưu cấu hình MQTT?")) {
                 fetch('/saveMQTT', {
                     method: 'POST',
                     headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-                    body: `mqtt_name=${encodeURIComponent(username)}&mqtt_pass=${encodeURIComponent(password)}&`
+                    body: `mqtt_name=${encodeURIComponent(username)}&mqtt_pass=${encodeURIComponent(password)}&mqtt_link=${encodeURIComponent(link)}&mqtt_id=${encodeURIComponent(id)}&mqtt_port=${encodeURIComponent(port)}&`
                 }).then(()=> addNotification('Đã lưu cấu hình MQTT', 'success'));
             }
         }
@@ -1620,8 +1627,12 @@
                 document.getElementById('wifi_pass').value = d.pass || "";
                 document.getElementById('gateway').value = d.gateway || "";
                 document.getElementById('netmask').value = d.netmask || "";
+                
                 document.getElementById('mqtt_username').value = d.mqtt_name || "";
                 document.getElementById('mqtt_password').value = d.mqtt_pass || "";
+                document.getElementById('mqtt_link').value = d.mqtt_link || "";
+                document.getElementById('mqtt_id').value = d.mqtt_id || "";
+                document.getElementById('mqtt_port').value = d.mqtt_port || "";
 
                 if(document.getElementById('inverterEnabaleToggle')) {
                     document.getElementById('inverterEnabaleToggle').checked = d.Inv_enable;
