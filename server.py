@@ -10,7 +10,7 @@ device_state = {
     # Status Variables
     "connected": True,
     "ip": "192.168.1.100",
-    "factory-id" : "1233213",
+    "factory_id" : "1233213",
     "Inv_state": True,
     "Inv_dir": True,
     "Inv_freq": "46",
@@ -66,6 +66,7 @@ def get_status():
         "time": current_time,
         "connected": device_state["connected"],
         "ip": device_state["ip"],
+        "factory_id" : device_state["factory_id"],
         "Inv_state": device_state["Inv_state"],
         "Inv_dir": device_state["Inv_dir"],
         "ram_usage": str(random.randint(30, 60)), # Sinh ngẫu nhiên RAM %
