@@ -739,6 +739,10 @@
         </div>
         
         <div id="view-settings" class="view-section">
+            <div class="status-bar" style="flex-direction: column; gap: 10px; align-items: stretch;">
+                <span id="factory-id"
+                        style="margin-left:auto; font-size: 1rem; color: white;">Factory ID: ...</span>         
+            </div>
             <div class="card" id="loginCard">
                 <div class="card-header"><i class="fas fa-user"></i> <span id="loginHeader">Đăng nhập</span></div>
                 <div id="loginForm">
@@ -1770,6 +1774,7 @@
                     }
                 }
                 if(d.ip) document.getElementById('ipDisplay').innerText = "IP: " + d.ip;
+                if(d.ip) document.getElementById('factory-id').innerText = "Factory: " + d.factory_id;
                 if(d.time) document.getElementById('clock').innerText = d.time;
                 
                 if(d.Inv_dir !== undefined) {

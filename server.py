@@ -10,6 +10,7 @@ device_state = {
     # Status Variables
     "connected": True,
     "ip": "192.168.1.100",
+    "factory-id" : "1233213",
     "Inv_state": True,
     "Inv_dir": True,
     "Inv_freq": "46",
