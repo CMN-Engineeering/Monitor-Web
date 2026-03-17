@@ -27,7 +27,7 @@ device_state = {
     "is_static": False,
     "static_ip": "192.168.1.100",
     "gateway": "192.168.1.1",
-    "netmask": "255.255.255.0",
+    "netmask": "",
     "ap_ssid": "ESP32_AP",
     "ap_pass": "12345678",
     "mqtt_name" : "cmn01",

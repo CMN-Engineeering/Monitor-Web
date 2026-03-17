@@ -538,10 +538,6 @@
 <body>
     <div class="container">
         <h1>CMNIoT SYSTEM</h1>
-        <!-- Align to left -->
-        <div class = "status-bar" id ="errorBadge" style="display: block;" >
-            
-        </div>
         <div class="nav-bar">
             <div id="nav-dash" class="nav-btn active" onclick="showTab('dashboard')">
                 <i class="fas fa-tachometer-alt"></i> Dashboard
@@ -952,7 +948,7 @@
                             <label class="checkbox-wrapper"><input type="checkbox" id="timer1_out2" onchange="handleTimerChange(1)"> Ngõ ra 2</label>
                             <label class="checkbox-wrapper"><input type="checkbox" id="timer1_out3" onchange="handleTimerChange(1)"> Ngõ ra 3</label>
                             <label class="checkbox-wrapper"><input type="checkbox" id="timer1_out4" onchange="handleTimerChange(1)"> Ngõ ra 4</label>
-                            <label class="checkbox-wrapper" id="timer1_inverter_wraper" style = "display:none;"><input type="checkbox" id="timer1_inverter" onchange="handleTimerChange(1)"> Inverter</label>
+                            <!-- <label class="checkbox-wrapper" id="timer1_inverter_wraper" style = "display:none;"><input type="checkbox" id="timer1_inverter" onchange="handleTimerChange(1)"> Inverter</label> -->
                         </div>
                     </div>
                 </div>
@@ -978,7 +974,7 @@
                             <label class="checkbox-wrapper"><input type="checkbox" id="timer2_out2" onchange="handleTimerChange(2)"> Ngõ ra 2</label>
                             <label class="checkbox-wrapper"><input type="checkbox" id="timer2_out3" onchange="handleTimerChange(2)"> Ngõ ra 3</label>
                             <label class="checkbox-wrapper"><input type="checkbox" id="timer2_out4" onchange="handleTimerChange(2)"> Ngõ ra 4</label>
-                            <label class="checkbox-wrapper" id="timer2_inverter_wraper" style = "display:none;"><input type="checkbox" id="timer2_inverter" onchange="handleTimerChange(2)"> Inverter</label>
+                            <!-- <label class="checkbox-wrapper" id="timer2_inverter_wraper" style = "display:none;"><input type="checkbox" id="timer2_inverter" onchange="handleTimerChange(2)"> Inverter</label> -->
                         </div>
                     </div>
                 </div>
@@ -1004,7 +1000,7 @@
                             <label class="checkbox-wrapper"><input type="checkbox" id="timer3_out2" onchange="handleTimerChange(3)"> Ngõ ra 2</label>
                             <label class="checkbox-wrapper"><input type="checkbox" id="timer3_out3" onchange="handleTimerChange(3)"> Ngõ ra 3</label>
                             <label class="checkbox-wrapper"><input type="checkbox" id="timer3_out4" onchange="handleTimerChange(3)"> Ngõ ra 4</label>
-                            <label class="checkbox-wrapper" id="timer3_inverter_wraper" style = "display:none;"><input type="checkbox" id="timer3_inverter" onchange="handleTimerChange(3)"> Inverter</label>
+                            <!-- <label class="checkbox-wrapper" id="timer3_inverter_wraper" style = "display:none;"><input type="checkbox" id="timer3_inverter" onchange="handleTimerChange(3)"> Inverter</label> -->
                         </div>
                     </div>
                 </div>
@@ -1030,7 +1026,7 @@
                             <label class="checkbox-wrapper"><input type="checkbox" id="timer4_out2" onchange="handleTimerChange(4)"> Ngõ ra 2</label>
                             <label class="checkbox-wrapper"><input type="checkbox" id="timer4_out3" onchange="handleTimerChange(4)"> Ngõ ra 3</label>
                             <label class="checkbox-wrapper"><input type="checkbox" id="timer4_out4" onchange="handleTimerChange(4)"> Ngõ ra 4</label>
-                            <label class="checkbox-wrapper" id="timer4_inverter_wraper" style = "display:none;"><input type="checkbox" id="timer4_inverter" onchange="handleTimerChange(4)"> Inverter</label>
+                            <!-- <label class="checkbox-wrapper" id="timer4_inverter_wraper" style = "display:none;"><input type="checkbox" id="timer4_inverter" onchange="handleTimerChange(4)"> Inverter</label> -->
                         </div>
                     </div>
                 </div>
@@ -1408,7 +1404,7 @@
 
         function saveInverterOption() {
             let inverterOption = document.querySelector('input[name="inverterOption"]:checked').value;
-            inverterOption = parseInt(inverterOption.charCodeAt(0) - 'A'.charCodeAt(0));
+            inverterOption = parseInt(inverterOption.charCodeAt(0) - 'A'.charCodeAt(0)) + 1;
             let inverterAddress = document.getElementById('inverterAddress').value;
             let inverterBaudrate = document.getElementById('inverterBaudrate').value;
             fetch('/InvCfg?inverterOption=' + inverterOption + '&inverterAddress=' + inverterAddress + '&inverterBaudrate=' + inverterBaudrate).then(r => { 
@@ -1626,8 +1622,8 @@
                 document.getElementById('wifi_name').value = d.ssid || "";
                 document.getElementById('wifi_pass').value = d.pass || "";
                 document.getElementById('gateway').value = d.gateway || "";
-                document.getElementById('netmask').value = d.netmask || "";
-                
+                document.getElementById('netmask').value = d.netmask || "255.255.255.0";
+
                 document.getElementById('mqtt_username').value = d.mqtt_name || "";
                 document.getElementById('mqtt_password').value = d.mqtt_pass || "";
                 document.getElementById('mqtt_link').value = d.mqtt_link || "";
