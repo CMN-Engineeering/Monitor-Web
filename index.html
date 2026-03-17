@@ -520,9 +520,6 @@
                     <div id="mqttBadge" class="badge offline"><i class="fas fa-network-wired"></i> MQTT: Disconnected</div>
                     <div id="mqttErrorText" style="font-size: 0.8rem; color: #e94560; font-style: italic;"></div>
                 </div>
-                <div style="display: flex; justify-content: space-between; align-items: center;">
-                    <div id="errorBadge"></div>
-                </div>
             </div>
 
             <div class="card" id="notificationCard">
@@ -644,9 +641,6 @@
         </div>
         
         <div id="view-settings" class="view-section">
-            <div class="card">
-                <div id="factoryID" style="font-weight: bold;">Factory ID: ...</div>
-            </div>
             
             <div class="card" id="loginCard">
                 <div class="card-header"><i class="fas fa-user"></i> <span id="loginHeader">Đăng nhập</span></div>
@@ -661,7 +655,7 @@
                     <button class="btn mt-2" onclick="logout()" style="background-color:#cc4562;"><i class="fas fa-sign-out-alt"></i> Đăng xuất</button>
                 </div>
             </div>
-
+            
             <div id="adminSettings" style="display:none;">
                 <div class="card" id="systemControlCard">
                     <div class="card-header"><i class="fas fa-cogs"></i> Chức năng hệ thống</div>
@@ -678,7 +672,7 @@
                         <label class="switch" ><input type="checkbox" id="ioEnableToggle" onchange="toggleIoVisibility()" checked><span class="slider"></span></label>
                     </div>
                 </div>
-
+                
                 <div class="card" id="inverterSettingsCard" style="display:none;">
                     <div class="card-header"><i class="fas fa-cogs"></i> Cấu hình biến tần</div>
                     <div style="display: flex; flex-direction: column; gap: 12px;">
@@ -719,7 +713,7 @@
                     </div>
                     <button class="btn mt-2" onclick="saveAdcSettings()" style="background-color: #3498db;"><i class="fas fa-check"></i> Lưu Tùy chọn</button>
                 </div>
-
+                
                 <div class="card" id="ioSettingsCard" style="display:block;">
                     <div class="card-header"><i class="fas fa-microchip"></i> Điều khiển chân IO </div>
                     
@@ -742,11 +736,11 @@
                         <script>
                             for(let i=1; i<=4; i++) {
                                 document.write(`
-                                    <div class="control-row" style="margin-bottom: 10px;">
+                                <div class="control-row" style="margin-bottom: 10px;">
                                         <span>Ngõ ra ${i}</span>
                                         <label class="switch"><input type="checkbox" id="output${i}Toggle" onchange="toggleOutputControls(${i})"><span class="slider"></span></label>
                                     </div>
-                                `);
+                                    `);
                             }
                         </script>
                     </div>
@@ -782,7 +776,7 @@
                                         </div>
                                     </div>
                                 </div>
-                            `);
+                                `);
                         }
                     </script>
                     <button class="btn big" onclick="saveTimers()" style="background-color: var(--accent); color: #000;"><i class="fas fa-save"></i> Lưu Cài Đặt Hẹn Giờ</button>
@@ -832,10 +826,13 @@
                     <div class="card-header"><i class="fas fa-power-off"></i> Hệ Thống</div>
                     <button class="btn" onclick="if(confirm('Reboot?')) fetch('/reboot')">Khởi động lại</button>
                 </div>
+                <div class="card">
+                    <div id="factoryID" style="font-weight: bold;">Factory ID: ...</div>
+                </div>
             </div>
         </div>
     </div>
-
+    
     <script>
         // --- State Variables ---
         let isAuthenticated = false;
@@ -1050,32 +1047,29 @@
 
         // --- Hardware APIs ---
         function startMotor() { 
-            fetch('/InvSetStart?val=1').then(r => { if(r.ok) addNotification("Đã BẬT Nguồn động cơ", "success"); })
-                .catch(() => addNotification("Lỗi kết nối", "error")); 
+            fetch('/InvSetStart?val=1').then(r => { if(r.ok) alert("Đã BẬT Nguồn động cơ"); })
+                .catch(() => alert("Lỗi kết nối")); 
         }
         
         function stopMotor() { 
-            fetch('/InvSetStart?val=0').then(r => { if(r.ok) addNotification("Đã TẮT Nguồn động cơ", "warning"); })
-                .catch(() => addNotification("Lỗi kết nối", "error")); 
+            fetch('/InvSetStart?val=0').then(r => { if(r.ok) alert("Đã TẮT Nguồn động cơ"); })
+                .catch(() => alert("Lỗi kết nối")); 
         }
 
         function toggleDir() {
-            isFwd = !isFwd;
-            document.getElementById('dirLabel').innerText = isFwd ? "Quay Thuận" : "Quay Nghịch";
-            document.getElementById('dirBtn').className = isFwd ? "btn mt-2 medium dir-fwd" : "btn mt-2 medium dir-rev";
-            fetch('/InvSetDir?val=' + (isFwd ? 1 : 0)).then(()=> addNotification(`Đã chuyển hướng: ${isFwd ? "Thuận" : "Nghịch"}`, "info"));
+            fetch('/InvSetDir?val=' + (isFwd ? 1 : 0)).then(()=> alert(`Đã chuyển hướng: ${isFwd ? "Thuận" : "Nghịch"}`));
         }
 
         function setFrequency() {
             let val = document.getElementById('freqSlider').value;
-            fetch('/InvSetFreq?val=' + val).then(r => { if(r.ok) addNotification(`Cập nhật tần số: ${val} Hz`, "success"); });
+            fetch('/InvSetFreq?val=' + val).then(r => { if(r.ok) alert(`Cập nhật tần số thành công: ${val} Hz`); });
             document.getElementById('freqVal').innerText = val;
         }
 
         function saveAdcSettings() {
             let v = document.getElementById('voltageLimitSlider').value;
             let c = document.getElementById('currentLimitSlider').value;
-            fetch(`/setAdcLimits?voltage=${v}&current=${c}`).then(r => { if(r.ok) addNotification(`Lưu ADC: ${v}V, ${c}A`, "success"); });
+            fetch(`/setAdcLimits?voltage=${v}&current=${c}`).then(r => { if(r.ok) alert(`Lưu ADC thành công: ${v}V, ${c}A`); });
         }
 
         function saveInverterOption() {
@@ -1084,7 +1078,7 @@
             let addr = document.getElementById('inverterAddress').value;
             let baud = document.getElementById('inverterBaudrate').value;
             fetch(`/InvCfg?inverterOption=${numOpt}&inverterAddress=${addr}&inverterBaudrate=${baud}`)
-                .then(r => { if(r.ok) addNotification(`Đã lưu cấu hình biến tần`, "success"); });
+                .then(r => { if(r.ok) alert(`Đã lưu cấu hình biến tần thành công`); });
         }
 
         function toggleOutput(num) {
@@ -1104,7 +1098,7 @@
 
         function confirmGpios() {
             if(confirm('Xác nhận thay đổi GPIO?')) {
-                fetch('/setGpios?m=' + computeGpioMask()).then(() => addNotification('Đã lưu cấu hình GPIO', 'success'));
+                fetch('/setGpios?m=' + computeGpioMask()).then(() => alert('Đã lưu cấu hình GPIO thành công'));
             }
         }
 
@@ -1132,7 +1126,7 @@
             if(confirm("Lưu cấu hình WiFi Station?")) {
                 let body = `sta_enable=${en}&ssid=${encodeURIComponent(s)}&pass=${encodeURIComponent(p)}&isStatic=${isStatic}&ip=${encodeURIComponent(ip)}&gateway=${encodeURIComponent(gw)}&netmask=${encodeURIComponent(nm)}&`;
                 fetch('/saveWifi', { method: 'POST', headers: {'Content-Type': 'application/x-www-form-urlencoded'}, body: body })
-                    .then(()=> addNotification(`Đã lưu WiFi`, 'info'));
+                    .then(()=> alert('Đã lưu cấu hình WiFi thành công'));
             } 
         }
 
@@ -1140,7 +1134,7 @@
             let s = document.getElementById('ap_name').value, p = document.getElementById('ap_pass').value;
             if(confirm("Xác nhận đổi AP?")) {
                 fetch('/saveAP', { method: 'POST', headers: {'Content-Type': 'application/x-www-form-urlencoded'}, body: `ap_name=${encodeURIComponent(s)}&ap_pass=${encodeURIComponent(p)}&` })
-                    .then(()=> addNotification('Đã lưu Access Point', 'success'));
+                    .then(()=> alert('Đã lưu cấu hình Access Point thành công'));
             }
         }
 
@@ -1153,7 +1147,7 @@
             if(!confirm("Lưu cấu hình MQTT?")) return;
             let data = `mqtt_name=${name}&mqtt_pass=${pass}&mqtt_link=${link}&mqtt_id=${id}&mqtt_port=${port}&`;
             fetch('/saveMQTT', { method: 'POST', headers: {'Content-Type': 'application/x-www-form-urlencoded'}, body: data })
-                .then(()=> addNotification('Đã lưu MQTT', 'success'));
+                .then(()=> alert('Đã lưu cấu hình MQTT thành công'));
         }
 
         function saveTimers() {
@@ -1181,10 +1175,9 @@
                     fetch(`/setTimer?timer=${i}&on=${document.getElementById(`timer${i}_on`).value||"00:00"}&off=${document.getElementById(`timer${i}_off`).value||"00:00"}&mask=${m}`);
                     fetch(`/setTimeren?timer=${i}&en=${en}`);
                 }
-                addNotification("Đã cập nhật các bộ hẹn giờ", "success");
+                alert("Đã cập nhật các bộ hẹn giờ thành công");
             }
         }
-
         // --- Polling & Fetch ---
         function loadConfig() {
             fetch('/get-config').then(r=>r.json()).then(d => {
@@ -1262,28 +1255,21 @@
 
                 if (d.error_code !== undefined) {
                     if (d.error_code == "0"){
-                        document.getElementById('errorBadge').className ="badge online";
-                        document.getElementById('errorBadge').innerHTML ='<i class="fas fa-circle-check"></i>Không phát hiện lỗi';
                     }
                     if (d.error_code == "1"){
-                        document.getElementById('errorBadge').className ="badge offline";
-                        document.getElementById('errorBadge').innerHTML ='<i class="fas fa-triangle-exclamation"></i>Đổi chiều động cơ thất bại';
+                        addNotification("Đổi chiều động cơ thất bại", "error")
                     }
                     if (d.error_code == "2"){
-                        document.getElementById('errorBadge').className ="badge offline";
-                        document.getElementById('errorBadge').innerHTML ='<i class="fas fa-triangle-exclamation"></i>Đổi tần số động cơ thất bạ';
+                        addNotification("Đổi tần số động cơ thất bại", "error")
                     }
                     if (d.error_code == "3"){
-                        document.getElementById('errorBadge').className ="badge offline";
-                        document.getElementById('errorBadge').innerHTML ='<i class="fas fa-triangle-exclamation"></i>Khởi động động cơ thất bại';
+                        addNotification("Khởi động động cơ thất bại", "error")
                     }
                     if (d.error_code == "4"){
-                        document.getElementById('errorBadge').className ="badge offline";
-                        document.getElementById('errorBadge').innerHTML ='<i class="fas fa-triangle-exclamation"></i>Dừng động cơ thất bại';
+                        addNotification("Dừng động cơ thất bại", "error")
                     }
                     if (d.error_code == "5"){
-                        document.getElementById('errorBadge').className ="badge offline";
-                        document.getElementById('errorBadge').innerHTML ='<i class="fas fa-triangle-exclamation"></i>Dừng động cơ thất bại';
+                        addNotification("Đổi giá trị ngõ ra thất bại", "error")
                     }
                     
                 }
