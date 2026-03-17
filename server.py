@@ -36,7 +36,7 @@ device_state = {
     "mqtt_link" : "http:/12.332.32.21",
     "mqtt_id" : "asc",
     "mqtt_port" : "192.168.1.12",
-    "factory_id" : "CS0CMV",
+    "factory_id" : "sacasc",
     
     # GPIO & Timer Config Variables
     "gpios": "0",

@@ -1186,6 +1186,7 @@
                 const setValue = (id, val) => { if(document.getElementById(id)) document.getElementById(id).value = val || ""; };
                 const checkEl = (id, state) => { if(document.getElementById(id)) document.getElementById(id).checked = state; };
 
+                
                 setValue('wifi_name', d.ssid); setValue('wifi_pass', d.pass);
                 setValue('gateway', d.gateway); setValue('netmask', d.netmask || "255.255.255.0");
                 setValue('mqtt_username', d.mqtt_name); setValue('mqtt_password', d.mqtt_pass);
@@ -1195,6 +1196,7 @@
 
                 checkEl('inverterEnabaleToggle', d.Inv_enable);
                 checkEl('sta_enable', d.sta_enable);
+                if(d.factory_id) document.getElementById('factoryID').innerText = "Factory ID: " + d.factory_id;
 
                 if(d.Inv_model !== undefined) {
                     let radioBtn = document.querySelector(`input[name="inverterOption"][value="${String.fromCharCode(65 + parseInt(d.Inv_model || 0))}"]`);
@@ -1282,7 +1284,6 @@
                 }
 
                 if(d.ip) document.getElementById('ipDisplay').innerText = "IP: " + d.ip;
-                if(d.factory_id) document.getElementById('factoryID').innerText = "Factory ID: " + d.factory_id;
                 if(d.time) document.getElementById('clock').innerText = d.time;
                 
                 if(d.Inv_dir !== undefined) {
