@@ -1145,8 +1145,13 @@
         }
 
         function saveMQTT() {
+            name = document.getElementById('mqtt_username').value;
+            pass = document.getElementById('mqtt_password').value;
+            link = document.getElementById('mqtt_link').value;
+            id = document.getElementById('mqtt_id').value;
+            port = document.getElementById('mqtt_port').value;
             if(!confirm("Lưu cấu hình MQTT?")) return;
-            let data = `mqtt_name=${encodeURIComponent(document.getElementById('mqtt_username').value)}&mqtt_pass=${encodeURIComponent(document.getElementById('mqtt_password').value)}&mqtt_link=${encodeURIComponent(document.getElementById('mqtt_link').value)}&mqtt_id=${encodeURIComponent(document.getElementById('mqtt_id').value)}&mqtt_port=${encodeURIComponent(document.getElementById('mqtt_port').value)}&`;
+            let data = `mqtt_name=${name}&mqtt_pass=${pass}&mqtt_link=${link}&mqtt_id=${id}&mqtt_port=${port}&`;
             fetch('/saveMQTT', { method: 'POST', headers: {'Content-Type': 'application/x-www-form-urlencoded'}, body: data })
                 .then(()=> addNotification('Đã lưu MQTT', 'success'));
         }
