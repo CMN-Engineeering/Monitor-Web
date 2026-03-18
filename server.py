@@ -73,6 +73,7 @@ def get_status():
         "factory_id" : device_state["factory_id"],
         "Inv_state": True,
         "Inv_dir": True,
+        "Inv_model" : 3,
         "ram_usage": str(random.randint(30, 60)), # Sinh ngẫu nhiên RAM %
         "cpu_load": str(random.randint(5, 25)),   # Sinh ngẫu nhiên CPU %
         "Inv_freq": str(device_state["Inv_freq"]),

@@ -1202,7 +1202,7 @@
                 if(d.factory_id) document.getElementById('factoryID').innerText = "Factory ID: " + d.factory_id;
 
                 if(d.Inv_model !== undefined) {
-                    let radioBtn = document.querySelector(`input[name="inverterOption"][value="${String.fromCharCode(65 + parseInt(d.Inv_model || 0))}"]`);
+                    let radioBtn = document.querySelector(`input[name="inverterOption"][value="${String.fromCharCode(65 + parseInt(d.Inv_model || 0) - 1)}"]`);
                     if(radioBtn) radioBtn.checked = true;
                 }
                 
@@ -1269,6 +1269,11 @@
                     mBadge.className = d.mqtt_connected ? "badge online" : "badge offline";
                     mBadge.innerHTML = d.mqtt_connected ? '<i class="fas fa-network-wired"></i> MQTT: Connected' : '<i class="fas fa-network-wired"></i> MQTT: Disconnected';
                     document.getElementById('mqttErrorText').innerText = d.mqtt_connected ? "" : (d.mqtt_error || "Lỗi kết nối");
+                }
+
+                if(d.Inv_model !== undefined) {
+                    let radioBtn = document.querySelector(`input[name="inverterOption"][value="${String.fromCharCode(65 + parseInt(d.Inv_model || 0) - 1)}"]`);
+                    if(radioBtn) radioBtn.checked = true;
                 }
 
                 if (d.error_code !== undefined) {
