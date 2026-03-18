@@ -11,7 +11,7 @@ device_state = {
     "connected": True,
     "ip": "192.168.1.100",
     "factory_id" : "1233213",
-    "Inv_state": True,
+    "Inv_state": False,
     "Inv_dir": False,
     "Inv_freq": "46",
     "input1_on_interval": "58", "input1_off_interval": "68","input1_state": False,
@@ -71,8 +71,8 @@ def get_status():
         "connected": device_state["connected"],
         "ip": device_state["ip"],
         "factory_id" : device_state["factory_id"],
-        "Inv_state": device_state["Inv_state"],
-        "Inv_dir": device_state["Inv_dir"],
+        "Inv_state": True,
+        "Inv_dir": True,
         "ram_usage": str(random.randint(30, 60)), # Sinh ngẫu nhiên RAM %
         "cpu_load": str(random.randint(5, 25)),   # Sinh ngẫu nhiên CPU %
         "Inv_freq": str(device_state["Inv_freq"]),

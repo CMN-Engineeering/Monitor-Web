@@ -933,7 +933,8 @@
         else toggleAuthState(false);
 
         // --- UI Visibility Toggles ---
-        function toggleMotorVisibility() {
+        // --- UI Visibility Toggles ---
+        function toggleMotorVisibility(sendRequest = true) {
             const isEn = document.getElementById('inverterEnabaleToggle').checked;
             document.getElementById('inverterSettingsCard').style.display = isEn ? 'block' : 'none';
             document.getElementById('motorControlCard').style.display = isEn ? 'block' : 'none';
@@ -941,7 +942,11 @@
                 const wrapper = document.getElementById(`timer${i}_inverter_wrapper`);
                 if(wrapper) wrapper.style.display = isEn ? 'flex' : 'none';
             }
-            fetch('/InvEn?val=' + (isEn ? '1' : '0'));
+            
+            // CHỈ gửi request xuống ESP khi do người dùng bấm (sendRequest = true)
+            if (sendRequest) {
+                fetch('/InvEn?val=' + (isEn ? '1' : '0'));
+            }
         }
         
         function toggleAdcVisibility() {
@@ -1208,6 +1213,18 @@
                     if(document.getElementById('freqVal')) document.getElementById('freqVal').innerText = f;
                 }
                 
+                if(d.Inv_dir !== undefined) {
+                    isFwd = d.Inv_dir;
+                    document.getElementById('dirLabel').innerText = isFwd ? "Quay Thuận" : "Quay Nghịch";
+                    document.getElementById('dirBtn').className = isFwd ? "btn mt-2 medium dir-fwd" : "btn mt-2 medium dir-rev";
+                }
+
+                if(d.Inv_state !== undefined){
+                    document.getElementById('motorStatusText').innerText = d.Inv_state ? "CHẠY" : "DỪNG";
+                    document.getElementById('motorStatusLight').className = d.Inv_state ? "indicator-light running" : "indicator-light stopped";                    
+                }
+
+
                 if(d.is_static !== undefined) {
                     let target = d.is_static ? "static" : "dhcp";
                     let radio = document.querySelector(`input[name="ipConfig"][value="${target}"]`);
@@ -1215,7 +1232,8 @@
                     toggleIpConfig();
                 }
 
-                toggleMotorVisibility(); toggleAdcVisibility();
+                toggleMotorVisibility(false); 
+                toggleAdcVisibility();
 
                 let mask = d.gpios ? parseInt(d.gpios) : 0;
                 for(let i=1; i<=4; i++) {
@@ -1281,6 +1299,11 @@
                     isFwd = d.Inv_dir;
                     document.getElementById('dirLabel').innerText = isFwd ? "Quay Thuận" : "Quay Nghịch";
                     document.getElementById('dirBtn').className = isFwd ? "btn mt-2 medium dir-fwd" : "btn mt-2 medium dir-rev";
+                }
+
+                if(d.Inv_state !== undefined){
+                    document.getElementById('motorStatusText').innerText = d.Inv_state ? "CHẠY" : "DỪNG";
+                    document.getElementById('motorStatusLight').className = d.Inv_state ? "indicator-light running" : "indicator-light stopped";                    
                 }
                 
                 if(d.Inv_freq !== undefined) document.getElementById('freqVal').innerText = d.Inv_freq;
