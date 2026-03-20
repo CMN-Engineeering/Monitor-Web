@@ -1,46 +1,16 @@
-import paho.mqtt.client as mqtt
-import time
-import ssl
+from pymongo.mongo_client import MongoClient
+from pymongo.server_api import ServerApi
+import certifi # 1. Import certifi
 
-# --- Configuration ---
-# REMOVE 'https://' and any trailing slashes
-BROKER = "acf0f61e3365448686a08d6ba9f418d7.s1.eu.hivemq.cloud"
-PORT = 8883
-TOPIC = "test/topic"  # Change this to the topic you want to watch
-USER = "esp8266"  # Replace with your HiveMQ Cloud credentials
-PASS = "Esp123456"  # Replace with your HiveMQ Cloud credentials
-OUTPUT_FILE = "hivemq_cloud_log.txt"
+# REMEMBER: Replace with your NEW password!
+uri = "mongodb+srv://phandinhcuong02:Cuong123@cluster0.udg5k.mongodb.net/?appName=Cluster0"
 
-def on_connect(client, userdata, flags, rc, properties=None):
-    if rc == 0:
-        print("✅ Success! Connected to HiveMQ Cloud.")
-        client.subscribe(TOPIC)
-    else:
-        print(f"❌ Connection failed. Code: {rc}")
-        if rc == 5:
-            print("Hint: Check your Username and Password!")
+# 2. Add tlsCAFile=certifi.where() to your client parameters
+client = MongoClient(uri, server_api=ServerApi('1'), tlsCAFile=certifi.where())
 
-def on_message(client, userdata, msg):
-    payload = msg.payload.decode()
-    log_entry = f"[{time.strftime('%H:%M:%S')}] {msg.topic}: {payload}\n"
-    print(log_entry, end="")
-    with open(OUTPUT_FILE, "a") as f:
-        f.write(log_entry)
-
-# Setup Client
-client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION1)
-client.on_connect = on_connect
-client.on_message = on_message
-
-# --- CLOUD SPECIFIC SECURITY ---
-client.username_pw_set(USER, PASS)
-client.tls_set(tls_version=ssl.PROTOCOL_TLSv1_2) # Required for Cloud
-# -------------------------------
-
-print(f"Connecting to {BROKER} on port {PORT}...")
-
+# Send a ping to confirm a successful connection
 try:
-    client.connect(BROKER, PORT, 60)
-    client.loop_forever()
+    client.admin.command('ping')
+    print("Pinged your deployment. You successfully connected to MongoDB!")
 except Exception as e:
-    print(f"🛑 Error: {e}")
+    print(e)

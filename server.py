@@ -93,7 +93,7 @@ def get_status():
         "output2_level": device_state["output2_level"],
         "output3_level": device_state["output3_level"],
         "output4_level": device_state["output4_level"],
-        "error_code": random.choice(["0", "1", "2", "3", "4","5"])
+        "error_code": random.choice(["0", "1", "2", "3", "4","5","6"])
     }
     print(f"Error Code : {status_data["error_code"]}")
     return jsonify(status_data)
