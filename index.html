@@ -837,7 +837,6 @@
         // --- State Variables ---
         let isAuthenticated = false;
         let notifVisible = false;
-        let isFwd = true;
         let wasOffline = false;
         let testSequenceInterval = null;
         let outputTestInterval = null; 
@@ -1062,7 +1061,8 @@
         }
 
         function toggleDir() {
-            fetch('/InvSetDir?val=' + (isFwd ? 1 : 0)).then(()=> alert(`Đã chuyển hướng: ${isFwd ? "Thuận" : "Nghịch"}`));
+            let isFwd = document.getElementById("dirLabel").innerText == "Quay Thuận" ? 1 : 0;
+            fetch('/InvSetDir?val=' + (isFwd ? 0 : 1)).then(()=> alert(`Đã chuyển hướng: ${isFwd ? "Nghịch" : "Thuận"}`));
         }
 
         function setFrequency() {
