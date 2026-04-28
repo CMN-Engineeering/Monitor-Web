@@ -663,6 +663,10 @@
                         <span style="font-weight: 500;">Hiển thị điều khiển Động cơ</span>
                         <label class="switch"><input type="checkbox" id="inverterEnabaleToggle" onchange="toggleMotorVisibility()" checked><span class="slider"></span></label>
                     </div>
+                     <div class="control-row" style="margin-top: 10px;">
+                        <span style="font-weight: 500;">Hiển thị Relay</span>
+                        <label class="switch"><input type="checkbox" id="inverterEnabaleToggle" onchange="toggleMotorVisibility()" checked><span class="slider"></span></label>
+                    </div>
                     <div class="control-row" style="margin-top: 10px;">
                         <span style="font-weight: 500;">Hiển thị ADC</span>
                         <label class="switch"><input type="checkbox" id="adcEnableToggle" onchange="toggleAdcVisibility()"><span class="slider"></span></label>
@@ -691,6 +695,24 @@
                         </select>
                     </div>
                     <button class="btn mt-2" onclick="saveInverterOption()" style="background-color: #3498db;"><i class="fas fa-check"></i> Lưu Tùy chọn</button>
+                </div>
+                
+                <div class="card" id="relaySettingsCard" style="display:block;">
+                    <div class="card-header"><i class="fas fa-cogs"></i> Cấu hình Relay</div>
+                    <div id="relaySettingsDetails" style="margin-top: 10px; display:flex; gap:10px;">
+                        <input type="text" id="motorNum" placeholder="Num of Motor" style="width: 100%">
+                        <div>
+                            <!-- 2 box of input for Start / Stop PIN -->
+                            <input type="text" id="startPin" placeholder="Start PIN" style="padding: 5px; border-radius: 4px; margin-bottom: 5px; width: 100%;">
+                            <input type="text" id="stopPin" placeholder="Stop PIN" style="padding: 5px; border-radius: 4px; width: 100%;">
+                        </div>
+                    </div>
+                    <!-- Box to input open time -->
+                    <div class="timer-row">
+                        <span style="font-size: 0.9rem;">Open Time:</span>
+                        <input type="time" id="relay-open-time" style="width: 80%"> 
+                    </div>
+                    <button class="btn mt-2" onclick="saveRelayOption()" style="background-color: #3498db;"><i class="fas fa-check"></i> Lưu Tùy chọn</button>
                 </div>
 
                 <div class="card" id="adcSettingsCard" style="display:none;">
@@ -1085,6 +1107,14 @@
             fetch(`/InvCfg?inverterOption=${numOpt}&inverterAddress=${addr}&inverterBaudrate=${baud}`)
                 .then(r => { if(r.ok) alert(`Đã lưu cấu hình biến tần thành công`); });
         }
+        function saveRelayOption() {
+            let num = document.getElementById('motorNum').value;
+            let startPin = document.getElementById('startPin').value;
+            let stopPin = document.getElementById('stopPin').value;
+            let openTime = document.getElementById('relay-open-time').value;
+            fetch(`/RelayCfg?num=${num}&startPin=${startPin}&stopPin=${stopPin}&openTime=${openTime}`)
+                .then(r => { if(r.ok) alert(`Đã lưu cấu hình relay thành công`); });
+        }
 
         function toggleOutput(num) {
             let sw = document.getElementById(`output${num}Switch`);
@@ -1196,6 +1226,11 @@
                 setValue('mqtt_link', d.mqtt_link); setValue('mqtt_id', d.mqtt_id); setValue('mqtt_port', d.mqtt_port);
                 setValue('inverterAddress', d.Inv_addr || "0"); setValue('inverterBaudrate', d.Inv_baudrate || "0");
                 setValue('static_ip', d.static_ip); setValue('ap_name', d.ap_ssid); setValue('ap_pass', d.ap_pass);
+
+                setValue('motorNum', d.relay_motor_num || "NA");
+                setValue('startPin', d.relay_start_pin || "NA");
+                setValue('stopPin', d.relay_stop_pin || "NA");
+                setValue(`relay-open-time`, d.relay_open_time || "10:37:00");
 
                 checkEl('inverterEnabaleToggle', d.Inv_enable);
                 checkEl('sta_enable', d.sta_enable);
@@ -1326,7 +1361,7 @@
                         if(sw) sw.checked = d[`output${i}_level`];
                     }
                     if(d[`input${i}_on_interval`] !== undefined) document.getElementById(`input${i}OnInterval`).value = d[`input${i}_on_interval`];
-                    if(d[`input${i}_off_interval`] !== undefined) document.getElementById(`input${i}OffInterval`).value = d[`input${i}_off_interval`];
+                    if(d[`input${i}_off_interval`] !== undefined) document.getElementById(`input${i}OffInterval`).value = d[`input$off_interval`];{i}_
                     
                     if(d[`input${i}_state`] !== undefined) {
                         const st = d[`input${i}_state`];

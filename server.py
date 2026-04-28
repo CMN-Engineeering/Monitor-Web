@@ -20,6 +20,7 @@ device_state = {
     "input4_on_interval": "15", "input4_off_interval": "75","input4_state": False,
     "output1_level": True, "output2_level": False,
     "output3_level": False, "output4_level": False,
+    "relay_motor_num": "9", "relay_start_pin": "12", "relay_stop_pin": "13", "relay_open_time": "05:30:00",
 
     # WiFi Config Variables
     "ssid": "CMNIoT_WiFi",
@@ -40,8 +41,8 @@ device_state = {
     
     # GPIO & Timer Config Variables
     "gpios": "0",
-    "timer1_en": False, "timer1_on": "00:00", "timer1_off": "08:00", "timer1_mask": "18",
-    "timer2_en": False, "timer2_on": "05:00", "timer2_off": "13:00", "timer2_mask": "12",
+    "timer1_en": True, "timer1_on": "00:00", "timer1_off": "08:00", "timer1_mask": "1",
+    "timer2_en": True, "timer2_on": "05:00", "timer2_off": "13:00", "timer2_mask": "12",
     "timer3_en": False, "timer3_on": "00:00", "timer3_off": "00:00", "timer3_mask": "0",
     "timer4_en": False, "timer4_on": "00:00", "timer4_off": "00:00", "timer4_mask": "0",
     
@@ -65,7 +66,6 @@ def get_status():
     now = datetime.now()
     current_time = now.strftime("%H:%M:%S")
     
-    # Trả về cục JSON cấu trúc y hệt như bảng yêu cầu
     status_data = {
         "time": current_time,
         "connected": device_state["connected"],
@@ -74,6 +74,10 @@ def get_status():
         "Inv_state": True,
         "Inv_dir": True,
         "Inv_model" : 3,
+        "relay_motor_num": device_state["relay_motor_num"],
+        "relay_start_pin": device_state["relay_start_pin"],
+        "relay_stop_pin": device_state["relay_stop_pin"],
+        "relay_open_time": device_state["relay_open_time"],
         "ram_usage": str(random.randint(30, 60)), # Sinh ngẫu nhiên RAM %
         "cpu_load": str(random.randint(5, 25)),   # Sinh ngẫu nhiên CPU %
         "Inv_freq": str(device_state["Inv_freq"]),
@@ -114,6 +118,10 @@ def get_config():
         "Inv_state": device_state["Inv_state"],
         "Inv_dir": device_state["Inv_dir"],
         "Inv_freq": device_state["Inv_freq"],
+        "relay_motor_num": device_state["relay_motor_num"],
+        "relay_start_pin": device_state["relay_start_pin"],
+        "relay_stop_pin": device_state["relay_stop_pin"],
+        "relay_open_time": device_state["relay_open_time"],
         "gpios": device_state["gpios"],
         "input1_state": device_state["input1_state"],
         "input2_state": device_state["input2_state"],
@@ -174,6 +182,19 @@ def set_inv_cfg():
     device_state["Inv_addr"] = address
     device_state["Inv_baudrate"] = baud
     print(f"👉 SET INVERTER CONFIG: Model={model}, Address={address}, Baudrate={baud}")
+    return "OK"
+
+@app.route('/RelayCfg')
+def set_relay_cfg():
+    num = request.args.get('num', default="0")
+    startPin = request.args.get('startPin', default="0")
+    stopPin = request.args.get('stopPin', default="0")
+    openTime = request.args.get('openTime', default="0")
+    device_state["Relay_NumMotors"] = num
+    device_state["Relay_StartPin"] = startPin
+    device_state["Relay_StopPin"] = stopPin
+    device_state["Relay_OpenTime"] = openTime
+    print(f"👉 SET RELAY CONFIG: NumMotors={num}, StartPin={startPin}, StopPin={stopPin}, OpenTime={openTime}")
     return "OK"
 
 @app.route('/InvEn')
