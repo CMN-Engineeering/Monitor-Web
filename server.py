@@ -159,11 +159,37 @@ def get_config():
         print(f"   {key}: {value}")
     return jsonify(config_data)
 
-@app.route('/InvSetStart')
+@app.route('/MotorStart')
 def set_power():
-    val = request.args.get('val', type=int)
-    device_state["Inv_state"] = bool(val)
-    print(f"👉 MOTOR POWER: {'ON' if val else 'OFF'}")
+    val = request.args.get('num')
+    print(f"👉 MOTOR START: Motor {val}")
+    return "OK"
+
+@app.route('/MotorCfg')
+def get_motor_cfg():
+    en = request.args.get('en', type=int, default=0)
+    mode = request.args.get('mode', type=int, default=0)
+    if mode == 1:
+        model = request.args.get('model', default="0")
+        addr = request.args.get('addr', default="1")
+        baud = request.args.get('baud', default="9600")
+        device_state["Inv_model"] = model
+        device_state["Inv_addr"] = addr
+        device_state["Inv_baudrate"] = baud
+        print(f"👉 SET MOTOR CONFIG: Enable={bool(en)}, Mode={mode}, Model={model}, Address={addr}, Baudrate={baud}")
+    
+    if mode == 2:
+        motor_1_enabled = request.args.get('Mot1En', type=int, default=0)
+        start_pin_1 = request.args.get('StartPin1', type = int, default=0)
+        stop_pin_1 = request.args.get('StopPin1', type = int, default=0)
+        
+        motor_2_enabled = request.args.get('Mot2En', type=int, default=0)
+        start_pin_2 = request.args.get('StartPin2', type = int, default=0)
+        stop_pin_2 = request.args.get('StopPin2', type = int, default=0)
+        print(f"👉 SET CONTACTOR CONFIG: Motor1_Enable={bool(motor_1_enabled)}, StartPin1={start_pin_1}, StopPin1={stop_pin_1}")
+        print(f"👉 SET CONTACTOR CONFIG: Motor2_Enable={bool(motor_2_enabled)}, StartPin2={start_pin_2}, StopPin2={stop_pin_2} ")
+        
+    
     return "OK"
 
 @app.route('/InvSetFreq')
