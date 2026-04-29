@@ -1225,7 +1225,7 @@
                 if(!ipRegex.test(ip) || !ipRegex.test(gw) || !ipRegex.test(nm)) return alert("Cấu hình IP không hợp lệ.");
             }
             if(confirm("Lưu cấu hình WiFi Station?")) {
-                let body = `sta_enable=${en}&ssid=${encodeURIComponent(s)}&pass=${encodeURIComponent(p)}&isStatic=${isStatic}&ip=${encodeURIComponent(ip)}&gateway=${encodeURIComponent(gw)}&netmask=${encodeURIComponent(nm)}&`;
+                let body = `sta_enable=${en}&ssid=${s}&pass=${p}&isStatic=${isStatic}&ip=${encodeURIComponent(ip)}&gateway=${encodeURIComponent(gw)}&netmask=${encodeURIComponent(nm)}&`;
                 fetch('/saveWifi', { method: 'POST', headers: {'Content-Type': 'application/x-www-form-urlencoded'}, body: body })
                     .then(()=> alert('Đã lưu cấu hình WiFi thành công'));
             } 
@@ -1285,7 +1285,6 @@
                 const setValue = (id, val) => { if(document.getElementById(id)) document.getElementById(id).value = val || ""; };
                 const checkEl = (id, state) => { if(document.getElementById(id)) document.getElementById(id).checked = state; };
 
-                
                 setValue('wifi_name', d.ssid);
                 document.getElementById('wifiDisplay').innerText = "Wifi: " + d.ssid;
                 setValue('wifi_pass', d.pass);
@@ -1295,14 +1294,52 @@
                 setValue('inverterAddress', d.Inv_addr || "0"); setValue('inverterBaudrate', d.Inv_baudrate || "0");
                 setValue('static_ip', d.static_ip); setValue('ap_name', d.ap_ssid); setValue('ap_pass', d.ap_pass);
 
-
-                checkEl('inverterEnabaleToggle', d.Inv_enable);
+                checkEl('inverterEnableToggle', d.Inv_enable);
                 checkEl('sta_enable', d.sta_enable);
+                
+                // --- NEW DATA BINDINGS ADDED HERE ---
+                checkEl('adcEnableToggle', d.adc_enable);
+                checkEl('ioEnableToggle', d.io_enable);
+                
+                if (d.adc_voltage_limit !== undefined) {
+                    setValue('voltageLimitSlider', d.adc_voltage_limit);
+                    if (document.getElementById('voltageLimitVal')) 
+                        document.getElementById('voltageLimitVal').innerText = d.adc_voltage_limit + ' V';
+                }
+                if (d.adc_current_limit !== undefined) {
+                    setValue('currentLimitSlider', d.adc_current_limit);
+                    if (document.getElementById('currentLimitVal')) 
+                        document.getElementById('currentLimitVal').innerText = d.adc_current_limit + ' A';
+                }
+
+                if (d.motor_mode !== undefined) {
+                    setValue('motor-option', d.motor_mode);
+                    let motorOpt = document.getElementById('motor-option');
+                    if (motorOpt) motorOpt.dispatchEvent(new Event('change')); // Triggers display block/none
+                }
+
+                if (d.motor_num !== undefined) setValue('motorNum', d.motor_num);
+                
+                if (d.motor1_en !== undefined) {
+                    checkEl('motor1_en', d.motor1_en);
+                    setValue('motor1-output-on', d.motor1_on_pin);
+                    setValue('motor1-output-off', d.motor1_off_pin);
+                    if(d.motor1_en) viewContactorMotorSetting(1);
+                }
+
+                if (d.motor2_en !== undefined) {
+                    checkEl('motor2_en', d.motor2_en);
+                    setValue('motor2-output-on', d.motor2_on_pin);
+                    setValue('motor2-output-off', d.motor2_off_pin);
+                    if(d.motor2_en) viewContactorMotorSetting(2);
+                }
+                // --- END NEW BINDINGS ---
+
                 if(d.factory_id) document.getElementById('factoryID').innerText = "Factory ID: " + d.factory_id;
 
                 if(d.Inv_model !== undefined) {
-                    let radioBtn = document.querySelector(`input[name="inverterOption"][value="${String.fromCharCode(65 + parseInt(d.Inv_model || 0) - 1)}"]`);
-                    if(radioBtn) radioBtn.checked = true;
+                    const motorTypeSelect = document.getElementById('motor-type');
+                    if (motorTypeSelect) motorTypeSelect.value = d.Inv_model;
                 }
                 
                 if(d.Inv_freq !== undefined) {
@@ -1313,7 +1350,7 @@
                 }
                 
                 if(d.Inv_dir !== undefined) {
-                    isFwd = d.Inv_dir;
+                    let isFwd = d.Inv_dir; // Fixed implicitly global variable declaration
                     document.getElementById('dirLabel').innerText = isFwd ? "Quay Thuận" : "Quay Nghịch";
                     document.getElementById('dirBtn').className = isFwd ? "btn mt-2 medium dir-fwd" : "btn mt-2 medium dir-rev";
                 }
@@ -1322,7 +1359,6 @@
                     document.getElementById('motorStatusText').innerText = d.Inv_state ? "CHẠY" : "DỪNG";
                     document.getElementById('motorStatusLight').className = d.Inv_state ? "indicator-light running" : "indicator-light stopped";                    
                 }
-
 
                 if(d.is_static !== undefined) {
                     let target = d.is_static ? "static" : "dhcp";
@@ -1333,6 +1369,7 @@
 
                 toggleMotorVisibility(false); 
                 toggleAdcVisibility();
+                toggleIoVisibility(); // Trigger the IO toggle
 
                 let mask = d.gpios ? parseInt(d.gpios) : 0;
                 for(let i=1; i<=4; i++) {
@@ -1349,12 +1386,12 @@
                     toggleInputDetails(i); toggleOutputControls(i);
                 }
                 refreshSystemTimerUI();
-            }).catch(() => {
+            }).catch((err) => {
+                console.error("Config load error:", err); // Handy for debugging
                 for(let i=1; i<=4; i++) handleTimerChange(i);
                 toggleMotorVisibility(); refreshSystemTimerUI();
             });
         }
-
         function fetchStatusOnce() {
             fetch('/status').then(r => r.json()).then(d => {
                 if(wasOffline) { addNotification("Đã kết nối lại", "success"); wasOffline = false; }
@@ -1425,7 +1462,7 @@
                         if(sw) sw.checked = d[`output${i}_level`];
                     }
                     if(d[`input${i}_on_interval`] !== undefined) document.getElementById(`input${i}OnInterval`).value = d[`input${i}_on_interval`];
-                    if(d[`input${i}_off_interval`] !== undefined) document.getElementById(`input${i}OffInterval`).value = d[`input$off_interval`];{i}_
+                    if(d[`input${i}_off_interval`] !== undefined) document.getElementById(`input${i}OffInterval`).value = d[`input${i}_off_interval`];
                     
                     if(d[`input${i}_state`] !== undefined) {
                         const st = d[`input${i}_state`];
@@ -1474,34 +1511,6 @@
                 document.getElementById('inverterSettingsCard').style.display = 'none';
             }
         });
-
-        const motorControlOption = document.getElementById('motor-control-option');
-        motorControlOption.addEventListener('change', function() {
-            const selectedValue = this.value;
-            if (selectedValue === '1') {
-                document.getElementById('contactor-motor-option').style.display = 'none';
-                document.getElementById('dirSet').style.display = 'block';
-                document.getElementById('freqSet').style.display = 'block';
-            } else if (selectedValue === '2') {
-                document.getElementById('dirSet').style.display = 'none';
-                document.getElementById('freqSet').style.display = 'none';
-                document.getElementById('contactor-motor-option').style.display = 'block';
-            } else{
-                document.getElementById('dirSet').style.display = 'none';
-                document.getElementById('freqSet').style.display = 'none';
-                document.getElementById('contactor-motor-option').style.display = 'none';                
-            }
-        });
-        function checkOutputLock(id){
-            let outputOn = document.getElementById(`motor${id}-output-on`).checked;
-            let outputOff = document.getElementById(`motor${id}-output-off`).checked;
-            // Nếu 1 value đã được chọn ở ON, disable option ở OFF, và ngược lại
-
-            
-
-        }
-    
-
         function executeTestStep() {
             const setUI = (freq) => { document.getElementById('freqSlider').value = freq; document.getElementById('freqSlider_val').innerText = freq; };
             switch (testStep) {

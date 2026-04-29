@@ -6,6 +6,7 @@ from datetime import datetime
 app = Flask(__name__, static_folder='.')
 
 # Giả lập bộ nhớ của ESP32 với các key khớp với bảng JSON
+# Giả lập bộ nhớ của ESP32 với các key khớp với bảng JSON
 device_state = {
     # Status Variables
     "connected": True,
@@ -20,10 +21,22 @@ device_state = {
     "input4_on_interval": "15", "input4_off_interval": "75","input4_state": False,
     "output1_level": True, "output2_level": False,
     "output3_level": False, "output4_level": False,
+    
+    # New Configs for Settings UI Sync
+    "adc_enable": True,
+    "io_enable": True,
+    "adc_voltage_limit": 24,
+    "adc_current_limit": 5,
+    "motor_mode": "1", # 1: Inverter, 2: Contactor
+    "motor_num": "2",
+    "motor1_en": True, "motor1_on_pin": "1", "motor1_off_pin": "2",
+    "motor2_en": False, "motor2_on_pin": "3", "motor2_off_pin": "4",
+
     "relay_motor_num": "9", "relay_start_pin": "12", "relay_stop_pin": "13", "relay_open_time": "05:30:00",
 
     # WiFi Config Variables
     "ssid": "CMNIoT_WiFi",
+    # ... (Keep the rest of your original device_state exact same as before) ...
     "pass": "12345678",
     "sta_enable": True,
     "is_static": False,
@@ -37,7 +50,6 @@ device_state = {
     "mqtt_link" : "http:/12.332.32.21",
     "mqtt_id" : "asc",
     "mqtt_port" : "192.168.1.12",
-    "factory_id" : "sacasc",
     
     # GPIO & Timer Config Variables
     "gpios": "0",
@@ -52,7 +64,6 @@ device_state = {
     "Inv_model": "0",
     "Inv_addr": "1"
 }
-
 # --- ROUTE CHO GIAO DIỆN WEB ---
 @app.route('/')
 def home():
@@ -106,6 +117,7 @@ def get_status():
 def get_config():
     # Log current config for settings page
     config_data = {
+        # ... (Keep your existing returned keys here) ...
         "ssid": device_state["ssid"],
         "pass": device_state["pass"],
         "sta_enable": device_state["sta_enable"],
@@ -152,8 +164,23 @@ def get_config():
         "mqtt_link" : device_state["mqtt_link"],
         "mqtt_id" : device_state["mqtt_id"],
         "mqtt_port" : device_state["mqtt_port"],
-        "factory_id" : device_state["factory_id"]
+        "factory_id" : device_state["factory_id"],
+        
+        # --- NEW VARIABLES ADDED HERE ---
+        "adc_enable": device_state.get("adc_enable", True),
+        "io_enable": device_state.get("io_enable", True),
+        "adc_voltage_limit": device_state.get("adc_voltage_limit", 0),
+        "adc_current_limit": device_state.get("adc_current_limit", 0),
+        "motor_mode": device_state.get("motor_mode", "1"),
+        "motor_num": device_state.get("motor_num", "2"),
+        "motor1_en": device_state.get("motor1_en", False),
+        "motor1_on_pin": device_state.get("motor1_on_pin", "0"),
+        "motor1_off_pin": device_state.get("motor1_off_pin", "0"),
+        "motor2_en": device_state.get("motor2_en", False),
+        "motor2_on_pin": device_state.get("motor2_on_pin", "0"),
+        "motor2_off_pin": device_state.get("motor2_off_pin", "0"),
     }
+    # ... return jsonify(config_data)
     print("👉 GET CONFIG CALLED")
     for key, value in config_data.items():
         print(f"   {key}: {value}")
