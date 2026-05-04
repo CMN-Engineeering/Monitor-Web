@@ -593,7 +593,7 @@
                 <button id="testBtn" class="btn medium mt-2" onclick="testInvConfig()" style="background-color: #34db47;"><i class="fas fa-check"></i> Testing</button>
             </div>
             </div>
-                        <div class="card" id="motorControlCard">
+                <div class="card" id="contactor1ControlCard">
                 <div class="card-header"><i class="fas fa-fan"></i> Động cơ Contactor 1</div>
                 <div class="status-indicator">
                     <div class="indicator-light stopped" id="motorStatusLight"></div>
@@ -607,7 +607,7 @@
                     <button class="btn medium" onclick="stopMotor(1)" style="background-color: #e94560;"><i class="fas fa-stop"></i> Dừng</button>
                 </div>
             </div>
-                <div class="card" id="motorControlCard">
+                <div class="card" id="contactor2ControlCard">
                 <div class="card-header"><i class="fas fa-fan"></i> Động cơ Contactor 2</div>
                 <div class="status-indicator">
                     <div class="indicator-light stopped" id="motorStatusLight"></div>
@@ -1015,7 +1015,10 @@
         function toggleMotorVisibility(sendRequest = true) {
             const isEn = document.getElementById('inverterEnableToggle').checked;
             document.getElementById('motorControlCard').style.display = isEn ? 'block' : 'none';
+            document.getElementById('contactor1ControlCard').style.display = isEn ? 'block' : 'none';
+            document.getElementById('contactor2ControlCard').style.display = isEn ? 'block' : 'none';
             document.getElementById('motor-option').style.display = isEn ? 'block' : 'none';
+
             for(let i=1; i<=4; i++) {
                 const wrapper = document.getElementById(`timer${i}_inverter_wrapper`);
                 if(wrapper) wrapper.style.display = isEn ? 'flex' : 'none';
