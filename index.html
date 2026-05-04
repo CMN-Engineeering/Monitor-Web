@@ -410,6 +410,24 @@
             justify-content: space-between;
             align-items: center;
         }
+        #save-settings-options {
+            display: none;
+            flex-direction: column;     /* stack vertically */
+            align-items: center;        /* center horizontally */
+            justify-content: center;    /* center vertically */
+            text-align: center;         /* center text */
+
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            width: 20%;
+            transform: translate(-50%, -50%);
+            
+            color: black;
+            background: white;
+            padding: 20px;
+            border: 1px solid #ccc;
+            }
 
         .timer-checks {
             display: flex;
@@ -489,8 +507,15 @@
         .state-circle { display: inline-block; width: 10px; height: 10px; border-radius: 50%; background-color: #e94560; margin-right: 5px; }
     </style>
 </head>
+    <div id="screen-lock" style="display:none; position:fixed;width: 100%;height : 100%; color:black;background:white;  opacity: 0.5;"></div>
     <div class="container">
         <h1>CMNIoT SYSTEM</h1>
+        <div id="save-settings-options" style="display:none; position:fixed; top:50%; left:50%; width: 20%;height: 35%;transform:translate(-50%, -50%); color:black;background:white; padding:20px; border:1px solid #ccc;">
+            <p>Save all settings?</p>
+            <button style="width : 100%; height: 20%; margin: 10px" onclick="handleChoice('yes')">Lưu và hiện Dashboard</button>
+            <button style="width : 100%; height: 20%; margin: 10px" onclick="handleChoice('no')">Không lưu và hiện Dashboard</button>
+            <button style="width : 100%; height: 20%; margin: 10px" onclick="handleChoice('cancel')">Hủy</button>
+        </div>
         <div class="nav-bar">
             <div id="nav-dash" class="nav-btn active" onclick="showTab('dashboard')">
                 <i class="fas fa-tachometer-alt"></i> Dashboard
@@ -690,12 +715,13 @@
                     <div class="card-header"><i class="fas fa-cogs"></i> Chức năng hệ thống</div>
                     <div class="control-row" style="margin-bottom: 0;">
                         <span style="font-weight: 500;">Hiển thị điều khiển Động cơ</span>
-                        <label class="switch"><input type="checkbox" id="inverterEnableToggle" onchange="toggleMotorVisibility()" checked><span class="slider"></span></label>
+                        <label class="switch"><input type="checkbox" id="motorEnableToggle" onchange="toggleMotorVisibility()" checked><span class="slider"></span></label>
                     </div>
                     <select id="motor-option" style="padding: 5px; border-radius: 4px; flex:1;">
-                            <option value="" selected>Chọn loại động cơ</option>
+                            <option value='-1' selected>Chọn loại động cơ</option>
                             <option value='1'>Inverter</option>
                             <option value='2'>Contactor</option>
+                            <option value='3'>Cả hai</option>                            
                     </select>
                     <div class="control-row" style="margin-top: 10px;">
                         <span style="font-weight: 500;">Hiển thị ADC</span>
@@ -725,7 +751,7 @@
                             <option value="14400">14400</option><option value="19200">19200</option>
                         </select>
                     </div>
-                    <button class="btn mt-2" onclick="saveInverterOption()" style="background-color: #3498db;"><i class="fas fa-check"></i> Lưu Tùy chọn</button>
+                    <!-- <button class="btn mt-2" onclick="saveInverterOption()" style="background-color: #3498db;"><i class="fas fa-check"></i> Lưu Tùy chọn</button> -->
                 </div>
 
                 <div class="card" id="contactorSettingsCard" style="display:none;">
@@ -769,7 +795,7 @@
                         }
                     </script>
                     </div>
-                    <button class="btn mt-2" onclick="saveContactorOption()" style="background-color: #3498db;"><i class="fas fa-check"></i> Lưu Contactor</button>
+                    <!-- <button class="btn mt-2" onclick="saveContactorOption()" style="background-color: #3498db;"><i class="fas fa-check"></i> Lưu Contactor</button> -->
                 </div>
 
                 <div class="card" id="adcSettingsCard" style="display:none;">
@@ -790,7 +816,7 @@
                             </div>
                         </div>
                     </div>
-                    <button class="btn mt-2" onclick="saveAdcSettings()" style="background-color: #3498db;"><i class="fas fa-check"></i> Lưu Tùy chọn</button>
+                    <!-- <button class="btn mt-2" onclick="saveAdcSettings()" style="background-color: #3498db;"><i class="fas fa-check"></i> Lưu Tùy chọn</button> -->
                 </div>
                 
                 <div class="card" id="ioSettingsCard" style="display:block;">
@@ -823,9 +849,9 @@
                             }
                         </script>
                     </div>
-                    <div style="display:flex; justify-content:flex-end; margin-top:10px;">
+                    <!-- <div style="display:flex; justify-content:flex-end; margin-top:10px;">
                         <button class="btn" onclick="confirmGpios()" style="background-color: #27ae60;"><i class="fas fa-check"></i> Lưu GPIO</button>
-                    </div>
+                    </div> -->
                 </div>
 
                 <div class="card">
@@ -858,7 +884,7 @@
                                 `);
                         }
                     </script>
-                    <button class="btn big" onclick="saveTimers()" style="background-color: var(--accent); color: #000;"><i class="fas fa-save"></i> Lưu Cài Đặt Hẹn Giờ</button>
+                    <!-- <button class="btn big" onclick="saveTimers()" style="background-color: var(--accent); color: #000;"><i class="fas fa-save"></i> Lưu Cài Đặt Hẹn Giờ</button> -->
                 </div>
 
                 <div class="card">
@@ -879,31 +905,35 @@
                         <input type="text" id="gateway" placeholder="Gateway (VD: 192.168.1.1)" disabled style="opacity: 0.5;">
                         <input type="text" id="netmask" placeholder="Netmask (VD: 255.255.255.0)" disabled style="opacity: 0.5;">
                     </div>
-                    <button class="btn" onclick="saveWifi()"><i class="fas fa-save"></i> Lưu & Kết Nối Lại Station</button>
+                    <!-- <button class="btn" onclick="saveWifi()"><i class="fas fa-save"></i> Lưu & Kết Nối Lại Station</button> -->
                 </div>
 
                 <div class="card">
                     <div class="card-header"><span><i class="fas fa-broadcast-tower"></i> Cài đặt Access Point</span></div>
                     <div class="input-group"><input type="text" id="ap_name" placeholder="Tên Access Point mới"></div>
                     <div class="input-group"><input type="text" id="ap_pass" placeholder="Mật khẩu Access Point mới"></div>
-                    <button class="btn" onclick="saveAP()" style="background-color: #f39c12;"><i class="fas fa-sync"></i> Xác nhận & Reinit AP</button>
+                    <!-- <button class="btn" onclick="saveAP()" style="background-color: #f39c12;"><i class="fas fa-sync"></i> Xác nhận & Reinit AP</button> -->
                 </div>
 
                 <div class="card" id="MQTT_Setting">
-                    <div class="card-header"><span><i class="fas fa-network-wired"></i> Cài đặt MQTT</span></div>
+                    <div class="card-header"><span><i class="fas fa-network-wired"></i> Cài đặt Server</span></div>
                     <div class="input-group">
                         <input type="text" id="mqtt_username" placeholder="SSID">
-                        <input type="password" id="mqtt_password" placeholder="Mật khẩu MQTT">
-                        <input type="text" id="mqtt_link" placeholder="Linh kết nối MQTT">
-                        <input type="text" id="mqtt_port" placeholder="Port MQTT">
+                        <input type="password" id="mqtt_password" placeholder="Mật khẩu Server">
+                        <input type="text" id="mqtt_link" placeholder="Link kết nối Server">
+                        <input type="text" id="mqtt_port" placeholder="Port Server">
+                        <input type="text" id="mqtt_topic" placeholder="Data Link">
                         <input type="text" id="mqtt_id" placeholder="Board ID">
                     </div>
-                    <button class="btn" onclick="saveMQTT()" style="background-color: #9b59b6;"><i class="fas fa-save"></i> Lưu MQTT Broker</button>
+                    <!-- <button class="btn" onclick="saveMQTT()" style="background-color: #9b59b6;"><i class="fas fa-save"></i> Lưu MQTT Broker</button> -->
                 </div>
 
                 <div class="card" style="border: 1px solid rgba(233, 69, 96, 0.3);">
                     <div class="card-header"><i class="fas fa-power-off"></i> Hệ Thống</div>
-                    <button class="btn" onclick="if(confirm('Reboot?')) fetch('/reboot')">Khởi động lại</button>
+                    <div style="display: flex;">
+                        <button class="btn" onclick="saveSettings('system')" style="width : 50%; margin-right: 20px">Lưu Cài Đặt</button>
+                        <button class="btn" onclick="reboot()" style="width : 50%">Khởi Động Lại</button>
+                    </div>
                 </div>
                 <div class="card">
                     <div id="factoryID" style="font-weight: bold;">Factory ID: ...</div>
@@ -967,13 +997,38 @@
         function updateSettingsVisibility() {
             document.getElementById('adminSettings').style.display = isAuthenticated ? 'block' : 'none';
         }
+        function handleChoice(choice){
+            if(choice === 'yes'){
+                saveSettings("dashboard")
+                document.getElementById('view-dashboard').classList.add('active');
+                document.getElementById('nav-dash').classList.add('active');
+            }
+            if(choice === 'no'){
+                loadConfig()
+                document.getElementById('view-dashboard').classList.add('active');
+                document.getElementById('nav-dash').classList.add('active');
+            }
+            if(choice === 'cancel'){
+                document.getElementById('view-settings').classList.add('active');
+                document.getElementById('nav-set').classList.add('active');
+            }
+            document.getElementById('save-settings-options').style.display = 'none';
+            document.getElementById('screen-lock').style.display = 'none';
 
+        }
         function showTab(tabName) {
+            current_active_tab = document.querySelector('.view-section.active').id;
             document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
             document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
-            document.getElementById('view-' + tabName).classList.add('active');
-            document.getElementById(tabName === 'dashboard' ? 'nav-dash' : 'nav-set').classList.add('active');
-            if(tabName === 'settings') updateSettingsVisibility();
+            if(tabName === 'dashboard' && current_active_tab === 'view-settings'){
+                document.getElementById('save-settings-options').style.display = 'block';
+                document.getElementById('screen-lock').style.display = 'block';
+            }
+            else{
+                document.getElementById('view-' + tabName).classList.add('active');
+                document.getElementById(tabName === 'dashboard' ? 'nav-dash' : 'nav-set').classList.add('active');
+                updateSettingsVisibility()
+            }
         }
 
         function toggleAuthState(loggedIn) {
@@ -1000,6 +1055,9 @@
                 addNotification('Cố gắng đăng nhập thất bại', 'error');
             }
         }
+        function reboot(){
+            fetch('/reboot');
+        }
 
         function logout() {
             sessionStorage.removeItem('auth');
@@ -1008,30 +1066,26 @@
             showTab('dashboard');
         }
 
+
         if(sessionStorage.getItem('auth') === '1') toggleAuthState(true);
         else toggleAuthState(false);
         // --- UI Visibility Toggles ---
         // --- UI Visibility Toggles ---
-        function toggleMotorVisibility(sendRequest = true) {
-            const isEn = document.getElementById('inverterEnableToggle').checked;
+        function toggleMotorVisibility() {
+            const isEn = document.getElementById('motorEnableToggle').checked;
+            document.getElementById('inverterSettingsCard').style.display = isEn ? 'block' : 'none';
+            document.getElementById('contactorSettingsCard').style.display = isEn ? 'block' : 'none';
             document.getElementById('motorControlCard').style.display = isEn ? 'block' : 'none';
             document.getElementById('contactor1ControlCard').style.display = isEn ? 'block' : 'none';
             document.getElementById('contactor2ControlCard').style.display = isEn ? 'block' : 'none';
             document.getElementById('motor-option').style.display = isEn ? 'block' : 'none';
-
+            
             for(let i=1; i<=4; i++) {
                 const wrapper = document.getElementById(`timer${i}_inverter_wrapper`);
                 if(wrapper) wrapper.style.display = isEn ? 'flex' : 'none';
             }
-            
-            // CHỈ gửi request xuống ESP khi do người dùng bấm (sendRequest = true)
-            if (sendRequest) {
-                fetch('/InvEn?val=' + (isEn ? '1' : '0'));
-            }
         }
         
-        
-
         function toggleAdcVisibility() {
             const isEn = document.getElementById('adcEnableToggle').checked;
             document.getElementById('adcStatusBar').style.display = isEn ? 'block' : 'none';
@@ -1158,23 +1212,140 @@
                 document.getElementById('freqVal').innerText = val;       
         }
 
-        function saveAdcSettings() {
+        function saveSettings(mode){
+            let confirmed = false;
+            if (mode === 'system'){
+                confirmed = confirm("Lưu các settings?") ? true : false;
+            }
+            if (mode === 'dashboard'){
+                confirmed = true;               
+            }
+            const selectedMotorType = motorSettingOption.value;
+            if (confirmed){ 
+                //ADC Setting
+                let adcEn = document.getElementById('adcEnableToggle').checked;
+                let v = document.getElementById('voltageLimitSlider').value;
+                let c = document.getElementById('currentLimitSlider').value;
+                fetch(`/adcEn?en=${adcEn}`)
+                fetch(`/setAdcLimits?voltage=${v}&current=${c}`);
+
+                const motorEnabled = document.getElementById('motorEnableToggle').checked;
+                if(motorEnabled){
+                    if (selectedMotorType === '-1'){
+                        fetch(`/MotorConf?en=1&mode=0`);
+                    }
+                    if (selectedMotorType === '1'){
+                                            //Inverter Setting
+                        let model = document.getElementById('motor-type').value;
+                        let addr = document.getElementById('inverterAddress').value.trim();
+                        let baud = document.getElementById('inverterBaudrate').value;
+                        fetch(`/MotorConf?en=1&mode=1&model=${model}&addr=${addr}&baud=${baud}`);
+                    }
+                    if (selectedMotorType === '2'){                                          
+                        //Contactor Setting
+                        const motor1En = document.getElementById('motor1_en').checked ? 1 : 0;
+                        const motor1OnPin = document.getElementById('motor1-output-on').value || 0;
+                        const motor1OffPin = document.getElementById('motor1-output-off').value || 0;
+                        const motor2En = document.getElementById('motor2_en').checked ? 1 : 0;
+                        const motor2OnPin = document.getElementById('motor2-output-on').value || 0;
+                        const motor2OffPin = document.getElementById('motor2-output-off').value || 0;
+                        fetch(`/MotorConf?en=1&mode=2&Mot1En=${motor1En}&StartPin1=${motor1OnPin}&StopPin1=${motor1OffPin}&Mot2En=${motor2En}&StartPin2=${motor2OnPin}&StopPin2=${motor2OffPin}`);
+                    }
+                    if (selectedMotorType === '3'){
+                        //Inverter Setting
+                        let model = document.getElementById('motor-type').value;
+                        let addr = document.getElementById('inverterAddress').value.trim();
+                        let baud = document.getElementById('inverterBaudrate').value;
+                        fetch(`/MotorConf?en=1&mode=1&model=${model}&addr=${addr}&baud=${baud}`);
+                        
+                        //Contactor Setting
+                        const motor1En = document.getElementById('motor1_en').checked ? 1 : 0;
+                        const motor1OnPin = document.getElementById('motor1-output-on').value || 0;
+                        const motor1OffPin = document.getElementById('motor1-output-off').value || 0;
+                        const motor2En = document.getElementById('motor2_en').checked ? 1 : 0;
+                        const motor2OnPin = document.getElementById('motor2-output-on').value || 0;
+                        const motor2OffPin = document.getElementById('motor2-output-off').value || 0;
+                        fetch(`/MotorConf?en=1&mode=2&Mot1En=${motor1En}&StartPin1=${motor1OnPin}&StopPin1=${motor1OffPin}&Mot2En=${motor2En}&StartPin2=${motor2OnPin}&StopPin2=${motor2OffPin}`);
+                    }
+                }
+                else{
+                    fetch('/MotorConf?en=0')
+                }
+                //GPIOs
+                let gpioEn = document.getElementById('ioEnableToggle').checked;
+                fetch(`/gpioEn?en=${gpioEn}`)
+                fetch('/setGpios?m=' + computeGpioMask());
+
+                //Timers
+                for(let i=1; i<=4; i++) {
+                    if(document.getElementById(`timer${i}_en`)?.checked) {
+                        let on = document.getElementById(`timer${i}_on`).value || "00:00";
+                        let off = document.getElementById(`timer${i}_off`).value || "00:00";
+                        if(on >= off) return alert(`Timer ${i}: Thời gian BẬT phải nhỏ hơn TẮT.`);
+                        
+                        let hasTarget = ['out1','out2','out3','out4','inverter'].some(t => document.getElementById(`timer${i}_${t}`)?.checked);
+                        if (!hasTarget) return alert(`Timer ${i} chưa chọn ngõ ra nào.`);
+                    }
+                }
+
+                for(let i=1; i<=4; i++) {
+                    let en = document.getElementById(`timer${i}_en`).checked ? 1 : 0;
+                    let m = 0;
+                    if(document.getElementById(`timer${i}_out1`)?.checked) m |= 1;
+                    if(document.getElementById(`timer${i}_out2`)?.checked) m |= 2;
+                    if(document.getElementById(`timer${i}_out3`)?.checked) m |= 4;
+                    if(document.getElementById(`timer${i}_out4`)?.checked) m |= 8;
+                    if(document.getElementById(`timer${i}_inverter`)?.checked) m |= 16;
+                    
+                    fetch(`/setTimer?timer=${i}&on=${document.getElementById(`timer${i}_on`).value||"00:00"}&off=${document.getElementById(`timer${i}_off`).value||"00:00"}&mask=${m}`);
+                    fetch(`/setTimeren?timer=${i}&en=${en}`);
+                }
+
+                //Wifi
+                let en = document.getElementById('sta_enable').checked ? 1 : 0;
+                let s = document.getElementById('wifi_name').value;
+                let p = document.getElementById('wifi_pass').value;
+                let isStatic = document.querySelector('input[name="ipConfig"]:checked').value === 'static' ? 1 : 0;
+                let ip = document.getElementById('static_ip').value;
+                let gw = document.getElementById('gateway').value;
+                let nm = document.getElementById('netmask').value;
+
+                if(isStatic) {
+                    const ipRegex = /^(25[0-5]|2[0-4]\d|1\d{2}|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d{2}|[1-9]?\d)){3}$/;
+                    if(!ipRegex.test(ip) || !ipRegex.test(gw) || !ipRegex.test(nm)) return alert("Cấu hình IP không hợp lệ.");
+                }
+                let body = `sta_enable=${en}&ssid=${s}&pass=${p}&isStatic=${isStatic}&ip=${encodeURIComponent(ip)}&gateway=${encodeURIComponent(gw)}&netmask=${encodeURIComponent(nm)}&`;
+                fetch('/saveWifi', { method: 'POST', headers: {'Content-Type': 'application/x-www-form-urlencoded'}, body: body });
+
+                //AP
+                fetch('/saveAP', { method: 'POST', headers: {'Content-Type': 'application/x-www-form-urlencoded'}, body: `ap_name=${document.getElementById('ap_name').value}&ap_pass=${encodeURIComponent(document.getElementById('ap_pass').value)}&` });            
+                //MQTT
+                name = document.getElementById('mqtt_username').value;
+                pass = document.getElementById('mqtt_password').value;
+                link = document.getElementById('mqtt_link').value;
+                data_link = document.getElementById('mqtt_topic').value;
+                id = document.getElementById('mqtt_id').value;
+                port = document.getElementById('mqtt_port').value;
+                let data = `mqtt_name=${name}&mqtt_pass=${pass}&mqtt_link=${link}&mqtt_topic=${data_link}&mqtt_id=${id}&mqtt_port=${port}&`;
+                fetch('/saveMQTT', { method: 'POST', headers: {'Content-Type': 'application/x-www-form-urlencoded'}, body: data });
+            }
+        }
+
+        /*function saveAdcSettings() {
             let v = document.getElementById('voltageLimitSlider').value;
             let c = document.getElementById('currentLimitSlider').value;
             fetch(`/setAdcLimits?voltage=${v}&current=${c}`).then(r => { if(r.ok) alert(`Lưu ADC thành công: ${v}V, ${c}A`); });
-        }
+        }*/
 
-        const motorEn = document.getElementById('inverterEnableToggle');
-        let motorEnabled = motorEn ? motorEn.checked : false;
-
-        function saveInverterOption() {
+        /*function saveInverterOption() {
             let model = document.getElementById('motor-type').value;
             let addr = document.getElementById('inverterAddress').value.trim();
             let baud = document.getElementById('inverterBaudrate').value;
             fetch(`/MotorConf?en=1&mode=1&model=${model}&addr=${addr}&baud=${baud}`)
                 .then(r => { if(r.ok) alert(`Đã lưu cấu hình biến tần thành công`); });
-        }
-        function saveContactorOption() {
+        }*/
+
+        /*function saveContactorOption() {
             const motor1En = document.getElementById('motor1_en').checked ? 1 : 0;
             const motor1OnPin = document.getElementById('motor1-output-on').value || 0;
             const motor1OffPin = document.getElementById('motor1-output-off').value || 0;
@@ -1183,7 +1354,7 @@
             const motor2OffPin = document.getElementById('motor2-output-off').value || 0;
             fetch(`/MotorConf?en=1&mode=2&Mot1En=${motor1En}&StartPin1=${motor1OnPin}&StopPin1=${motor1OffPin}&Mot2En=${motor2En}&StartPin2=${motor2OnPin}&StopPin2=${motor2OffPin}`)
                 .then(r => { if(r.ok) alert(`Đã lưu cấu hình contactor thành công`); });
-        }
+        }*/
 
         function toggleOutput(num) {
             let sw = document.getElementById(`output${num}Switch`);
@@ -1200,11 +1371,11 @@
             return m;
         }
 
-        function confirmGpios() {
+        /*function confirmGpios() {
             if(confirm('Xác nhận thay đổi GPIO?')) {
                 fetch('/setGpios?m=' + computeGpioMask()).then(() => alert('Đã lưu cấu hình GPIO thành công'));
             }
-        }
+        }*/
 
         function toggleIpConfig() {
             let isStatic = document.querySelector('input[name="ipConfig"]:checked').value === 'static';
@@ -1214,7 +1385,7 @@
             });
         }
 
-        function saveWifi() {
+        /*function saveWifi() {
             let en = document.getElementById('sta_enable').checked ? 1 : 0;
             let s = document.getElementById('wifi_name').value;
             let p = document.getElementById('wifi_pass').value;
@@ -1240,9 +1411,9 @@
                 fetch('/saveAP', { method: 'POST', headers: {'Content-Type': 'application/x-www-form-urlencoded'}, body: `ap_name=${encodeURIComponent(s)}&ap_pass=${encodeURIComponent(p)}&` })
                     .then(()=> alert('Đã lưu cấu hình Access Point thành công'));
             }
-        }
+        }*/
 
-        function saveMQTT() {
+        /*function saveMQTT() {
             name = document.getElementById('mqtt_username').value;
             pass = document.getElementById('mqtt_password').value;
             link = document.getElementById('mqtt_link').value;
@@ -1252,9 +1423,9 @@
             let data = `mqtt_name=${name}&mqtt_pass=${pass}&mqtt_link=${link}&mqtt_id=${id}&mqtt_port=${port}&`;
             fetch('/saveMQTT', { method: 'POST', headers: {'Content-Type': 'application/x-www-form-urlencoded'}, body: data })
                 .then(()=> alert('Đã lưu cấu hình MQTT thành công'));
-        }
+        }*/
 
-        function saveTimers() {
+        /*function saveTimers() {
             for(let i=1; i<=4; i++) {
                 if(document.getElementById(`timer${i}_en`)?.checked) {
                     let on = document.getElementById(`timer${i}_on`).value || "00:00";
@@ -1281,9 +1452,9 @@
                 }
                 alert("Đã cập nhật các bộ hẹn giờ thành công");
             }
-        }
+        }*/
         // --- Polling & Fetch ---
-        function loadConfig() {
+        /*function loadConfig() {
             fetch('/get-config').then(r=>r.json()).then(d => {
                 const setValue = (id, val) => { if(document.getElementById(id)) document.getElementById(id).value = val || ""; };
                 const checkEl = (id, state) => { if(document.getElementById(id)) document.getElementById(id).checked = state; };
@@ -1293,11 +1464,12 @@
                 setValue('wifi_pass', d.pass);
                 setValue('gateway', d.gateway); setValue('netmask', d.netmask || "255.255.255.0");
                 setValue('mqtt_username', d.mqtt_name); setValue('mqtt_password', d.mqtt_pass);
-                setValue('mqtt_link', d.mqtt_link); setValue('mqtt_id', d.mqtt_id); setValue('mqtt_port', d.mqtt_port);
+                setValue('mqtt_link', d.mqtt_link); setValue('mqtt_topic', d.mqtt_topic);
+                setValue('mqtt_id', d.mqtt_id); setValue('mqtt_port', d.mqtt_port);
                 setValue('inverterAddress', d.Inv_addr || "0"); setValue('inverterBaudrate', d.Inv_baudrate || "0");
                 setValue('static_ip', d.static_ip); setValue('ap_name', d.ap_ssid); setValue('ap_pass', d.ap_pass);
 
-                checkEl('inverterEnableToggle', d.Inv_enable);
+                checkEl('motorEnableToggle', d.Inv_enable);
                 checkEl('sta_enable', d.sta_enable);
                 
                 // --- NEW DATA BINDINGS ADDED HERE ---
@@ -1306,7 +1478,7 @@
                 
                 if (d.adc_voltage_limit !== undefined) {
                     setValue('voltageLimitSlider', d.adc_voltage_limit);
-                    if (document.getElementById('voltageLimitVal')) 
+                    if (document.getElementById('voltgageLimitVal')) 
                         document.getElementById('voltageLimitVal').innerText = d.adc_voltage_limit + ' V';
                 }
                 if (d.adc_current_limit !== undefined) {
@@ -1415,31 +1587,6 @@
                     if(radioBtn) radioBtn.checked = true;
                 }
 
-                if (d.error_code !== undefined) {
-                    if (d.error_code == "0"){
-                    }
-                    if (d.error_code == "1"){
-                        addNotification("Đổi chiều động cơ thất bại", "error")
-                    }
-                    if (d.error_code == "2"){
-                        addNotification("Đổi tần số động cơ thất bại", "error")
-                    }
-                    if (d.error_code == "3"){
-                        addNotification("Khởi động động cơ thất bại", "error")
-                    }
-                    if (d.error_code == "4"){
-                        addNotification("Dừng động cơ thất bại", "error")
-                    }
-                    if (d.error_code == "5"){
-                        addNotification("Đổi giá trị ngõ ra thất bại", "error")
-                    }
-                    if (d.error_code == "6"){
-                        addNotification("Yêu cầu khởi động lại", "warning")
-                    }
-                    
-                    
-                }
-
                 if(d.ip) document.getElementById('ipDisplay').innerText = "IP: " + d.ip;
                 if(d.time) document.getElementById('clock').innerText = d.time;
                 
@@ -1466,6 +1613,208 @@
                     }
                     if(d[`input${i}_on_interval`] !== undefined) document.getElementById(`input${i}OnInterval`).value = d[`input${i}_on_interval`];
                     if(d[`input${i}_off_interval`] !== undefined) document.getElementById(`input${i}OffInterval`).value = d[`input${i}_off_interval`];
+                    
+                    if(d[`input${i}_state`] !== undefined) {
+                        const st = d[`input${i}_state`];
+                        const el = document.getElementById(`input${i}State`);
+                        const cir = document.getElementById(`input${i}StateCircle`);
+                        if(el) { el.innerText = st ? 'ACTIVE' : 'INACTIVE'; el.style.color = st ? '#00c853' : '#e94560'; }
+                        if(cir) { cir.style.backgroundColor = st ? '#00c853' : '#e94560'; cir.style.boxShadow = st ? '0 0 8px #00c853' : 'none'; }
+                    }
+                }
+            }).catch(() => {
+                if(!wasOffline) { addNotification("Mất tín hiệu kết nối", "error"); wasOffline = true; }
+                const b = document.getElementById('statusBadge');
+                if(b) { b.className = "badge offline"; b.innerHTML = '<i class="fas fa-times-circle"></i> Mất tín hiệu'; }
+            });
+        }*/
+        function loadConfig() {
+            fetch('/get-config').then(r=>r.json()).then(d => {
+                const setValue = (id, val) => { if(document.getElementById(id)) document.getElementById(id).value = val || ""; };
+                const checkEl = (id, state) => { if(document.getElementById(id)) document.getElementById(id).checked = state; };
+
+                // 1. Wifi Station Config
+                checkEl('sta_enable', d.sta_enable);
+                setValue('wifi_name', d.ssid);
+                setValue('wifi_pass', d.pass);
+                if(document.getElementById('wifiDisplay')) document.getElementById('wifiDisplay').innerText = "Wifi: " + (d.ssid || "...");
+                
+                let targetRadio = d.is_static ? "static" : "dhcp";
+                let radio = document.querySelector(`input[name="ipConfig"][value="${targetRadio}"]`);
+                if(radio) { radio.checked = true; toggleIpConfig(); }
+                
+                setValue('static_ip', d.static_ip);
+                setValue('gateway', d.gateway);
+                setValue('netmask', d.netmask || "255.255.255.0");
+
+                // 2. AP Config
+                setValue('ap_name', d.ap_ssid);
+                setValue('ap_pass', d.ap_pass);
+
+                // 3. MQTT Config
+                setValue('mqtt_username', d.mqtt_name);
+                setValue('mqtt_password', d.mqtt_pass);
+                setValue('mqtt_link', d.mqtt_link);
+                setValue('mqtt_topic', d.mqtt_topic);
+                setValue('mqtt_id', d.mqtt_id);
+                setValue('mqtt_port', d.mqtt_port);
+
+                // 4. ADC Config
+                checkEl('adcEnableToggle', d.adc_enable);
+                if (d.adc_voltage_limit !== undefined) {
+                    setValue('voltageLimitSlider', d.adc_voltage_limit);
+                    if (document.getElementById('voltageLimitVal')) document.getElementById('voltageLimitVal').innerText = d.adc_voltage_limit + ' V';
+                }
+                if (d.adc_current_limit !== undefined) {
+                    setValue('currentLimitSlider', d.adc_current_limit);
+                    if (document.getElementById('currentLimitVal')) document.getElementById('currentLimitVal').innerText = d.adc_current_limit + ' A';
+                }
+
+                // 5. Motor / Contactor Config
+                checkEl('motorEnableToggle', d.Inv_enable);
+                if (d.motor_mode !== undefined) {
+                    setValue('motor-option', d.motor_mode);
+                    let motorOpt = document.getElementById('motor-option');
+                    if (motorOpt) motorOpt.dispatchEvent(new Event('change')); // Trigger visibility
+                }
+                
+                setValue('motor-type', d.Inv_model);
+                setValue('inverterAddress', d.Inv_addr);
+                setValue('inverterBaudrate', d.Inv_baudrate);
+
+                checkEl('motor1_en', d.motor1_en);
+                setValue('motor1-output-on', d.motor1_on_pin);
+                setValue('motor1-output-off', d.motor1_off_pin);
+                if(d.motor1_en) viewContactorMotorSetting(1);
+
+                checkEl('motor2_en', d.motor2_en);
+                setValue('motor2-output-on', d.motor2_on_pin);
+                setValue('motor2-output-off', d.motor2_off_pin);
+                if(d.motor2_en) viewContactorMotorSetting(2);
+
+                // 6. IO & System Details
+                checkEl('ioEnableToggle', d.io_enable);
+                if(d.factory_id && document.getElementById('factoryID')) document.getElementById('factoryID').innerText = "Factory ID: " + d.factory_id;
+
+                let mask = d.gpios ? parseInt(d.gpios) : 0;
+                for(let i=1; i<=4; i++) {
+                    checkEl(`input${i}Toggle`, !!(mask & (1 << (i-1))));
+                    checkEl(`output${i}Toggle`, !!(mask & (1 << (i+3))));
+                    toggleInputDetails(i); 
+                    toggleOutputControls(i);
+                }
+
+                // 7. Timers
+                for(let i=1; i<=4; i++) {
+                    checkEl(`timer${i}_en`, d[`timer${i}_en`]);
+                    setValue(`timer${i}_on`, d[`timer${i}_on`]);
+                    setValue(`timer${i}_off`, d[`timer${i}_off`]);
+                    
+                    let tMask = d[`timer${i}_mask`] ? parseInt(d[`timer${i}_mask`]) : 0;
+                    ['out1','out2','out3','out4','inverter'].forEach((t, idx) => checkEl(`timer${i}_${t}`, !!(tMask & (1 << idx))));
+                    handleTimerChange(i);
+                }
+
+                // Sync UI visuals
+                toggleMotorVisibility(); 
+                toggleAdcVisibility();
+                toggleIoVisibility();
+                refreshSystemTimerUI();
+
+            }).catch(err => {
+                console.error("Config load error:", err);
+                for(let i=1; i<=4; i++) handleTimerChange(i);
+                toggleMotorVisibility(); refreshSystemTimerUI();
+            });
+        }
+
+        function fetchStatusOnce() {
+            fetch('/status').then(r => r.json()).then(d => {
+                if(wasOffline) { addNotification("Đã kết nối lại", "success"); wasOffline = false; }
+                
+                // Dashboard Header Status
+                const sBadge = document.getElementById('statusBadge');
+                if(sBadge) {
+                    sBadge.className = d.connected ? "badge online" : "badge offline";
+                    sBadge.innerHTML = d.connected ? '<i class="fas fa-check-circle"></i> Đã kết nối' : '<i class="fas fa-exclamation-circle"></i> Ngoại tuyến';
+                }
+                
+                if (d.mqtt_connected !== undefined) {
+                    const mBadge = document.getElementById('mqttBadge');
+                    if(mBadge) {
+                        mBadge.className = d.mqtt_connected ? "badge online" : "badge offline";
+                        mBadge.innerHTML = d.mqtt_connected ? '<i class="fas fa-network-wired"></i> MQTT: Connected' : '<i class="fas fa-network-wired"></i> MQTT: Disconnected';
+                    }
+                    if(document.getElementById('mqttErrorText')) document.getElementById('mqttErrorText').innerText = d.mqtt_connected ? "" : (d.mqtt_error || "Lỗi kết nối");
+                }
+
+                if (d.error_code !== undefined) {
+                    if (d.error_code == "0"){
+                    }
+                    if (d.error_code == "1"){
+                        addNotification("Đổi chiều động cơ thất bại", "error")
+                    }
+                    if (d.error_code == "2"){
+                        addNotification("Đổi tần số động cơ thất bại", "error")
+                    }
+                    if (d.error_code == "3"){
+                        addNotification("Khởi động động cơ thất bại", "error")
+                    }
+                    if (d.error_code == "4"){
+                        addNotification("Dừng động cơ thất bại", "error")
+                    }
+                    if (d.error_code == "5"){
+                        addNotification("Đổi giá trị ngõ ra thất bại", "error")
+                    }
+                    if (d.error_code == "6"){
+                        addNotification("Yêu cầu khởi động lại", "warning")
+                    }
+                    
+                    
+                }
+
+                if(d.ip && document.getElementById('ipDisplay')) document.getElementById('ipDisplay').innerText = "IP: " + d.ip;
+                if(d.time && document.getElementById('clock')) document.getElementById('clock').innerText = d.time;
+                
+                // Resource Bars
+                if(d.ram_usage !== undefined) { 
+                    if(document.getElementById('memoryPercent')) document.getElementById('memoryPercent').innerText = ` ${d.ram_usage} %`; 
+                    updateBar('memoryBar', d.ram_usage); 
+                }
+                if(d.cpu_load !== undefined) { 
+                    if(document.getElementById('cpuPercent')) document.getElementById('cpuPercent').innerText = ` ${d.cpu_load} %`; 
+                    updateBar('cpuBar', d.cpu_load); 
+                }
+
+                // Realtime Hardware (ADC)
+
+                if(d.adc_voltage !== undefined && document.getElementById('voltage')) document.getElementById('voltage').innerText = d.adc_voltage;
+                if(d.adc_current !== undefined && document.getElementById('current')) document.getElementById('current').innerText = d.adc_current;
+
+                // Motor Realtime Controls
+                if(d.Inv_state !== undefined){
+                    let motorTexts = document.querySelectorAll('#motorStatusText');
+                    let motorLights = document.querySelectorAll('#motorStatusLight');
+                    motorTexts.forEach(txt => txt.innerText = d.Inv_state ? "CHẠY" : "DỪNG");
+                    motorLights.forEach(lt => lt.className = d.Inv_state ? "indicator-light running" : "indicator-light stopped");
+                }
+
+
+                
+                if(d.Inv_dir !== undefined) {
+                    let isFwd = d.Inv_dir;
+                    if(document.getElementById('dirLabel')) document.getElementById('dirLabel').innerText = isFwd ? "Quay Thuận" : "Quay Nghịch";
+                    if(document.getElementById('dirBtn')) document.getElementById('dirBtn').className = isFwd ? "btn mt-2 medium dir-fwd" : "btn mt-2 medium dir-rev";
+                }
+                
+                if(d.Inv_freq !== undefined && document.getElementById('freqVal')) document.getElementById('freqVal').innerText = d.Inv_freq;
+
+                // IO States
+                for(let i=1; i<=4; i++) {
+                    if(d[`output${i}_level`] !== undefined) {
+                        let sw = document.getElementById(`output${i}Switch`);
+                        if(sw) sw.checked = d[`output${i}_level`];
+                    }
                     
                     if(d[`input${i}_state`] !== undefined) {
                         const st = d[`input${i}_state`];
@@ -1509,6 +1858,9 @@
             } else if (selectedValue === '2') {
                 document.getElementById('contactorSettingsCard').style.display = 'block';
                 document.getElementById('inverterSettingsCard').style.display = 'none';
+            } else if (selectedValue === '3'){
+                document.getElementById('contactorSettingsCard').style.display = 'block';
+                document.getElementById('inverterSettingsCard').style.display = 'block';
             } else{
                 document.getElementById('contactorSettingsCard').style.display = 'none';
                 document.getElementById('inverterSettingsCard').style.display = 'none';
