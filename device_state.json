@@ -15,7 +15,7 @@
     "output4_level": false,
     "adc_voltage": 12.5,
     "adc_current": 2.1,
-    "adc_enable": false,
+    "adc_enable": true,
     "io_enable": false,
     "adc_voltage_limit": 24.0,
     "adc_current_limit": 5.0,

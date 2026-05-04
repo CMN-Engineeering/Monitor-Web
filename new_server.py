@@ -30,11 +30,11 @@ default_device_state = {
     # Config Variables
     "adc_enable": True,
     "io_enable": True,
+    "Inv_enable": True,
     "adc_voltage_limit": 24,
     "adc_current_limit": 5,
     
     "motor_mode": "3", # 1: Inverter, 2: Contactor, 3: Both
-    "Inv_enable": True,
     "Inv_model": "1",
     "Inv_addr": "1",
     "Inv_baudrate": "9600",
@@ -77,13 +77,17 @@ def load_state():
             print(f"Error loading state from {STATE_FILE}: {e}")
     return default_device_state.copy()
 
+@app.route('/saveSettings')
 def save_state():
-    """Save the current device state to the JSON file."""
-    try:
-        with open(STATE_FILE, 'w') as f:
-            json.dump(device_state, f, indent=4)
-    except Exception as e:
-        print(f"Error saving state to {STATE_FILE}: {e}")
+    """Save the current device state to the JSON file by deleting the old one first."""
+        # 1. Delete the existing file if it exists
+    if os.path.exists(STATE_FILE):
+        os.remove(STATE_FILE)
+    
+    # 2. Create a new file and write the fresh state
+    with open(STATE_FILE, 'w') as f:
+        json.dump(device_state, f, indent=4) 
+    return "OK"           
 
 # Initialize state on startup
 device_state = load_state()
@@ -155,37 +159,29 @@ def motor_conf():
             device_state["motor2_en"] = bool(request.args.get('Mot2En', type=int, default=0))
             device_state["motor2_on_pin"] = request.args.get('StartPin2', default="0")
             device_state["motor2_off_pin"] = request.args.get('StopPin2', default="0")
-            
-    save_state() # Save changes
     print(f"👉 MOTOR CONFIG UPDATED: Mode={device_state['motor_mode']}, Enabled={device_state['Inv_enable']}")
     return "OK"
 
 @app.route('/adcEn')
 def enable_adc():
-    en = request.args.get('en', type=int)
-    device_state["adc_enable"] = bool(en)
-    save_state()
+    device_state["adc_enable"] = bool(request.args.get('en', type=int))
     return "OK"
 
 @app.route('/gpioEn')
 def enable_gpio():
-    en = request.args.get('en', type=int)
-    device_state["io_enable"] = bool(en)
-    save_state()
+    device_state["io_enable"] = bool(request.args.get('en', type=int))
     return "OK"    
 
 @app.route('/setAdcLimits')
 def set_adc_limits():
     device_state["adc_voltage_limit"] = request.args.get('voltage', type=float, default=0.0)
     device_state["adc_current_limit"] = request.args.get('current', type=float, default=0.0)
-    save_state()
     print(f"👉 ADC LIMITS: V={device_state['adc_voltage_limit']}, A={device_state['adc_current_limit']}")
     return "OK"
 
 @app.route('/setGpios')
 def set_gpios():
     device_state["gpios"] = request.args.get('m', default="0")
-    save_state()
     print(f"👉 GPIO MASK: {device_state['gpios']}")
     return "OK"
 
@@ -195,14 +191,12 @@ def set_timer():
     device_state[f"timer{t_id}_on"] = request.args.get('on', default="00:00")
     device_state[f"timer{t_id}_off"] = request.args.get('off', default="00:00")
     device_state[f"timer{t_id}_mask"] = request.args.get('mask', default="0")
-    save_state()
     return "OK"
 
 @app.route('/setTimeren')
 def set_timer_en():
     t_id = request.args.get('timer', type=int)
     device_state[f"timer{t_id}_en"] = bool(request.args.get('en', type=int, default=0))
-    save_state()
     return "OK"
 
 @app.route('/saveWifi', methods=['POST'])
@@ -214,7 +208,6 @@ def save_wifi():
     device_state["static_ip"] = request.form.get('ip', '')
     device_state["gateway"] = request.form.get('gateway', '')
     device_state["netmask"] = request.form.get('netmask', '')
-    save_state()
     print(f"📡 WIFI UPDATED: {device_state['ssid']}")
     return "OK"
 
@@ -222,7 +215,6 @@ def save_wifi():
 def save_ap():
     device_state["ap_ssid"] = request.form.get('ap_name', '')
     device_state["ap_pass"] = request.form.get('ap_pass', '')
-    save_state()
     return "OK"
 
 @app.route('/saveMQTT', methods=['POST'])
@@ -233,7 +225,6 @@ def save_mqtt():
     device_state["mqtt_topic"] = request.form.get('mqtt_topic', '')
     device_state["mqtt_id"] = request.form.get('mqtt_id', '')
     device_state["mqtt_port"] = request.form.get('mqtt_port', '')
-    save_state()
     print(f"📡 MQTT UPDATED: Link={device_state['mqtt_link']}")
     return "OK"
 
@@ -243,31 +234,26 @@ def save_mqtt():
 def set_freq():
     val = request.args.get('val', type=int)
     device_state["Inv_freq"] = str(val)
-    save_state()
     return "OK"
 
 @app.route('/InvSetDir')
 def set_dir():
     device_state["Inv_dir"] = bool(request.args.get('val', type=int))
-    save_state()
     return "OK"
 
 @app.route('/MotorStart')
 def motor_start():
     device_state["Inv_state"] = True
-    save_state()
     return "OK"
 
 @app.route('/MotorStop')
 def motor_stop():
     device_state["Inv_state"] = False
-    save_state()
     return "OK"
 
 @app.route('/setOutput<int:num>')
 def set_out(num):
     device_state[f"output{num}_level"] = bool(request.args.get('val', type=int))
-    save_state()
     return "OK"
 
 @app.route('/reboot')

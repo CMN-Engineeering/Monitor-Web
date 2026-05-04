@@ -1226,7 +1226,7 @@
                 let adcEn = document.getElementById('adcEnableToggle').checked;
                 let v = document.getElementById('voltageLimitSlider').value;
                 let c = document.getElementById('currentLimitSlider').value;
-                fetch(`/adcEn?en=${adcEn}`)
+                fetch(`/adcEn?en=${adcEn ? 1 : 0}`)
                 fetch(`/setAdcLimits?voltage=${v}&current=${c}`);
 
                 const motorEnabled = document.getElementById('motorEnableToggle').checked;
@@ -1273,7 +1273,7 @@
                 }
                 //GPIOs
                 let gpioEn = document.getElementById('ioEnableToggle').checked;
-                fetch(`/gpioEn?en=${gpioEn}`)
+                fetch(`/gpioEn?en=${gpioEn ? 1 : 0}`)
                 fetch('/setGpios?m=' + computeGpioMask());
 
                 //Timers
@@ -1328,6 +1328,9 @@
                 port = document.getElementById('mqtt_port').value;
                 let data = `mqtt_name=${name}&mqtt_pass=${pass}&mqtt_link=${link}&mqtt_topic=${data_link}&mqtt_id=${id}&mqtt_port=${port}&`;
                 fetch('/saveMQTT', { method: 'POST', headers: {'Content-Type': 'application/x-www-form-urlencoded'}, body: data });
+                
+                //Save Settings
+                fetch('/saveSettings')
             }
         }
 
