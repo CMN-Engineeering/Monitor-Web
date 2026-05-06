@@ -736,7 +736,7 @@
                 <div class="card" id="inverterSettingsCard" style="display:none;">
                     <div class="card-header"><i class="fas fa-cogs"></i> Cấu hình biến tần</div>
                     <div style="display: flex; flex-direction: column; gap: 12px;">
-                    <select id="motor-type" style="padding: 5px; border-radius: 4px; flex:1;">
+                    <select id="inverter_model" style="padding: 5px; border-radius: 4px; flex:1;">
                             <option value="" disabled selected>Chọn loại biến tần</option>
                             <option value="1">KM20</option>
                             <option value="0">None</option>
@@ -1236,7 +1236,7 @@
                     }
                     if (selectedMotorType === '1'){
                                             //Inverter Setting
-                        let model = document.getElementById('motor-type').value;
+                        let model = document.getElementById('inverter_model').value;
                         let addr = document.getElementById('inverterAddress').value.trim();
                         let baud = document.getElementById('inverterBaudrate').value;
                         fetch(`/MotorConf?en=1&mode=1&model=${model}&addr=${addr}&baud=${baud}`);
@@ -1253,7 +1253,7 @@
                     }
                     if (selectedMotorType === '3'){
                         //Inverter Setting
-                        let model = document.getElementById('motor-type').value;
+                        let model = document.getElementById('inverter_model').value;
                         let addr = document.getElementById('inverterAddress').value.trim();
                         let baud = document.getElementById('inverterBaudrate').value;
                         fetch(`/MotorConf?en=1&mode=1&model=${model}&addr=${addr}&baud=${baud}`);
@@ -1341,7 +1341,7 @@
         }*/
 
         /*function saveInverterOption() {
-            let model = document.getElementById('motor-type').value;
+            let model = document.getElementById('inverter_model').value;
             let addr = document.getElementById('inverterAddress').value.trim();
             let baud = document.getElementById('inverterBaudrate').value;
             fetch(`/MotorConf?en=1&mode=1&model=${model}&addr=${addr}&baud=${baud}`)
@@ -1472,7 +1472,7 @@
                 setValue('inverterAddress', d.Inv_addr || "0"); setValue('inverterBaudrate', d.Inv_baudrate || "0");
                 setValue('static_ip', d.static_ip); setValue('ap_name', d.ap_ssid); setValue('ap_pass', d.ap_pass);
 
-                checkEl('motorEnableToggle', d.Inv_enable);
+                checkEl('motorEnableToggle', d.motor_ctrl_enable);
                 checkEl('sta_enable', d.sta_enable);
                 
                 // --- NEW DATA BINDINGS ADDED HERE ---
@@ -1516,7 +1516,7 @@
                 if(d.factory_id) document.getElementById('factoryID').innerText = "Factory ID: " + d.factory_id;
 
                 if(d.Inv_model !== undefined) {
-                    const motorTypeSelect = document.getElementById('motor-type');
+                    const motorTypeSelect = document.getElementById('inverter_model');
                     if (motorTypeSelect) motorTypeSelect.value = d.Inv_model;
                 }
                 
@@ -1674,14 +1674,14 @@
                 }
 
                 // 5. Motor / Contactor Config
-                checkEl('motorEnableToggle', d.Inv_enable);
+                checkEl('motorEnableToggle', d.motor_ctrl_enable);
                 if (d.motor_mode !== undefined) {
                     setValue('motor-option', d.motor_mode);
                     let motorOpt = document.getElementById('motor-option');
                     if (motorOpt) motorOpt.dispatchEvent(new Event('change')); // Trigger visibility
                 }
                 
-                setValue('motor-type', d.Inv_model);
+                setValue('inverter_model', d.Inv_model);
                 setValue('inverterAddress', d.Inv_addr);
                 setValue('inverterBaudrate', d.Inv_baudrate);
 
