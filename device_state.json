@@ -29,7 +29,7 @@
     "motor1_en": true,
     "motor1_on_pin": "1",
     "motor1_off_pin": "2",
-    "motor2_en": false,
+    "motor2_en": true,
     "motor2_on_pin": "3",
     "motor2_off_pin": "4",
     "ssid": "CMNIoT_WiFi",

@@ -717,7 +717,7 @@
                         <span style="font-weight: 500;">Hiển thị điều khiển Động cơ</span>
                         <label class="switch"><input type="checkbox" id="motorEnableToggle" onchange="toggleMotorVisibility()" checked><span class="slider"></span></label>
                     </div>
-                    <select id="motor-option" style="padding: 5px; border-radius: 4px; flex:1;">
+                    <select id="motor-option" style="padding: 5px; border-radius: 4px; flex:1;" onchange="toggleMotorVisibility()">
                             <option value='-1' selected>Chọn loại động cơ</option>
                             <option value='1'>Inverter</option>
                             <option value='2'>Contactor</option>
@@ -1071,20 +1071,62 @@
         else toggleAuthState(false);
         // --- UI Visibility Toggles ---
         // --- UI Visibility Toggles ---
+        function enableMotor(){
+            const isEn = document.getElementById('motorEnableToggle').checked;
+            document.getElementById('motor-option').style.display = isEn ? 'block' : 'none';
+        }
         function toggleMotorVisibility() {
             const isEn = document.getElementById('motorEnableToggle').checked;
-            document.getElementById('inverterSettingsCard').style.display = isEn ? 'block' : 'none';
-            document.getElementById('contactorSettingsCard').style.display = isEn ? 'block' : 'none';
-            document.getElementById('motorControlCard').style.display = isEn ? 'block' : 'none';
-            document.getElementById('contactor1ControlCard').style.display = isEn ? 'block' : 'none';
-            document.getElementById('contactor2ControlCard').style.display = isEn ? 'block' : 'none';
-            document.getElementById('motor-option').style.display = isEn ? 'block' : 'none';
-            
-            for(let i=1; i<=4; i++) {
-                const wrapper = document.getElementById(`timer${i}_inverter_wrapper`);
-                if(wrapper) wrapper.style.display = isEn ? 'flex' : 'none';
+            if (isEn){
+                document.getElementById('motor-option').style.display = isEn ? 'block' : 'none';
+                
+                const selectedMotorType = document.getElementById("motor-option").value;
+                switch(selectedMotorType){
+                    case '1':
+                        document.getElementById('inverterSettingsCard').style.display = 'block';
+                        document.getElementById('contactorSettingsCard').style.display = 'none';
+                        document.getElementById('motorControlCard').style.display = 'block';
+                        document.getElementById('contactor1ControlCard').style.display = 'none';
+                        document.getElementById('contactor2ControlCard').style.display = 'none';
+                        break; // Added break
+                    case '2':
+                        document.getElementById('inverterSettingsCard').style.display = 'none';
+                        document.getElementById('contactorSettingsCard').style.display = 'block';
+                        document.getElementById('motorControlCard').style.display = 'none';
+                        document.getElementById('contactor1ControlCard').style.display = 'block';
+                        document.getElementById('contactor2ControlCard').style.display = 'block';
+                        break; // Added break
+                    case '3':
+                        document.getElementById('inverterSettingsCard').style.display = 'block';
+                        document.getElementById('contactorSettingsCard').style.display = 'block';
+                        document.getElementById('motorControlCard').style.display = 'block';
+                        document.getElementById('contactor1ControlCard').style.display = 'block';
+                        document.getElementById('contactor2ControlCard').style.display = 'block';
+                        break; // Added break
+                    default:
+                        document.getElementById('inverterSettingsCard').style.display = 'none';
+                        document.getElementById('contactorSettingsCard').style.display = 'none';
+                        document.getElementById('motorControlCard').style.display = 'none';
+                        document.getElementById('contactor1ControlCard').style.display = 'none';
+                        document.getElementById('contactor2ControlCard').style.display = 'none';
+                        document.getElementById('motor-option').value = '-1';
+                        break; // Added break (best practice)
+                }
             }
-        }
+            else{
+                document.getElementById('inverterSettingsCard').style.display = 'none';
+                document.getElementById('contactorSettingsCard').style.display = 'none';
+                document.getElementById('motorControlCard').style.display = 'none';
+                document.getElementById('contactor1ControlCard').style.display = 'none';
+                document.getElementById('contactor2ControlCard').style.display = 'none';
+                document.getElementById('motor-option').style.display = 'none';
+            }
+    
+    for(let i=1; i<=4; i++) {
+        const wrapper = document.getElementById(`timer${i}_inverter_wrapper`);
+        if(wrapper) wrapper.style.display = isEn ? 'flex' : 'none';
+    }
+}
         
         function toggleAdcVisibility() {
             const isEn = document.getElementById('adcEnableToggle').checked;
@@ -1227,7 +1269,9 @@
                 let v = document.getElementById('voltageLimitSlider').value;
                 let c = document.getElementById('currentLimitSlider').value;
                 fetch(`/adcEn?en=${adcEn ? 1 : 0}`)
+                setTimeout(() => {}, 300);
                 fetch(`/setAdcLimits?voltage=${v}&current=${c}`);
+                setTimeout(() => {}, 300);
 
                 const motorEnabled = document.getElementById('motorEnableToggle').checked;
                 if(motorEnabled){
@@ -1271,10 +1315,15 @@
                 else{
                     fetch('/MotorConf?en=0')
                 }
+                setTimeout(() => {}, 300);
+
                 //GPIOs
                 let gpioEn = document.getElementById('ioEnableToggle').checked;
                 fetch(`/gpioEn?en=${gpioEn ? 1 : 0}`)
+                setTimeout(() => {}, 300);
+
                 fetch('/setGpios?m=' + computeGpioMask());
+                setTimeout(() => {}, 300);
 
                 //Timers
                 for(let i=1; i<=4; i++) {
@@ -1298,7 +1347,11 @@
                     if(document.getElementById(`timer${i}_inverter`)?.checked) m |= 16;
                     
                     fetch(`/setTimer?timer=${i}&on=${document.getElementById(`timer${i}_on`).value||"00:00"}&off=${document.getElementById(`timer${i}_off`).value||"00:00"}&mask=${m}`);
+                    setTimeout(() => {}, 300);
+
                     fetch(`/setTimeren?timer=${i}&en=${en}`);
+                    setTimeout(() => {}, 300);
+
                 }
 
                 //Wifi
@@ -1316,9 +1369,12 @@
                 }
                 let body = `sta_enable=${en}&ssid=${s}&pass=${p}&isStatic=${isStatic}&ip=${encodeURIComponent(ip)}&gateway=${encodeURIComponent(gw)}&netmask=${encodeURIComponent(nm)}&`;
                 fetch('/saveWifi', { method: 'POST', headers: {'Content-Type': 'application/x-www-form-urlencoded'}, body: body });
+                setTimeout(() => {}, 300);
 
                 //AP
                 fetch('/saveAP', { method: 'POST', headers: {'Content-Type': 'application/x-www-form-urlencoded'}, body: `ap_name=${document.getElementById('ap_name').value}&ap_pass=${encodeURIComponent(document.getElementById('ap_pass').value)}&` });            
+                setTimeout(() => {}, 300);
+
                 //MQTT
                 name = document.getElementById('mqtt_username').value;
                 pass = document.getElementById('mqtt_password').value;
@@ -1328,9 +1384,10 @@
                 port = document.getElementById('mqtt_port').value;
                 let data = `mqtt_name=${name}&mqtt_pass=${pass}&mqtt_link=${link}&mqtt_topic=${data_link}&mqtt_id=${id}&mqtt_port=${port}&`;
                 fetch('/saveMQTT', { method: 'POST', headers: {'Content-Type': 'application/x-www-form-urlencoded'}, body: data });
+                setTimeout(() => {}, 300);
                 
                 //Save Settings
-                fetch('/saveSettings')
+                //fetch('/saveSettings')
             }
         }
 
@@ -1879,7 +1936,7 @@
             executeTestStep(); 
             testSequenceInterval = setInterval(() => { testStep = (testStep + 1) % 6; executeTestStep(); }, 600000); 
         }
-        motorSettingOption.addEventListener('change', function() {
+        /*motorSettingOption.addEventListener('change', function() {
             const selectedValue = this.value;
             if (selectedValue === '1') {
                 document.getElementById('contactorSettingsCard').style.display = 'none';
@@ -1894,7 +1951,7 @@
                 document.getElementById('contactorSettingsCard').style.display = 'none';
                 document.getElementById('inverterSettingsCard').style.display = 'none';
             }
-        });
+        });*/
         function executeTestStep() {
             const setUI = (freq) => { document.getElementById('freqSlider').value = freq; document.getElementById('freqSlider_val').innerText = freq; };
             switch (testStep) {
