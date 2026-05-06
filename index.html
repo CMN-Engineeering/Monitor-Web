@@ -1269,9 +1269,9 @@
                 let v = document.getElementById('voltageLimitSlider').value;
                 let c = document.getElementById('currentLimitSlider').value;
                 fetch(`/adcEn?en=${adcEn ? 1 : 0}`)
-                setTimeout(() => {}, 300);
+                setTimeout(() => {}, 500);
                 fetch(`/setAdcLimits?voltage=${v}&current=${c}`);
-                setTimeout(() => {}, 300);
+                setTimeout(() => {}, 500);
 
                 const motorEnabled = document.getElementById('motorEnableToggle').checked;
                 if(motorEnabled){
@@ -1315,15 +1315,15 @@
                 else{
                     fetch('/MotorConf?en=0')
                 }
-                setTimeout(() => {}, 300);
+                setTimeout(() => {}, 500);
 
                 //GPIOs
                 let gpioEn = document.getElementById('ioEnableToggle').checked;
                 fetch(`/gpioEn?en=${gpioEn ? 1 : 0}`)
-                setTimeout(() => {}, 300);
+                setTimeout(() => {}, 500);
 
                 fetch('/setGpios?m=' + computeGpioMask());
-                setTimeout(() => {}, 300);
+                setTimeout(() => {}, 500);
 
                 //Timers
                 for(let i=1; i<=4; i++) {
@@ -1347,10 +1347,10 @@
                     if(document.getElementById(`timer${i}_inverter`)?.checked) m |= 16;
                     
                     fetch(`/setTimer?timer=${i}&on=${document.getElementById(`timer${i}_on`).value||"00:00"}&off=${document.getElementById(`timer${i}_off`).value||"00:00"}&mask=${m}`);
-                    setTimeout(() => {}, 300);
+                    setTimeout(() => {}, 500);
 
                     fetch(`/setTimeren?timer=${i}&en=${en}`);
-                    setTimeout(() => {}, 300);
+                    setTimeout(() => {}, 500);
 
                 }
 
@@ -1369,11 +1369,11 @@
                 }
                 let body = `sta_enable=${en}&ssid=${s}&pass=${p}&isStatic=${isStatic}&ip=${encodeURIComponent(ip)}&gateway=${encodeURIComponent(gw)}&netmask=${encodeURIComponent(nm)}&`;
                 fetch('/saveWifi', { method: 'POST', headers: {'Content-Type': 'application/x-www-form-urlencoded'}, body: body });
-                setTimeout(() => {}, 300);
+                setTimeout(() => {}, 500);
 
                 //AP
                 fetch('/saveAP', { method: 'POST', headers: {'Content-Type': 'application/x-www-form-urlencoded'}, body: `ap_name=${document.getElementById('ap_name').value}&ap_pass=${encodeURIComponent(document.getElementById('ap_pass').value)}&` });            
-                setTimeout(() => {}, 300);
+                setTimeout(() => {}, 500);
 
                 //MQTT
                 name = document.getElementById('mqtt_username').value;
@@ -1384,7 +1384,7 @@
                 port = document.getElementById('mqtt_port').value;
                 let data = `mqtt_name=${name}&mqtt_pass=${pass}&mqtt_link=${link}&mqtt_topic=${data_link}&mqtt_id=${id}&mqtt_port=${port}&`;
                 fetch('/saveMQTT', { method: 'POST', headers: {'Content-Type': 'application/x-www-form-urlencoded'}, body: data });
-                setTimeout(() => {}, 300);
+                setTimeout(() => {}, 500);
                 
             }
         }
