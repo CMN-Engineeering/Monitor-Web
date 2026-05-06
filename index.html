@@ -543,7 +543,7 @@
             <span id="clock" class="clock" style="margin-left:auto; font-size: 1rem; color: var(--accent);">--:--:--</span>         
         </div>
 
-        <div id="view-dashboard" class="view-section active">
+        <div id="view-dashboard" class="view-section">
             <div class="status-bar" style="flex-direction: column; gap: 10px; align-items: stretch;">
                 <div style="display: flex; justify-content: space-between; align-items: center;">
                     <div id="statusBadge" class="badge offline"><i class="fas fa-wifi"></i> Station: Đang kết nối...</div>
@@ -695,7 +695,7 @@
             </div>
         </div>
         
-        <div id="view-settings" class="view-section">
+        <div id="view-settings" class="view-section active">
             
             <div class="card" id="loginCard">
                 <div class="card-header"><i class="fas fa-user"></i> <span id="loginHeader">Đăng nhập</span></div>
@@ -839,9 +839,35 @@
                         <script>
                             for(let i=1; i<=4; i++) {
                                 document.write(`
-                                    <div class="control-row" style="margin-bottom: 10px;">
-                                        <span>Ngõ vào ${i}</span>
-                                        <label class="switch"><input type="checkbox" id="input${i}Toggle" onchange="toggleInputDetails(${i})"><span class="slider"></span></label>
+                                    <div class="control-row" style="margin-bottom: 10px; display:flex; flex-direction:column; align-items:flex-start">
+
+                                        <div style="margin-bottom:10px; display:block; align-items:center; gap:10px">
+                                            <span>Ngõ vào ${i}</span>
+                                            <label class="switch">
+                                                <input type="checkbox" id="input${i}Toggle" onchange="toggleInputDetails(${i})">
+                                                <span class="slider"></span>
+                                            </label>
+                                            <div id="input${i}-threshold-enable" style="margin-top:15px; display:none; align-items:center; gap:10px">
+                                                <span>Enable Threshold</span>
+                                                <label class="switch">
+                                                    <input type="checkbox" id="input${i}-thrEn-btn"onchange="toggleThresholdDetails(${i})">
+                                                    <span class="slider"></span>
+                                                </label>
+                                            </div>
+                                        </div>
+
+
+                                        <div id="input${i}-threshold-details" style="display:none">
+                                        <div style="margin:5px; display:flex; align-items:center;">
+                                            <span style="min-width:120px">Threshold</span>
+                                        </div>
+                                        <input id="input${i}-threshold" type="number" max="36000" step="1" style="width:100px">
+
+                                        <div style="margin:5px; display:flex; align-items:center;">
+                                            <span style="min-width:120px">Scale Factor</span>
+                                        </div>
+                                        <input id="input${i}-scale-factor" type="number" max="36000" step="1" style="width:100px">
+                                    </div>
                                     </div>
                                 `);
                             }
@@ -1151,7 +1177,15 @@
         }
 
         function toggleInputDetails(num) {
-            document.getElementById(`input${num}Details`).style.display = document.getElementById(`input${num}Toggle`).checked ? 'block' : 'none';
+            const inputEn = document.getElementById(`input${num}Toggle`).checked;
+            document.getElementById(`input${num}Details`).style.display =  inputEn ? 'block' : 'none';
+            document.getElementById(`input${num}-threshold-enable`).style.display =  inputEn ? 'block' : 'none';
+            document.getElementById(`input${num}-threshold-details`).style.display = inputEn ? "block" : "none";
+            document.getElementById(`input${num}-thrEn-btn`).checked = inputEn;
+        }
+        function toggleThresholdDetails(num){
+            const thrEn = document.getElementById(`input${num}-thrEn-btn`).checked;
+            document.getElementById(`input${num}-threshold-details`).style.display = thrEn ? "block" : "none";
         }
 
         function toggleOutputControls(num) {
@@ -1351,10 +1385,30 @@
 
                 // GPIOs
                 let gpioEn = document.getElementById('ioEnableToggle').checked;
-                await fetch(`/gpioEn?en=${gpioEn ? 1 : 0}`);
+                const in1_thr_en = document.getElementById('input1-thrEn-btn').checked ? 1 : 0;
+                const in2_thr_en = document.getElementById('input2-thrEn-btn').checked ? 1 : 0;
+                const in3_thr_en = document.getElementById('input3-thrEn-btn').checked ? 1 : 0;
+                const in4_thr_en = document.getElementById('input4-thrEn-btn').checked ? 1 : 0;
+
+                const in1_input_thr = in1_thr_en? document.getElementById('input1-threshold').value : 0;
+                const in2_input_thr = in2_thr_en? document.getElementById('input2-threshold').value : 0;
+                const in3_input_thr = in3_thr_en? document.getElementById('input3-threshold').value : 0;
+                const in4_input_thr = in4_thr_en? document.getElementById('input4-threshold').value : 0;
+
+                const in1_scale_factor = in1_thr_en? document.getElementById('input1-scale-factor').value : 0;
+                const in2_scale_factor = in2_thr_en? document.getElementById('input2-scale-factor').value : 0;
+                const in3_scale_factor = in3_thr_en? document.getElementById('input3-scale-factor').value : 0;
+                const in4_scale_factor = in4_thr_en? document.getElementById('input4-scale-factor').value : 0;
+
+                if(!gpioEn){
+                    await fetch(`/gpioEn?en=0`);
+                }
+                else{
+                    await fetch(`/gpioEn?en=1`);
+                }
                 await delay(delay_time);
 
-                await fetch('/setGpios?m=' + computeGpioMask());
+                await fetch('/setGpios?m=' + computeGpioMask() + `&in1_thr_en=${in1_thr_en}&in2_thr_en=${in2_thr_en}&in3_thr_en=${in3_thr_en}&in4_thr_en=${in4_thr_en}&in1_input_thr=${in1_input_thr}&in2_input_thr=${in2_input_thr}&in3_input_thr=${in3_input_thr}&in4_input_thr=${in4_input_thr}&in1_scale_factor=${in1_scale_factor}&in2_scale_factor=${in2_scale_factor}&in3_scale_factor=${in3_scale_factor}&in4_scale_factor=${in4_scale_factor}`);
                 await delay(delay_time);
 
                 // Timers
@@ -1506,6 +1560,14 @@
                     toggleInputDetails(i); 
                     toggleOutputControls(i);
                 }
+
+                for(let i=1; i<=4; i++) {
+                    document.getElementById(`input${i}-thrEn-btn`).checked = d[`input${i}-thrEn-btn`];
+                    document.getElementById(`input${i}-threshold`).value = d[`in${i}_thr_en`];
+                    document.getElementById(`input${i}-threshold`).value = d[`in${i}_input_thr`];
+                    document.getElementById(`input${i}-scale-factor`).value = d[`in${i}_scale_factor`];
+                }
+
 
                 // 7. Timers
                 for(let i=1; i<=4; i++) {
