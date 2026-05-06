@@ -264,6 +264,11 @@ def motor_stop():
         device_state[f"Motor{num}_state"] = False
     return "OK"
 
+@app.route('/MotorSetDir')
+def motor_set_dir():
+    device_state["Inv_dir"] = bool(request.args.get('dir', type=int))
+    return "OK"
+
 @app.route('/setOutput<int:num>')
 def set_out(num):
     device_state[f"output{num}_level"] = bool(request.args.get('val', type=int))

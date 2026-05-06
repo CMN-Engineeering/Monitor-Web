@@ -757,7 +757,7 @@
 
                 <div class="card" id="contactorSettingsCard" style="display:none;">
                     <div class="card-header"><i class="fas fa-cogs"></i> Cấu hình Contactor</div>
-                    <input type="text" id="motorNum" placeholder="Num of Motor" style="width: 100%">
+                    <input type="text" id="motorNum" placeholder="Num of Motor" style="width: 100%; display: none">
                     <div id="contactorSettingsDetails" style="display:block; gap:10px;">
                         <script>
                         for(let i=1; i<=2; i++) {
@@ -787,6 +787,17 @@
                                                     <option value="2">Output 2</option>
                                                     <option value="3">Output 3</option>
                                                     <option value="4">Output 4</option>
+                                            </select>
+                                            </div>
+                                             <div>
+                                            <span style="font-size: 0.8rem; color: #bbb;">Input Feedback:</span>
+                                            <select id="motor${i}-input-feedback" style="padding: 5px; margin-top :10px;border-radius: 4px; flex:1;">
+                                                    <option value="" disabled selected>Chọn Input Feedback</option>
+                                                    <option value="1">Input 1</option>
+                                                    <option value="2">Input 2</option>
+                                                    <option value="3">Input 3</option>
+                                                    <option value="4">Input 4</option>
+                                                    <option value="0">Disable</option>
                                             </select>
                                             </div>
                                         </div> 
@@ -1322,10 +1333,14 @@
                         const motor1En = document.getElementById('motor1_en').checked ? 1 : 0;
                         const motor1OnPin = document.getElementById('motor1-output-on').value || 0;
                         const motor1OffPin = document.getElementById('motor1-output-off').value || 0;
+                        const motor1InputFB = document.getElementById('motor1-input-feedback').value || 0;
+
                         const motor2En = document.getElementById('motor2_en').checked ? 1 : 0;
                         const motor2OnPin = document.getElementById('motor2-output-on').value || 0;
                         const motor2OffPin = document.getElementById('motor2-output-off').value || 0;
-                        await fetch(`/MotorConf?en=1&mode=2&Mot1En=${motor1En}&StartPin1=${motor1OnPin}&StopPin1=${motor1OffPin}&Mot2En=${motor2En}&StartPin2=${motor2OnPin}&StopPin2=${motor2OffPin}`);
+                        const motor2InputFB = document.getElementById('motor2-input-feedback').value || 0;
+
+                        await fetch(`/MotorConf?en=1&mode=2&Mot1En=${motor1En}&StartPin1=${motor1OnPin}&StopPin1=${motor1OffPin}&InputFB1=${motor1InputFB}&Mot2En=${motor2En}&StartPin2=${motor2OnPin}&StopPin2=${motor2OffPin}&InputFB2=${motor2InputFB}`);
                         await delay(300);
                     }
                 } else {
@@ -1462,6 +1477,10 @@
                 setValue('inverter_model', d.Inv_model);
                 setValue('inverterAddress', d.Inv_addr);
                 setValue('inverterBaudrate', d.Inv_baudrate);
+                if (d.Inv_state !== undefined){
+                    document.getElementById("dirLabel").innerText = d.Inv_state ? "Thuận" : "Nghịch";
+                    document.getElementById("dirBtn").className = d.Inv_state ? "dir-fwd" : "dir-rev"
+                }
 
                 checkEl('motor1_en', d.motor1_en);
                 setValue('motor1-output-on', d.motor1_on_pin);
