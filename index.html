@@ -1486,11 +1486,13 @@
                 checkEl('motor1_en', d.motor1_en);
                 setValue('motor1-output-on', d.motor1_on_pin);
                 setValue('motor1-output-off', d.motor1_off_pin);
+                setValue('motor1-input-feedback', d.motor1_input_feedback);
                 if(d.motor1_en) viewContactorMotorSetting(1);
 
                 checkEl('motor2_en', d.motor2_en);
                 setValue('motor2-output-on', d.motor2_on_pin);
                 setValue('motor2-output-off', d.motor2_off_pin);
+                setValue('motor2-input-feedback', d.motor2_input_feedback);
                 if(d.motor2_en) viewContactorMotorSetting(2);
 
                 // 6. IO & System Details
