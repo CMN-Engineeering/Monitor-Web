@@ -858,16 +858,16 @@
 
 
                                         <div id="input${i}-threshold-details" style="display:none">
-                                        <div style="margin:5px; display:flex; align-items:center;">
-                                            <span style="min-width:120px">Threshold</span>
-                                        </div>
-                                        <input id="input${i}-threshold" type="number" max="36000" step="1" style="width:100px">
+                                            <div style="margin:5px; display:flex; align-items:center;">
+                                                <span style="min-width:120px">Threshold</span>
+                                            </div>
+                                            <input id="input${i}-threshold" type="number" max="36000" step="1" style="width:100px">
 
-                                        <div style="margin:5px; display:flex; align-items:center;">
-                                            <span style="min-width:120px">Scale Factor</span>
+                                            <div style="margin:5px; display:flex; align-items:center;">
+                                                <span style="min-width:120px">Scale Factor</span>
+                                            </div>
+                                            <input id="input${i}-scale-factor" type="number" max="36000" step="1" style="width:100px">
                                         </div>
-                                        <input id="input${i}-scale-factor" type="number" max="36000" step="1" style="width:100px">
-                                    </div>
                                     </div>
                                 `);
                             }
@@ -1180,8 +1180,10 @@
             const inputEn = document.getElementById(`input${num}Toggle`).checked;
             document.getElementById(`input${num}Details`).style.display =  inputEn ? 'block' : 'none';
             document.getElementById(`input${num}-threshold-enable`).style.display =  inputEn ? 'block' : 'none';
-            document.getElementById(`input${num}-threshold-details`).style.display = inputEn ? "block" : "none";
-            document.getElementById(`input${num}-thrEn-btn`).checked = inputEn;
+            if(inputEn === false){
+                document.getElementById(`input${num}-thrEn-btn`).checked = false;
+                document.getElementById(`input${num}-threshold-details`).style.display = "none";
+            }
         }
         function toggleThresholdDetails(num){
             const thrEn = document.getElementById(`input${num}-thrEn-btn`).checked;
