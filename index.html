@@ -1268,10 +1268,10 @@
                 let adcEn = document.getElementById('adcEnableToggle').checked;
                 let v = document.getElementById('voltageLimitSlider').value;
                 let c = document.getElementById('currentLimitSlider').value;
-                fetch(`/adcEn?en=${adcEn ? 1 : 0}`)
-                setTimeout(() => {}, 500);
-                fetch(`/setAdcLimits?voltage=${v}&current=${c}`);
-                setTimeout(() => {}, 500);
+                
+                setTimeout(fetch(`/adcEn?en=${adcEn ? 1 : 0}`), 500);
+                
+                setTimeout(fetch(`/setAdcLimits?voltage=${v}&current=${c}`);, 500);
 
                 const motorEnabled = document.getElementById('motorEnableToggle').checked;
                 if(motorEnabled){
