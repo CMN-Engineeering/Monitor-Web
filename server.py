@@ -123,6 +123,17 @@ def get_status():
         "input2_state": device_state["input2_state"],
         "input3_state": device_state["input3_state"],
         "input4_state": device_state["input4_state"],
+        
+        "input1_on_interval": 12,
+        "input2_on_interval": 24,
+        "input3_on_interval": 44,
+        "input4_on_interval": 22,
+        
+        "input1_off_interval": 35,
+        "input2_off_interval": 25,
+        "input3_off_interval": 77,
+        "input4_off_interval": 21,
+        
         "output1_level": device_state["output1_level"],
         "output2_level": device_state["output2_level"],
         "output3_level": device_state["output3_level"],

@@ -1644,6 +1644,15 @@
                         let sw = document.getElementById(`output${i}Switch`);
                         if(sw) sw.checked = d[`output${i}_level`];
                     }
+
+                    if(d[`input${i}_on_interval`] !== undefined){
+                        const interval = d[`input${i}_on_interval`];
+                        document.getElementById(`input${i}OnInterval`).value = interval;
+                    }
+                    if(d[`input${i}_off_interval`] !== undefined){
+                        const interval = d[`input${i}_off_interval`];
+                        document.getElementById(`input${i}OffInterval`).value = interval;
+                    }
                     
                     if(d[`input${i}_state`] !== undefined) {
                         const st = d[`input${i}_state`];
