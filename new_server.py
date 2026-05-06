@@ -39,6 +39,9 @@ default_device_state = {
     "Inv_addr": "1",
     "Inv_baudrate": "9600",
     
+    "Motor1_state" : True,
+    "Motor2_state" : False,    
+    
     "motor1_en": True, "motor1_on_pin": "1", "motor1_off_pin": "2",
     "motor2_en": False, "motor2_on_pin": "3", "motor2_off_pin": "4",
 
@@ -108,6 +111,8 @@ def get_status():
         "adcEn" : device_state["adc_enable"],
         "ioEn" : device_state["io_enable"],
         "Inv_state": device_state["Inv_state"],
+        "Motor1_state" : device_state["Motor1_state"],
+        "Motor2_state" : device_state["Motor2_state"],
         "Inv_dir": device_state["Inv_dir"],
         "Inv_freq": device_state["Inv_freq"],
         "ram_usage": str(random.randint(30, 60)), 
@@ -122,7 +127,7 @@ def get_status():
         "output2_level": device_state["output2_level"],
         "output3_level": device_state["output3_level"],
         "output4_level": device_state["output4_level"],
-        "error_code": str(random.randint(0, 6))
+        "error_code": str(random.randint(0, 11))
     }
     return jsonify(status_data)
     
@@ -243,12 +248,20 @@ def set_dir():
 
 @app.route('/MotorStart')
 def motor_start():
-    device_state["Inv_state"] = True
+    num = request.args.get('num', type=int)
+    if num == 0:
+        device_state["Inv_state"] = True
+    if num in [1,2]: 
+        device_state[f"Motor{num}_state"] = True
     return "OK"
 
 @app.route('/MotorStop')
 def motor_stop():
-    device_state["Inv_state"] = False
+    num = request.args.get('num', type=int)
+    if num == 0:
+        device_state["Inv_state"] = False
+    if num in [1,2]: 
+        device_state[f"Motor{num}_state"] = False
     return "OK"
 
 @app.route('/setOutput<int:num>')

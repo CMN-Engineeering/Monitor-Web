@@ -593,10 +593,10 @@
             <div class="card" id="motorControlCard">
                 <div class="card-header"><i class="fas fa-fan"></i> Động cơ Inverter</div>
                 <div class="status-indicator">
-                    <div class="indicator-light stopped" id="motorStatusLight"></div>
+                    <div class="indicator-light stopped" id="inverterStatusLight"></div>
                     <div class="indicator-text">
                         <span class="indicator-label">Trạng thái:</span>
-                        <span class="indicator-state" id="motorStatusText" style="margin-top: 5px;">DỪNG</span>
+                        <span class="indicator-state" id="inverterStatusText" style="margin-top: 5px;">DỪNG</span>
                     </div>
                 </div>
                 <div class="control-row">
@@ -621,10 +621,10 @@
                 <div class="card" id="contactor1ControlCard">
                 <div class="card-header"><i class="fas fa-fan"></i> Động cơ Contactor 1</div>
                 <div class="status-indicator">
-                    <div class="indicator-light stopped" id="motorStatusLight"></div>
+                    <div class="indicator-light stopped" id="motor1StatusLight"></div>
                     <div class="indicator-text">
                         <span class="indicator-label">Trạng thái:</span>
-                        <span class="indicator-state" id="motorStatusText" style="margin-top: 5px;">DỪNG</span>
+                        <span class="indicator-state" id="motor1StatusText" style="margin-top: 5px;">DỪNG</span>
                     </div>
                 </div>
                 <div class="control-row">
@@ -635,10 +635,10 @@
                 <div class="card" id="contactor2ControlCard">
                 <div class="card-header"><i class="fas fa-fan"></i> Động cơ Contactor 2</div>
                 <div class="status-indicator">
-                    <div class="indicator-light stopped" id="motorStatusLight"></div>
+                    <div class="indicator-light stopped" id="motor2StatusLight"></div>
                     <div class="indicator-text">
                         <span class="indicator-label">Trạng thái:</span>
-                        <span class="indicator-state" id="motorStatusText" style="margin-top: 5px;">DỪNG</span>
+                        <span class="indicator-state" id="motor2StatusText" style="margin-top: 5px;">DỪNG</span>
                     </div>
                 </div>
                 <div class="control-row">
@@ -1752,28 +1752,42 @@
                 }
 
                 if (d.error_code !== undefined) {
-                    if (d.error_code == "0"){
+                    switch (d.error_code) {
+                        case "0":
+                            break;
+                        case "1":
+                            addNotification("Đổi chiều động cơ thất bại", "error");
+                            break;
+                        case "2":
+                            addNotification("Đổi tần số động cơ thất bại", "error");
+                            break;
+                        case "3":
+                            addNotification("Khởi động động cơ thất bại", "error");
+                            break;
+                        case "4":
+                            addNotification("Dừng động cơ thất bại", "error");
+                            break;
+                        case "5":
+                            addNotification("Đổi giá trị ngõ ra thất bại", "error");
+                            break;
+                        case "6":
+                            addNotification("Yêu cầu khởi động lại", "warning");
+                            break;
+                        case "7":
+                            addNotification("Kẹt động cơ ở INPUT 1", "error");
+                            break;
+                        case "8":
+                            addNotification("Kẹt động cơ ở INPUT 2", "error");
+                            break;
+                        case "9":
+                            addNotification("Kẹt động cơ ở INPUT 3", "error");
+                            break;
+                        case "10":
+                            addNotification("Kẹt động cơ ở INPUT 4", "error");
+                            break;
+                        default:
+                            console.warn("Unknown error_code:", d.error_code);
                     }
-                    if (d.error_code == "1"){
-                        addNotification("Đổi chiều động cơ thất bại", "error")
-                    }
-                    if (d.error_code == "2"){
-                        addNotification("Đổi tần số động cơ thất bại", "error")
-                    }
-                    if (d.error_code == "3"){
-                        addNotification("Khởi động động cơ thất bại", "error")
-                    }
-                    if (d.error_code == "4"){
-                        addNotification("Dừng động cơ thất bại", "error")
-                    }
-                    if (d.error_code == "5"){
-                        addNotification("Đổi giá trị ngõ ra thất bại", "error")
-                    }
-                    if (d.error_code == "6"){
-                        addNotification("Yêu cầu khởi động lại", "warning")
-                    }
-                    
-                    
                 }
 
                 if(d.ip && document.getElementById('ipDisplay')) document.getElementById('ipDisplay').innerText = "IP: " + d.ip;
@@ -1796,18 +1810,30 @@
 
                 // Motor Realtime Controls
                 if(d.Inv_state !== undefined){
-                    let motorTexts = document.querySelectorAll('#motorStatusText');
-                    let motorLights = document.querySelectorAll('#motorStatusLight');
-                    motorTexts.forEach(txt => txt.innerText = d.Inv_state ? "CHẠY" : "DỪNG");
-                    motorLights.forEach(lt => lt.className = d.Inv_state ? "indicator-light running" : "indicator-light stopped");
+                    let inverterTexts = document.querySelectorAll('#inverterStatusText');
+                    let inverterLights = document.querySelectorAll('#inverterStatusLight');
+                    inverterTexts.forEach(txt => txt.innerText = d.Inv_state ? "CHẠY" : "DỪNG");
+                    inverterLights.forEach(lt => lt.className = d.Inv_state ? "indicator-light running" : "indicator-light stopped");
                 }
 
+                if(d.Inv_state !== undefined){
+                    let inverterTexts = document.querySelectorAll('#inverterStatusText');
+                    let inverterLights = document.querySelectorAll('#inverterStatusLight');
+                    inverterTexts.forEach(txt => txt.innerText = d.Inv_state ? "CHẠY" : "DỪNG");
+                    inverterLights.forEach(lt => lt.className = d.Inv_state ? "indicator-light running" : "indicator-light stopped");
+                }
+                if(d.Motor1_state !== undefined){
+                    let motor1Texts = document.querySelectorAll('#motor1StatusText');
+                    let motor1Lights = document.querySelectorAll('#motor1StatusLight');
+                    motor1Texts.forEach(txt => txt.innerText = d.Motor1_state ? "CHẠY" : "DỪNG");
+                    motor1Lights.forEach(lt => lt.className = d.Motor1_state ? "indicator-light running" : "indicator-light stopped");
+                }
 
-                
-                if(d.Inv_dir !== undefined) {
-                    let isFwd = d.Inv_dir;
-                    if(document.getElementById('dirLabel')) document.getElementById('dirLabel').innerText = isFwd ? "Quay Thuận" : "Quay Nghịch";
-                    if(document.getElementById('dirBtn')) document.getElementById('dirBtn').className = isFwd ? "btn mt-2 medium dir-fwd" : "btn mt-2 medium dir-rev";
+                if(d.Motor2_state !== undefined){
+                    let motor2Texts = document.querySelectorAll('#motor2StatusText');
+                    let motor2Lights = document.querySelectorAll('#motor2StatusLight');
+                    motor2Texts.forEach(txt => txt.innerText = d.Motor2_state ? "CHẠY" : "DỪNG");
+                    motor2Lights.forEach(lt => lt.className = d.Motor2_state ? "indicator-light running" : "indicator-light stopped");
                 }
                 
                 if(d.Inv_freq !== undefined && document.getElementById('freqVal')) document.getElementById('freqVal').innerText = d.Inv_freq;
@@ -1925,7 +1951,7 @@
         // --- Initialization ---
         window.onload = function() {
             loadConfig();
-            setInterval(fetchStatusOnce, 2000);
+            setInterval(fetchStatusOnce, 1000);
         };
     </script>
 </body>
