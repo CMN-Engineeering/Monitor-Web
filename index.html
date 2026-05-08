@@ -1439,7 +1439,7 @@
                 await delay(delay_time);
 
                 // AP
-                await fetch('/saveAP', { method: 'POST', headers: {'Content-Type': 'application/x-www-form-urlencoded'}, body: `ap_name=${document.getElementById('ap_name').value}&ap_pass=${encodeURIComponent(document.getElementById('ap_pass').value)}&` });
+                await fetch('/saveAP', { method: 'POST', headers: {'Content-Type': 'application/x-www-form-urlencoded'}, body: `ap_name=${document.getElementById('ap_name').value}&ap_pass=${document.getElementById('ap_pass').value}&` });
                 await delay(delay_time);
 
                 // MQTT
@@ -1564,10 +1564,11 @@
                 }
 
                 for(let i=1; i<=4; i++) {
-                    document.getElementById(`input${i}-thrEn-btn`).checked = d[`input${i}-thrEn-btn`];
-                    document.getElementById(`input${i}-threshold`).value = d[`in${i}_thr_en`];
-                    document.getElementById(`input${i}-threshold`).value = d[`in${i}_input_thr`];
-                    document.getElementById(`input${i}-scale-factor`).value = d[`in${i}_scale_factor`];
+                    const thrEn = (d[`in${i}_thr_en`] && document.getElementById(`input${i}Toggle`).checked);
+                    document.getElementById(`input${i}-thrEn-btn`).checked = thrEn;
+                    document.getElementById(`input${i}-threshold-details`).style.display = thrEn ? "block" : "none";
+                    document.getElementById(`input${i}-threshold`).value = thrEn ? d[`in${i}_input_thr`] : 0;
+                    document.getElementById(`input${i}-scale-factor`).value = thrEn ? d[`in${i}_scale_factor`] : 0;
                 }
 
 

@@ -22,7 +22,11 @@ default_device_state = {
     "input3_state": True, "input4_state": False,
     "output1_level": True, "output2_level": False,
     "output3_level": False, "output4_level": False,
-    
+    "in1_thr_en" : False, "in1_input_thr" : 11, "in1_scale_factor" : 111,
+    "in2_thr_en" : True, "in2_input_thr" : 22, "in2_scale_factor" : 222,
+    "in3_thr_en" : False, "in3_input_thr" : 33, "in3_scale_factor" : 333,
+    "in4_thr_en" : True, "in4_input_thr" : 44, "in4_scale_factor" : 444,
+
     # Real-time hardware values (simulated)
     "adc_voltage": 12.5,
     "adc_current": 2.1,
@@ -62,7 +66,7 @@ default_device_state = {
     "mqtt_id" : "asc",
     "mqtt_port" : "1883",
     
-    "gpios": "18",
+    "gpios": "100",
     "timer1_en": True, "timer1_on": "00:00", "timer1_off": "08:00", "timer1_mask": "1",
     "timer2_en": True, "timer2_on": "05:00", "timer2_off": "13:00", "timer2_mask": "12",
     "timer3_en": False, "timer3_on": "00:00", "timer3_off": "00:00", "timer3_mask": "0",
@@ -108,6 +112,7 @@ def get_status():
         "connected": device_state["connected"],
         "mqtt_connected": random.choice([True, False]), # Random simulation
         "ip": device_state["ip"],
+        
         "adcEn" : device_state["adc_enable"],
         "ioEn" : device_state["io_enable"],
         "Inv_state": device_state["Inv_state"],
@@ -198,6 +203,10 @@ def set_adc_limits():
 @app.route('/setGpios')
 def set_gpios():
     device_state["gpios"] = request.args.get('m', default="0")
+    for i in range(1,5):
+       device_state[f"in{i}_thr_en"] = request.args.get(f"in{i}_thr_en",type = int, default = 0) 
+       device_state[f"in{i}_input_thr"] = request.args.get(f"in{i}_input_thr",type = int, default = 0) 
+       device_state[f"in{i}_scale_factor"] = request.args.get(f"in{i}_scale_factor",type = int, default = 0) 
     print(f"👉 GPIO MASK: {device_state['gpios']}")
     return "OK"
 
@@ -293,3 +302,4 @@ def reboot():
 if __name__ == '__main__':
     print("🚀 Server is running at: http://localhost:5000")
     app.run(port=5000, debug=True)
+    get_config()
