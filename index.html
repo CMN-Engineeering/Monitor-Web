@@ -862,12 +862,12 @@
                                                 <span style="min-width:120px">Threshold</span>
                                             </div>
                                             <input id="input${i}-threshold" type="number" max="36000" step="1" style="width:100px">
-
-                                            <div style="margin:5px; display:flex; align-items:center;">
-                                                <span style="min-width:120px">Scale Factor</span>
-                                            </div>
-                                            <input id="input${i}-scale-factor" type="number" max="36000" step="1" style="width:100px">
                                         </div>
+                                        
+                                        <div style="margin:5px; display:flex; align-items:center;">
+                                            <span style="min-width:120px">Scale Factor</span>
+                                        </div>
+                                        <input id="input${i}-scale-factor" type="number" max="36000" step="1" style="width:100px">
                                     </div>
                                 `);
                             }
@@ -1035,24 +1035,43 @@
         function updateSettingsVisibility() {
             document.getElementById('adminSettings').style.display = isAuthenticated ? 'block' : 'none';
         }
-        function handleChoice(choice){
+        async function handleChoice(choice){
             if(choice === 'yes'){
-                saveSettings("dashboard")
-                document.getElementById('view-dashboard').classList.add('active');
-                document.getElementById('nav-dash').classList.add('active');
+                const success = await saveSettings("dashboard");
+
+                if(success){
+                    document.getElementById('view-dashboard').classList.add('active');
+                    document.getElementById('nav-dash').classList.add('active');
+
+                    document.getElementById('view-settings').classList.remove('active');
+                    document.getElementById('nav-set').classList.remove('active');
+
+                    document.getElementById('save-settings-options').style.display = 'none';
+                    document.getElementById('screen-lock').style.display = 'none';
+                }
+                else{
+                    document.getElementById('view-settings').classList.add('active');
+                    document.getElementById('nav-set').classList.add('active');
+                }
             }
+
             if(choice === 'no'){
-                loadConfig()
+                loadConfig();
+
                 document.getElementById('view-dashboard').classList.add('active');
                 document.getElementById('nav-dash').classList.add('active');
+
+                document.getElementById('view-settings').classList.remove('active');
+                document.getElementById('nav-set').classList.remove('active');
             }
+
             if(choice === 'cancel'){
                 document.getElementById('view-settings').classList.add('active');
                 document.getElementById('nav-set').classList.add('active');
             }
+
             document.getElementById('save-settings-options').style.display = 'none';
             document.getElementById('screen-lock').style.display = 'none';
-
         }
         function showTab(tabName) {
             current_active_tab = document.querySelector('.view-section.active').id;
@@ -1320,10 +1339,16 @@
                     if(document.getElementById(`timer${i}_en`)?.checked) {
                         let on = document.getElementById(`timer${i}_on`).value || "00:00";
                         let off = document.getElementById(`timer${i}_off`).value || "00:00";
-                        if(on >= off) return alert(`Timer ${i}: Thời gian BẬT phải nhỏ hơn TẮT.`);
+                        if(on >= off){
+                            alert(`Timer ${i}: Thời gian BẬT phải nhỏ hơn TẮT.`);
+                            return false;
+                        } 
                         
                         let hasTarget = ['out1','out2','out3','out4','inverter'].some(t => document.getElementById(`timer${i}_${t}`)?.checked);
-                        if (!hasTarget) return alert(`Timer ${i} chưa chọn ngõ ra nào.`);
+                        if (!hasTarget){
+                            alert(`Timer ${i} chưa chọn ngõ ra nào.`);
+                            return false
+                        }
                     }
                 }
 
@@ -1334,9 +1359,18 @@
                 let nm = document.getElementById('netmask').value;
                 if(isStatic) {
                     const ipRegex = /^(25[0-5]|2[0-4]\d|1\d{2}|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d{2}|[1-9]?\d)){3}$/;
-                    if(!ipRegex.test(ip) || !ipRegex.test(gw) || !ipRegex.test(nm)) return alert("Cấu hình IP không hợp lệ.");
+                    if(!ipRegex.test(ip) || !ipRegex.test(gw) || !ipRegex.test(nm)){
+                        alert("Cấu hình IP không hợp lệ.");
+                        return false;
+                    }
                 }
-
+                
+                for(let i = 1; i <=4 ; i++){
+                    if(document.getElementById(`input${i}-scale-factor`).value < 0){
+                        alert(`Scale factor input ${i} không hợp lệ (nhỏ hơn 0)`)
+                        return false;
+                    }
+                }
                 // --- SEQUENTIAL FETCHES ---
                 
                 // ADC Setting
@@ -1396,11 +1430,13 @@
                 const in2_input_thr = in2_thr_en? document.getElementById('input2-threshold').value : 0;
                 const in3_input_thr = in3_thr_en? document.getElementById('input3-threshold').value : 0;
                 const in4_input_thr = in4_thr_en? document.getElementById('input4-threshold').value : 0;
+                
 
                 const in1_scale_factor = in1_thr_en? document.getElementById('input1-scale-factor').value : 0;
                 const in2_scale_factor = in2_thr_en? document.getElementById('input2-scale-factor').value : 0;
                 const in3_scale_factor = in3_thr_en? document.getElementById('input3-scale-factor').value : 0;
                 const in4_scale_factor = in4_thr_en? document.getElementById('input4-scale-factor').value : 0;
+                
 
                 if(!gpioEn){
                     await fetch(`/gpioEn?en=0`);
@@ -1457,6 +1493,7 @@
                 // alert("Lưu cài đặt thành công!");
             }
         }
+        
         function toggleOutput(num) {
             let sw = document.getElementById(`output${num}Switch`);
             if(sw.disabled) return; 
@@ -1568,7 +1605,7 @@
                     document.getElementById(`input${i}-thrEn-btn`).checked = thrEn;
                     document.getElementById(`input${i}-threshold-details`).style.display = thrEn ? "block" : "none";
                     document.getElementById(`input${i}-threshold`).value = thrEn ? d[`in${i}_input_thr`] : 0;
-                    document.getElementById(`input${i}-scale-factor`).value = thrEn ? d[`in${i}_scale_factor`] : 0;
+                    document.getElementById(`input${i}-scale-factor`).value = (d[`in${i}_scale_factor`] !== undefined) ? d[`in${i}_scale_factor`] : 0;
                 }
 
 
