@@ -508,6 +508,7 @@
     </style>
 </head>
     <div id="screen-lock" style="display:none; position:fixed;width: 100%;height : 100%; color:black;background:white;  opacity: 0.5;"></div>
+    <div id="wait-screen" style="display:none; position:fixed;width: 100%;height : 100%; color:black;background:white;  opacity: 0.5;"></div>
     <div class="container">
         <h1>CMNIoT SYSTEM</h1>
         <div id="save-settings-options" style="display:none; position:fixed; top:50%; left:50%; width: 20%;height: 35%;transform:translate(-50%, -50%); color:black;background:white; padding:20px; border:1px solid #ccc;">
@@ -515,6 +516,9 @@
             <button style="width : 100%; height: 20%; margin: 10px" onclick="handleChoice('yes')">Lưu và hiện Dashboard</button>
             <button style="width : 100%; height: 20%; margin: 10px" onclick="handleChoice('no')">Không lưu và hiện Dashboard</button>
             <button style="width : 100%; height: 20%; margin: 10px" onclick="handleChoice('cancel')">Hủy</button>
+        </div>
+        <div id="save-settings-wait" style="display:none; font-weight: bold; position:fixed; top:50%; left:50%; width: 20%;height: 5%;transform:translate(-50%, -50%); color:black;background:white; padding:20px; border:1px solid #ccc; align-items: center; justify-content:center">
+            Wait
         </div>
         <div class="card" id="notificationCard">
                 <div class="card-header" style="justify-content: space-between;">
@@ -863,12 +867,13 @@
                                             </div>
                                             <input id="input${i}-threshold" type="number" max="36000" step="1" style="width:100px">
                                         </div>
-                                        <div>
-                                        <div style="margin:5px; display:flex; align-items:center;">
-                                            <span style="min-width:120px">Scale Factor</span>
+
+                                        <div id="input${i}-scale-factor-block" style="display : none">
+                                            <div style="margin:5px; display:flex; align-items:center;">
+                                                <span style="min-width:120px">Scale Factor</span>
+                                            </div>
+                                            <input id="input${i}-scale-factor" type="number" value = "1" max="36000" step="1" style="width:100px;">
                                         </div>
-                                        <input id="input${i}-scale-factor" type="number" value = "1" max="36000" step="1" style="width:100px">
-                                    </div>
                                     </div>
                                 `);
                             }
@@ -1200,6 +1205,7 @@
             const inputEn = document.getElementById(`input${num}Toggle`).checked;
             document.getElementById(`input${num}Details`).style.display =  inputEn ? 'block' : 'none';
             document.getElementById(`input${num}-threshold-enable`).style.display =  inputEn ? 'block' : 'none';
+            document.getElementById(`input${num}-scale-factor-block`).style.display = inputEn ? 'block' : 'none';
             if(inputEn === false){
                 document.getElementById(`input${num}-thrEn-btn`).checked = false;
                 document.getElementById(`input${num}-threshold-details`).style.display = "none";
@@ -1336,6 +1342,11 @@
             const selectedMotorType = motorSettingOption.value;
             
             if (confirmed) {
+                document.getElementById("save-settings-wait").style.display = "flex";
+                document.getElementById("save-settings-options").style.display = "none";
+                
+                //Validation Stage
+
                 for(let i=1; i<=4; i++) {
                     if(document.getElementById(`timer${i}_en`)?.checked) {
                         let on = document.getElementById(`timer${i}_on`).value || "00:00";
@@ -1433,10 +1444,10 @@
                 const in4_input_thr = in4_thr_en? document.getElementById('input4-threshold').value : 0;
                 
 
-                const in1_scale_factor = in1_thr_en? document.getElementById('input1-scale-factor').value : 0;
-                const in2_scale_factor = in2_thr_en? document.getElementById('input2-scale-factor').value : 0;
-                const in3_scale_factor = in3_thr_en? document.getElementById('input3-scale-factor').value : 0;
-                const in4_scale_factor = in4_thr_en? document.getElementById('input4-scale-factor').value : 0;
+                const in1_scale_factor = document.getElementById('input1-scale-factor').value;
+                const in2_scale_factor = document.getElementById('input2-scale-factor').value;
+                const in3_scale_factor = document.getElementById('input3-scale-factor').value;
+                const in4_scale_factor = document.getElementById('input4-scale-factor').value;
                 
 
                 if(!gpioEn){
@@ -1489,7 +1500,8 @@
                 let data = `mqtt_name=${name}&mqtt_pass=${pass}&mqtt_link=${link}&mqtt_topic=${data_link}&mqtt_id=${id}&mqtt_port=${port}&`;
                 
                 await fetch('/saveMQTT', { method: 'POST', headers: {'Content-Type': 'application/x-www-form-urlencoded'}, body: data });
-                
+                document.getElementById("save-settings-wait").style.display = "none";
+                return true;
                 // Optional: Show a completion alert or notification here
                 // alert("Lưu cài đặt thành công!");
             }

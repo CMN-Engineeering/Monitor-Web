@@ -204,10 +204,15 @@ def set_adc_limits():
 def set_gpios():
     device_state["gpios"] = request.args.get('m', default="0")
     for i in range(1,5):
-       device_state[f"in{i}_thr_en"] = request.args.get(f"in{i}_thr_en",type = int, default = 0) 
-       device_state[f"in{i}_input_thr"] = request.args.get(f"in{i}_input_thr",type = int, default = 0) 
-       device_state[f"in{i}_scale_factor"] = request.args.get(f"in{i}_scale_factor",type = int, default = 0) 
+        device_state[f"in{i}_thr_en"] = request.args.get(f"in{i}_thr_en",type = int, default = 0) 
+        device_state[f"in{i}_input_thr"] = request.args.get(f"in{i}_input_thr",type = int, default = 0) 
+        device_state[f"in{i}_scale_factor"] = request.args.get(f"in{i}_scale_factor",type = int, default = 0)
+        print(f"Input {i} threshold enabled : ", device_state[f"in{i}_thr_en"])
+        print(f"Input {i} threshold input : ", device_state[f"in{i}_input_thr"])
+        print(f"Input {i} scale factor : ", device_state[f"in{i}_scale_factor"])
+            
     print(f"👉 GPIO MASK: {device_state['gpios']}")
+    
     return "OK"
 
 @app.route('/setTimer')
