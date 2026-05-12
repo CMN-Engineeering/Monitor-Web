@@ -1317,7 +1317,7 @@
             fetch(`/MotorStop?num=${id}`);  
         }
 
-         function toggleDir() {
+        function toggleDir() {
             let isFwd = document.getElementById("dirLabel").innerText == "Quay Thuận" ? 0 : 1;
             fetch('/MotorSetDir?val=' + (isFwd ? 1 : 0)).then(()=> alert(`Đã chuyển hướng: ${isFwd ? "Thuận" : "Nghịch"}`));
         }
@@ -1584,9 +1584,9 @@
                 setValue('inverter_model', d.Inv_model);
                 setValue('inverterAddress', d.Inv_addr);
                 setValue('inverterBaudrate', d.Inv_baudrate);
-                if (d.Inv_state !== undefined){
-                    document.getElementById("dirLabel").innerText = d.Inv_state ? "Thuận" : "Nghịch";
-                    document.getElementById("dirBtn").className = d.Inv_state ? "dir-fwd" : "dir-rev"
+                if (d.Inv_dir !== undefined){
+                    document.getElementById("dirLabel").innerText = d.Inv_dir ? "Quay Thuận" : "Quay Nghịch";
+                    document.getElementById("dirBtn").className = d.Inv_dir ? "dir-fwd" : "dir-rev"
                 }
 
                 checkEl('motor1_en', d.motor1_en);
@@ -1731,12 +1731,6 @@
                     inverterLights.forEach(lt => lt.className = d.Inv_state ? "indicator-light running" : "indicator-light stopped");
                 }
 
-                if(d.Inv_state !== undefined){
-                    let inverterTexts = document.querySelectorAll('#inverterStatusText');
-                    let inverterLights = document.querySelectorAll('#inverterStatusLight');
-                    inverterTexts.forEach(txt => txt.innerText = d.Inv_state ? "CHẠY" : "DỪNG");
-                    inverterLights.forEach(lt => lt.className = d.Inv_state ? "indicator-light running" : "indicator-light stopped");
-                }
                 if(d.Motor1_state !== undefined){
                     let motor1Texts = document.querySelectorAll('#motor1StatusText');
                     let motor1Lights = document.querySelectorAll('#motor1StatusLight');
@@ -1752,7 +1746,10 @@
                 }
                 
                 if(d.Inv_freq !== undefined && document.getElementById('freqVal')) document.getElementById('freqVal').innerText = d.Inv_freq;
-
+                if (d.Inv_dir !== undefined){
+                    document.getElementById("dirLabel").innerText = d.Inv_dir ? "Quay Thuận" : "Quay Nghịch";
+                    document.getElementById("dirBtn").className = d.Inv_dir ? "dir-fwd" : "dir-rev"
+                }
                 // IO States
                 for(let i=1; i<=4; i++) {
                     if(d[`output${i}_level`] !== undefined) {
