@@ -507,8 +507,8 @@
         .state-circle { display: inline-block; width: 10px; height: 10px; border-radius: 50%; background-color: #e94560; margin-right: 5px; }
     </style>
 </head>
-    <div id="screen-lock" style="display:none; position:fixed;width: 100%;height : 100%; color:black;background:white;  opacity: 0.5;"></div>
-    <div id="wait-screen" style="display:none; position:fixed;width: 100%;height : 100%; color:black;background:white;  opacity: 0.5;"></div>
+<div id="wait-screen" style="display:none; position:fixed;width: 100%;height : 100%; color:black;background:white;  opacity: 0.5;"></div>
+<div id="screen-lock" style="display:none; position:fixed;width: 100%;height : 100%; color:black;background:white;  opacity: 0.5;"></div>
     <div class="container">
         <h1>CMNIoT SYSTEM</h1>
         <div id="save-settings-options" style="display:none; position:fixed; top:50%; left:50%; width: 20%;height: 35%;transform:translate(-50%, -50%); color:black;background:white; padding:20px; border:1px solid #ccc;">
@@ -1342,13 +1342,18 @@
             const selectedMotorType = motorSettingOption.value;
             
             if (confirmed) {
+
+                document.getElementById("screen-lock").style.display = "block";
                 document.getElementById("save-settings-wait").style.display = "flex";
                 document.getElementById("save-settings-options").style.display = "none";
-                
+                if (mode === "system"){
+                    document.getElementById('view-settings').classList.remove("active");
+                }
                 //Validation Stage
 
                 for(let i=1; i<=4; i++) {
                     if(document.getElementById(`timer${i}_en`)?.checked) {
+                        document.getElementById("screen-lock").style.display = "none";
                         let on = document.getElementById(`timer${i}_on`).value || "00:00";
                         let off = document.getElementById(`timer${i}_off`).value || "00:00";
                         if(on >= off){
@@ -1501,6 +1506,10 @@
                 
                 await fetch('/saveMQTT', { method: 'POST', headers: {'Content-Type': 'application/x-www-form-urlencoded'}, body: data });
                 document.getElementById("save-settings-wait").style.display = "none";
+                document.getElementById('screen-lock').style.display = "none";
+                if (mode === "system"){
+                    document.getElementById('view-settings').classList.add("active");
+                }
                 return true;
                 // Optional: Show a completion alert or notification here
                 // alert("Lưu cài đặt thành công!");
