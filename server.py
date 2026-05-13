@@ -291,7 +291,7 @@ def motor_stop():
 
 @app.route('/MotorSetDir')
 def motor_set_dir():
-    device_state["Inv_dir"] = bool(request.args.get('dir', type=int))
+    device_state["Inv_dir"] = bool(request.args.get('val', type=int))
     return "OK"
 
 @app.route('/setOutput<int:num>')

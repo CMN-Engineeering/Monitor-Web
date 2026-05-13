@@ -183,9 +183,19 @@
             margin-right: 8px;
         }
 
-        .dir-fwd { background-color: #0c1fed !important; }
-        .dir-rev { background-color: #f29913 !important; }
-
+        .dir-fwd { 
+            background-color: #0c1fed !important;
+            display:block; width:215px; height:50px; border-radius:8px; border: none;
+        }
+        .dir-rev { 
+            background-color: #f29913 !important; 
+            display:block; width:215px; height:50px; border-radius:8px; border: none;
+        }
+        .dir-fwd-label{
+            font-size: large;
+            font-weight: bold;
+            color: white;
+        }
         .btn:active {
             transform: scale(0.98);
             box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35) inset;
@@ -608,9 +618,9 @@
                     <button class="btn medium" onclick="startMotor(0)" style="background-color: #2ecc71;"><i class="fas fa-play"></i> Bắt đầu</button>
                     <button class="btn medium" onclick="stopMotor(0)" style="background-color: #e94560;"><i class="fas fa-stop"></i> Dừng</button>
                 </div>
-                <div id="dirSet" style="display:block;">
-                    <button id="dirBtn" class="btn mt-2 medium dir-fwd" onclick="toggleDir()">
-                    <i class="fas fa-sync"></i> <span id="dirLabel">Quay Thuận</span>
+                <div id="dirSet">
+                    <button id="dirBtn" class="dir-fwd" onclick="toggleDir()">
+                    </i> <span id="dirLabel" class="dir-fwd-label">Quay Thuận</span>
                 </button>
                 </div>
                 <div id="freqSet" style="display:block;">
@@ -723,8 +733,8 @@
                         <label class="switch"><input type="checkbox" id="motorEnableToggle" onchange="toggleMotorVisibility()" checked><span class="slider"></span></label>
                     </div>
                     <select id="motor-option" style="padding: 5px; border-radius: 4px; flex:1;" onchange="toggleMotorVisibility()">
-                            <option value='-1' selected>Chọn loại động cơ</option>
-                            <option value='1'>Inverter</option>
+                            <option value='-1'>Chọn loại động cơ</option>
+                            <option value='1' selected>Inverter</option>
                             <option value='2'>Contactor</option>
                             <option value='3'>Cả hai</option>                            
                     </select>
@@ -1583,7 +1593,7 @@
                 }
 
                 // 5. Motor / Contactor Config
-                checkEl('motorEnableToggle', d.motor_ctrl_enable);
+                checkEl('motorEnableToggle', d.Inv_enable);
                 if (d.motor_mode !== undefined) {
                     setValue('motor-option', d.motor_mode);
                     let motorOpt = document.getElementById('motor-option');
@@ -1757,7 +1767,7 @@
                 if(d.Inv_freq !== undefined && document.getElementById('freqVal')) document.getElementById('freqVal').innerText = d.Inv_freq;
                 if (d.Inv_dir !== undefined){
                     document.getElementById("dirLabel").innerText = d.Inv_dir ? "Quay Thuận" : "Quay Nghịch";
-                    document.getElementById("dirBtn").className = d.Inv_dir ? "dir-fwd" : "dir-rev"
+                    document.getElementById("dirBtn").className = d.Inv_dir ? "dir-fwd" : "dir-rev";
                 }
                 // IO States
                 for(let i=1; i<=4; i++) {
