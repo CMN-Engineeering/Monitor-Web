@@ -1128,8 +1128,35 @@
                 addNotification('Cố gắng đăng nhập thất bại', 'error');
             }
         }
-        function reboot(){
+        function reboot() {
+            // 1. Hiện hộp thoại confirm, nếu người dùng chọn Cancel (Hủy) thì dừng lại
+            if (!confirm("Xác nhận khởi động lại hệ thống (Reboot)?")) {
+                return; 
+            }
+
+            // 2. Gửi lệnh reboot xuống server
             fetch('/reboot');
+
+            // 3. Khóa màn hình và hiện hộp thoại chờ
+            document.getElementById("screen-lock").style.display = "block";
+            const waitBox = document.getElementById("save-settings-wait");
+            waitBox.style.display = "flex";
+            
+            // 4. Bắt đầu đếm ngược 10 giây
+            let timeLeft = 10;
+            waitBox.innerText = `Đang khởi động lại... ${timeLeft}s`;
+            
+            const countdownInterval = setInterval(() => {
+                timeLeft--;
+                if (timeLeft > 0) {
+                    waitBox.innerText = `Đang khởi động lại... ${timeLeft}s`;
+                } else {
+                    // Hết 10 giây -> Xóa bộ đếm và refresh trang
+                    clearInterval(countdownInterval);
+                    waitBox.innerText = "Đang tải lại giao diện...";
+                    window.location.reload(); 
+                }
+            }, 1000); // Lặp lại mỗi 1000ms (1 giây)
         }
 
         function logout() {
