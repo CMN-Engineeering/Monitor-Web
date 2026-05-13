@@ -34,7 +34,7 @@
     "adc_voltage_limit": 24.0,
     "adc_current_limit": 5.0,
     "motor_mode": "1",
-    "Inv_enable": true,
+    "motor_ctrl_enable": true,
     "Inv_model": "1",
     "Inv_addr": "1",
     "Inv_baudrate": "9600",

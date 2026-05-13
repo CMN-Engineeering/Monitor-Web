@@ -1620,7 +1620,7 @@
                 }
 
                 // 5. Motor / Contactor Config
-                checkEl('motorEnableToggle', d.Inv_enable);
+                checkEl('motorEnableToggle', d.motor_ctrl_enable);
                 if (d.motor_mode !== undefined) {
                     setValue('motor-option', d.motor_mode);
                     let motorOpt = document.getElementById('motor-option');

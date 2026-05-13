@@ -34,7 +34,7 @@ default_device_state = {
     # Config Variables
     "adc_enable": True,
     "io_enable": True,
-    "Inv_enable": True,
+    "motor_ctrl_enable": True,
     "adc_voltage_limit": 24,
     "adc_current_limit": 5,
     
@@ -112,7 +112,7 @@ def get_status():
         "connected": device_state["connected"],
         "mqtt_connected": random.choice([True, False]), # Random simulation
         "ip": device_state["ip"],
-        
+        "motor_ctrl_enable" : device_state["motor_ctrl_enable"],
         "adcEn" : device_state["adc_enable"],
         "ioEn" : device_state["io_enable"],
         "Inv_state": device_state["Inv_state"],
@@ -159,7 +159,7 @@ def get_config():
 @app.route('/MotorConf')
 def motor_conf():
     en = request.args.get('en', type=int, default=0)
-    device_state["Inv_enable"] = bool(en)
+    device_state["motor_ctrl_enable"] = bool(en)
     
     if en:
         mode = request.args.get('mode', type=int, default=0)
@@ -180,7 +180,7 @@ def motor_conf():
             device_state["motor2_en"] = bool(request.args.get('Mot2En', type=int, default=0))
             device_state["motor2_on_pin"] = request.args.get('StartPin2', default="0")
             device_state["motor2_off_pin"] = request.args.get('StopPin2', default="0")
-    print(f"👉 MOTOR CONFIG UPDATED: Mode={device_state['motor_mode']}, Enabled={device_state['Inv_enable']}")
+    print(f"👉 MOTOR CONFIG UPDATED: Mode={device_state['motor_mode']}, Enabled={device_state['motor_ctrl_enable']}")
     return "OK"
 
 @app.route('/adcEn')
