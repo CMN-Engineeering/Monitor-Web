@@ -630,9 +630,14 @@
                     <span id="freqSlider_val" style="color: var(--accent); font-weight: bold; min-width: 30px;">0</span>
                 </div>
                 <button class="btn medium mt-2" onclick="setFrequency()" style="background-color: #3498db;"><i class="fas fa-check"></i> Xác nhận Tần số</button>
-                <button id="testBtn" class="btn medium mt-2" onclick="testInvConfig()" style="background-color: #34db47;"><i class="fas fa-check"></i> Testing</button>
+                
             </div>
-            </div>
+        </div>
+        <div id="contactor-testing"> 
+            <button id="testBtn" class="btn medium mt-2" onclick="testInvConfig()" style="background-color: #34db47;">
+                <i class="fas fa-check"></i> Testing Contactor
+            </button>
+        </div>
                 <div class="card" id="contactor1ControlCard">
                 <div class="card-header"><i class="fas fa-fan"></i> Động cơ Contactor 1</div>
                 <div class="status-indicator">
@@ -660,7 +665,6 @@
                     <button class="btn medium" onclick="startMotor(2)" style="background-color: #2ecc71;"><i class="fas fa-play"></i> Bắt đầu</button>
                     <button class="btn medium" onclick="stopMotor(2)" style="background-color: #e94560;"><i class="fas fa-stop"></i> Dừng</button>
                 </div>
-
             </div>
             <div class="status-bar" style="flex-direction: column; align-items: stretch;">
                 <div class="card-header" style="margin-bottom: 10px;"><i class="fa-solid fa-clock"></i> NGÕ VÀO</div>
@@ -1620,7 +1624,7 @@
                 }
 
                 // 5. Motor / Contactor Config
-                checkEl('motorEnableToggle', d.Inv_enable);
+                checkEl('motorEnableToggle', d.motor_ctrl_enable);
                 if (d.motor_mode !== undefined) {
                     setValue('motor-option', d.motor_mode);
                     let motorOpt = document.getElementById('motor-option');
@@ -1862,15 +1866,27 @@
                 document.getElementById('inverterSettingsCard').style.display = 'none';
             }
         });*/
+        // function executeTestStep() {
+        //     const setUI = (freq) => { document.getElementById('freqSlider').value = freq; document.getElementById('freqSlider_val').innerText = freq; };
+        //     switch (testStep) {
+        //         case 0: fetch('/InvSetDir?val=1'); fetch('/InvSetStart?val=1'); addNotification("Test [0s]: Thuận, Bắt đầu", "info"); break;
+        //         case 1: fetch('/InvSetFreq?val=50'); setUI(50); addNotification("Test [5s]: 50Hz", "info"); break;
+        //         case 2: fetch('/InvSetFreq?val=40'); fetch('/InvSetDir?val=0'); setUI(40); addNotification("Test [10s]: 40Hz, Ngược", "info"); break;
+        //         case 3: fetch('/InvSetFreq?val=30'); fetch('/InvSetStart?val=0'); setUI(30); addNotification("Test [15s]: 30Hz, Dừng", "warning"); break;
+        //         case 4: fetch('/InvSetFreq?val=20'); setUI(20); addNotification("Test [20s]: 20Hz", "info"); break;
+        //         case 5: fetch('/InvSetFreq?val=10'); setUI(10); addNotification("Test [25s]: 10Hz. Chuẩn bị lặp lại...", "success"); break;
+        //     }
+        // }
+
         function executeTestStep() {
             const setUI = (freq) => { document.getElementById('freqSlider').value = freq; document.getElementById('freqSlider_val').innerText = freq; };
             switch (testStep) {
-                case 0: fetch('/InvSetDir?val=1'); fetch('/InvSetStart?val=1'); addNotification("Test [0s]: Thuận, Bắt đầu", "info"); break;
-                case 1: fetch('/InvSetFreq?val=50'); setUI(50); addNotification("Test [5s]: 50Hz", "info"); break;
-                case 2: fetch('/InvSetFreq?val=40'); fetch('/InvSetDir?val=0'); setUI(40); addNotification("Test [10s]: 40Hz, Ngược", "info"); break;
-                case 3: fetch('/InvSetFreq?val=30'); fetch('/InvSetStart?val=0'); setUI(30); addNotification("Test [15s]: 30Hz, Dừng", "warning"); break;
-                case 4: fetch('/InvSetFreq?val=20'); setUI(20); addNotification("Test [20s]: 20Hz", "info"); break;
-                case 5: fetch('/InvSetFreq?val=10'); setUI(10); addNotification("Test [25s]: 10Hz. Chuẩn bị lặp lại...", "success"); break;
+                case 0: fetch(`/MotorStart?num=1`);   ; break;
+                case 1:  break;
+                case 2: fetch(`/MotorStart?num=2`); break;
+                case 3:  break;
+                case 4: fetch(`/MotorStop?num=2`); break;
+                case 5: fetch(`/MotorStop?num=1`); break;
             }
         }
 
