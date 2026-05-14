@@ -1347,21 +1347,23 @@
 
         // --- Hardware APIs ---
         function startMotor(id) { 
-            fetch(`/MotorStart?num=${id}`);    
+            // fetch(`/MotorStart?num=${id}`);    
+            fetch(`/MotorControl?cmd=2&num=${id}`);
         }
         
         function stopMotor(id) { 
-            fetch(`/MotorStop?num=${id}`);  
+            // fetch(`/MotorStop?num=${id}`);  
+            fetch(`/MotorControl?cmd=3&num=${id}`);
         }
 
         function toggleDir() {
             let isFwd = document.getElementById("dirLabel").innerText == "Quay Thuận" ? 0 : 1;
-            fetch('/MotorSetDir?val=' + (isFwd ? 1 : 0)).then(()=> alert(`Đã chuyển hướng: ${isFwd ? "Thuận" : "Nghịch"}`));
+            fetch('/MotorControl?cmd=4&val=' + (isFwd ? 1 : 0)).then(()=> alert(`Đã chuyển hướng: ${isFwd ? "Thuận" : "Nghịch"}`));
         }
 
         function setFrequency() {
                 let val = document.getElementById('freqSlider').value;
-                fetch('/MotorSetFreq?val=' + val).then(r => { if(r.ok) alert(`Cập nhật tần số thành công: ${val} Hz`); });
+                fetch('/MotorControl?cmd=1&val=' + val).then(r => { if(r.ok) alert(`Cập nhật tần số thành công: ${val} Hz`); });
                 document.getElementById('freqVal').innerText = val;       
         }
 
@@ -1556,7 +1558,7 @@
         function toggleOutput(num) {
             let sw = document.getElementById(`output${num}Switch`);
             if(sw.disabled) return; 
-            fetch(`/setOutput${num}?val=` + (sw.checked ? 1 : 0)).then(() => addNotification(`Ngõ ra ${num}: ${sw.checked ? 'BẬT' : 'TẮT'}`, "info"));
+            fetch(`/setOutput?num=${num}&val=` + (sw.checked ? 1 : 0)).then(() => addNotification(`Ngõ ra ${num}: ${sw.checked ? 'BẬT' : 'TẮT'}`, "info"));
         }
 
         function computeGpioMask() {
@@ -1903,13 +1905,13 @@
             
             switch (OutputtestStep) {
                 case 0: 
-                    fetch('/setOutput1?val=1'); 
-                    fetch('/setOutput2?val=1'); 
+                    fetch('/setOutput?num=1&val=1'); 
+                    fetch('/setOutput?num=2&val=1'); 
                     setUI(true); 
                     break;
                 case 1: 
-                    fetch('/setOutput1?val=0'); 
-                    fetch('/setOutput2?val=0'); 
+                    fetch('/setOutput?num=1&val=0'); 
+                    fetch('/setOutput?num=2&val=0'); 
                     setUI(false); 
                     break; 
             }
