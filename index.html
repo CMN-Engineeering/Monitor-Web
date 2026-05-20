@@ -1066,6 +1066,9 @@
                     document.getElementById('screen-lock').style.display = 'none';
                 }
                 else{
+                    document.getElementById("screen-lock").style.display = "none";
+                    document.getElementById("save-settings-wait").style.display = "none";
+                    document.getElementById("save-settings-options").style.display = "none";
                     document.getElementById('view-settings').classList.add('active');
                     document.getElementById('nav-set').classList.add('active');
                 }
@@ -1136,12 +1139,13 @@
 
             // 2. Gửi lệnh reboot xuống server
             fetch('/reboot');
-
+            loadConfig()
+            
             // 3. Khóa màn hình và hiện hộp thoại chờ
             document.getElementById("screen-lock").style.display = "block";
+            document.getElementById("view-settings").style.display = "none";
             const waitBox = document.getElementById("save-settings-wait");
             waitBox.style.display = "flex";
-            
             // 4. Bắt đầu đếm ngược 10 giây
             let timeLeft = 10;
             waitBox.innerText = `Đang khởi động lại... ${timeLeft}s`;
