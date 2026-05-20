@@ -665,7 +665,7 @@
             <div class="status-bar" style="flex-direction: column; align-items: stretch;">
                 <div class="card-header" style="margin-bottom: 10px;"><i class="fa-solid fa-clock"></i> NGÕ VÀO</div>
                 <script>
-                    for(let i=1; i<=4; i++) {
+                    for(let i=1; i<=2; i++) {
                         if(i%2 !== 0) document.write('<div class="io-grid">');
                         document.write(`
                             <div>
@@ -694,7 +694,7 @@
                 </div>
                 
                 <script>
-                    for(let i=1; i<=4; i++) {
+                    for(let i=1; i<=2; i++) {
                         document.write(`
                             <div id="output${i}Controls" style="display: none; gap: 8px; padding: 8px;">
                                 <div style="font-weight: 900">NGÕ RA ${i}</div>
@@ -851,7 +851,7 @@
                     <div class="card-header mt-2" style="font-size: 1rem;"><i class="fas fa-arrow-right"></i> NGÕ VÀO</div>
                     <div class="io-grid">
                         <script>
-                            for(let i=1; i<=4; i++) {
+                            for(let i=1; i<=2; i++) {
                                 document.write(`
                                     <div class="control-row" style="margin-bottom: 10px; display:flex; flex-direction:column; align-items:flex-start">
 
@@ -893,7 +893,7 @@
                     <div class="card-header mt-2" style="font-size: 1rem;"><i class="fas fa-arrow-left"></i> NGÕ RA</div>
                     <div class="io-grid">
                         <script>
-                            for(let i=1; i<=4; i++) {
+                            for(let i=1; i<=2; i++) {
                                 document.write(`
                                 <div class="control-row" style="margin-bottom: 10px;">
                                         <span>Ngõ ra ${i}</span>
@@ -911,7 +911,7 @@
                 <div class="card">
                     <div class="card-header"><i class="fas fa-clock"></i> Bộ Hẹn Giờ</div>
                     <script>
-                        for(let i=1; i<=4; i++) {
+                        for(let i=1; i<=2; i++) {
                             document.write(`
                                 <div class="timer-block" id="timerBlock${i}">
                                     <div class="timer-title">
@@ -929,8 +929,6 @@
                                             <span>Kích hoạt:</span>
                                             <label class="checkbox-wrapper"><input type="checkbox" id="timer${i}_out1" onchange="handleTimerChange(${i})"> Ra 1</label>
                                             <label class="checkbox-wrapper"><input type="checkbox" id="timer${i}_out2" onchange="handleTimerChange(${i})"> Ra 2</label>
-                                            <label class="checkbox-wrapper"><input type="checkbox" id="timer${i}_out3" onchange="handleTimerChange(${i})"> Ra 3</label>
-                                            <label class="checkbox-wrapper"><input type="checkbox" id="timer${i}_out4" onchange="handleTimerChange(${i})"> Ra 4</label>
                                             <!-- <label class="checkbox-wrapper" id="timer${i}_inverter_wrapper" style="display:none;"><input type="checkbox" id="timer${i}_inverter" onchange="handleTimerChange(${i})"> Inverter</label> -->
                                         </div>
                                     </div>
@@ -1066,6 +1064,9 @@
                     document.getElementById('screen-lock').style.display = 'none';
                 }
                 else{
+                    document.getElementById("screen-lock").style.display = "none";
+                    document.getElementById("save-settings-wait").style.display = "none";
+                    document.getElementById("save-settings-options").style.display = "none";
                     document.getElementById('view-settings').classList.add('active');
                     document.getElementById('nav-set').classList.add('active');
                 }
@@ -1138,7 +1139,8 @@
             fetch('/reboot');
 
             // 3. Khóa màn hình và hiện hộp thoại chờ
-            document.getElementById("screen-lock").style.display = "block";
+            document.getElementById("screen-lock").style.display = "block";      
+            document.getElementById("view-settings").style.display = "none"; 
             const waitBox = document.getElementById("save-settings-wait");
             waitBox.style.display = "flex";
             
@@ -1157,6 +1159,7 @@
                     window.location.reload(); 
                 }
             }, 1000); // Lặp lại mỗi 1000ms (1 giây)
+            document.getElementById('view-settings').classList.add("active");
         }
 
         function logout() {
@@ -1222,7 +1225,7 @@
                 document.getElementById('motor-option').style.display = 'none';
             }
     
-    for(let i=1; i<=4; i++) {
+    for(let i=1; i<=2; i++) {
         const wrapper = document.getElementById(`timer${i}_inverter_wrapper`);
         if(wrapper) wrapper.style.display = isEn ? 'flex' : 'none';
     }
