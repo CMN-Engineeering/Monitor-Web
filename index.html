@@ -694,7 +694,7 @@
                 </div>
                 
                 <script>
-                    for(let i=1; i<=2; i++) {
+                    for(let i=1; i<=4; i++) {
                         document.write(`
                             <div id="output${i}Controls" style="display: none; gap: 8px; padding: 8px;">
                                 <div style="font-weight: 900">NGÕ RA ${i}</div>
@@ -911,7 +911,7 @@
                 <div class="card">
                     <div class="card-header"><i class="fas fa-clock"></i> Bộ Hẹn Giờ</div>
                     <script>
-                        for(let i=1; i<=2; i++) {
+                        for(let i=1; i<=4; i++) {
                             document.write(`
                                 <div class="timer-block" id="timerBlock${i}">
                                     <div class="timer-title">
@@ -983,7 +983,7 @@
                 <div class="card" style="border: 1px solid rgba(233, 69, 96, 0.3);">
                     <div class="card-header"><i class="fas fa-power-off"></i> Hệ Thống</div>
                     <div style="display: flex;">
-                        <button class="btn" onclick="saveSettings('system')" style="width : 50%; margin-right: 20px">Lưu Cài Đặt</button>
+                        <button class="btn" onclick="saveSystemSettings('system')" style="width : 50%; margin-right: 20px">Lưu Cài Đặt</button>
                         <button class="btn" onclick="reboot()" style="width : 50%">Khởi Động Lại</button>
                     </div>
                 </div>
@@ -1090,6 +1090,27 @@
             document.getElementById('save-settings-options').style.display = 'none';
             document.getElementById('screen-lock').style.display = 'none';
         }
+
+        async function saveSystemSettings(){
+            const success = await saveSettings("system");
+            console.log(`{Able to save sys settings : ${success}"}`);
+            if(success){
+                document.getElementById('view-settings').classList.add('active');
+                document.getElementById('nav-set').classList.add('active');
+
+                document.getElementById('save-settings-options').style.display = 'none';
+                document.getElementById('screen-lock').style.display = 'none';
+            }
+            else{
+                document.getElementById("screen-lock").style.display = "none";
+                document.getElementById("save-settings-wait").style.display = "none";
+                document.getElementById("save-settings-options").style.display = "none";
+                document.getElementById('view-settings').classList.add('active');
+                document.getElementById('nav-set').classList.add('active');
+            }
+        }
+
+
         function showTab(tabName) {
             current_active_tab = document.querySelector('.view-section.active').id;
             document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
@@ -1139,8 +1160,7 @@
             fetch('/reboot');
 
             // 3. Khóa màn hình và hiện hộp thoại chờ
-            document.getElementById("screen-lock").style.display = "block";      
-            document.getElementById("view-settings").style.display = "none"; 
+            document.getElementById("screen-lock").style.display = "block";
             const waitBox = document.getElementById("save-settings-wait");
             waitBox.style.display = "flex";
             
@@ -1159,7 +1179,6 @@
                     window.location.reload(); 
                 }
             }, 1000); // Lặp lại mỗi 1000ms (1 giây)
-            document.getElementById('view-settings').classList.add("active");
         }
 
         function logout() {
@@ -1225,7 +1244,7 @@
                 document.getElementById('motor-option').style.display = 'none';
             }
     
-    for(let i=1; i<=2; i++) {
+    for(let i=1; i<=4; i++) {
         const wrapper = document.getElementById(`timer${i}_inverter_wrapper`);
         if(wrapper) wrapper.style.display = isEn ? 'flex' : 'none';
     }
@@ -1403,7 +1422,7 @@
                             return false;
                         } 
                         
-                        let hasTarget = ['out1','out2','out3','out4','inverter'].some(t => document.getElementById(`timer${i}_${t}`)?.checked);
+                        let hasTarget = ['out1','out2'].some(t => document.getElementById(`timer${i}_${t}`)?.checked);
                         if (!hasTarget){
                             alert(`Timer ${i} chưa chọn ngõ ra nào.`);
                             return false
@@ -1424,7 +1443,7 @@
                     }
                 }
                 
-                for(let i = 1; i <=4 ; i++){
+                for(let i = 1; i <=2 ; i++){
                     if(document.getElementById(`input${i}-scale-factor`).value < 0){
                         alert(`Scale factor input ${i} không hợp lệ (nhỏ hơn 0)`)
                         return false;
@@ -1482,20 +1501,12 @@
                 let gpioEn = document.getElementById('ioEnableToggle').checked;
                 const in1_thr_en = document.getElementById('input1-thrEn-btn').checked ? 1 : 0;
                 const in2_thr_en = document.getElementById('input2-thrEn-btn').checked ? 1 : 0;
-                const in3_thr_en = document.getElementById('input3-thrEn-btn').checked ? 1 : 0;
-                const in4_thr_en = document.getElementById('input4-thrEn-btn').checked ? 1 : 0;
 
                 const in1_input_thr = in1_thr_en? document.getElementById('input1-threshold').value : 0;
                 const in2_input_thr = in2_thr_en? document.getElementById('input2-threshold').value : 0;
-                const in3_input_thr = in3_thr_en? document.getElementById('input3-threshold').value : 0;
-                const in4_input_thr = in4_thr_en? document.getElementById('input4-threshold').value : 0;
                 
-
                 const in1_scale_factor = document.getElementById('input1-scale-factor').value;
-                const in2_scale_factor = document.getElementById('input2-scale-factor').value;
-                const in3_scale_factor = document.getElementById('input3-scale-factor').value;
-                const in4_scale_factor = document.getElementById('input4-scale-factor').value;
-                
+                const in2_scale_factor = document.getElementById('input2-scale-factor').value;                
 
                 if(!gpioEn){
                     await fetch(`/gpioEn?en=0`);
@@ -1505,7 +1516,7 @@
                 }
                 await delay(delay_time);
 
-                await fetch('/setGpios?m=' + computeGpioMask() + `&in1_thr_en=${in1_thr_en}&in2_thr_en=${in2_thr_en}&in3_thr_en=${in3_thr_en}&in4_thr_en=${in4_thr_en}&in1_input_thr=${in1_input_thr}&in2_input_thr=${in2_input_thr}&in3_input_thr=${in3_input_thr}&in4_input_thr=${in4_input_thr}&in1_scale_factor=${in1_scale_factor}&in2_scale_factor=${in2_scale_factor}&in3_scale_factor=${in3_scale_factor}&in4_scale_factor=${in4_scale_factor}`);
+                await fetch('/setGpios?m=' + computeGpioMask() + `&in1_thr_en=${in1_thr_en}&in2_thr_en=${in2_thr_en}&in1_input_thr=${in1_input_thr}&in2_input_thr=${in2_input_thr}&in1_scale_factor=${in1_scale_factor}&in2_scale_factor=${in2_scale_factor}`);
                 await delay(delay_time);
 
                 // Timers
@@ -1514,9 +1525,6 @@
                     let m = 0;
                     if(document.getElementById(`timer${i}_out1`)?.checked) m |= 1;
                     if(document.getElementById(`timer${i}_out2`)?.checked) m |= 2;
-                    if(document.getElementById(`timer${i}_out3`)?.checked) m |= 4;
-                    if(document.getElementById(`timer${i}_out4`)?.checked) m |= 8;
-                    if(document.getElementById(`timer${i}_inverter`)?.checked) m |= 16;
                     
                     await fetch(`/setTimer?timer=${i}&on=${document.getElementById(`timer${i}_on`).value||"00:00"}&off=${document.getElementById(`timer${i}_off`).value||"00:00"}&mask=${m}`);
                     await delay(delay_time);
