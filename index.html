@@ -1526,10 +1526,7 @@
                     if(document.getElementById(`timer${i}_out1`)?.checked) m |= 1;
                     if(document.getElementById(`timer${i}_out2`)?.checked) m |= 2;
                     
-                    await fetch(`/setTimer?timer=${i}&on=${document.getElementById(`timer${i}_on`).value||"00:00"}&off=${document.getElementById(`timer${i}_off`).value||"00:00"}&mask=${m}`);
-                    await delay(delay_time);
-                    
-                    await fetch(`/setTimeren?timer=${i}&en=${en}`);
+                    await fetch(`/TimerConf?timer=${i}&en=${en}&on=${document.getElementById(`timer${i}_on`).value||"00:00"}&off=${document.getElementById(`timer${i}_off`).value||"00:00"}&mask=${m}`);
                     await delay(delay_time);
                 }
 
