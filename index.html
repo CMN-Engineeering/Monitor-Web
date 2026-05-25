@@ -1349,33 +1349,28 @@
         }
 
         function refreshSystemTimerUI() {
-            let locks = { out1: false, out2: false, out3: false, out4: false, inverter: false };
+            let locks = { out1: false, out2: false };
             let dashboardHtml = '';
 
-            for(let i=1; i<=4; i++) {
-                if(document.getElementById(`timer${i}_en`)?.checked) {
+            for (let i = 1; i <= 4; i++) {
+                if (document.getElementById(`timer${i}_en`)?.checked) {
+
                     let vals = {
                         out1: document.getElementById(`timer${i}_out1`)?.checked,
-                        out2: document.getElementById(`timer${i}_out2`)?.checked,
-                        out3: document.getElementById(`timer${i}_out3`)?.checked,
-                        out4: document.getElementById(`timer${i}_out4`)?.checked,
-                        inverter: document.getElementById(`timer${i}_inverter`)?.checked
+                        out2: document.getElementById(`timer${i}_out2`)?.checked
                     };
-                    
-                    if(vals.out1) locks.out1 = true;
-                    if(vals.out2) locks.out2 = true;
-                    if(vals.out3) locks.out3 = true;
-                    if(vals.out4) locks.out4 = true;
-                    if(vals.inverter) locks.inverter = true;
+
+                    if (vals.out1) locks.out1 = true;
+                    if (vals.out2) locks.out2 = true;
 
                     let targets = [];
-                    if(vals.out1) targets.push('Ra 1');
-                    if(vals.out2) targets.push('Ra 2');
-                    if(vals.out3) targets.push('Ra 3');
-                    if(vals.out4) targets.push('Ra 4');
-                    if(vals.inverter) targets.push('Inverter');
-                    
-                    let targetStr = targets.length > 0 ? targets.join(' + ') : '<span style="color:#e94560">Chưa gán</span>';
+                    if (vals.out1) targets.push('Ra 1');
+                    if (vals.out2) targets.push('Ra 2');
+
+                    let targetStr = targets.length > 0
+                        ? targets.join(' + ')
+                        : '<span style="color:#e94560">Chưa gán</span>';
+
                     let onTime = document.getElementById(`timer${i}_on`)?.value || '--:--';
                     let offTime = document.getElementById(`timer${i}_off`)?.value || '--:--';
 
@@ -1383,32 +1378,40 @@
                         <div class="timer-item-dash">
                             <div style="display:flex; justify-content:space-between; margin-bottom: 5px;">
                                 <span style="color: var(--accent); font-weight: bold;">Timer ${i}</span>
-                                <span style="font-size:0.85rem; background:#333; padding:2px 6px; border-radius:4px;">${targetStr}</span>
+                                <span style="font-size:0.85rem; background:#333; padding:2px 6px; border-radius:4px;">
+                                    ${targetStr}
+                                </span>
                             </div>
+
                             <div style="font-size:0.9rem; color:#ddd; display:flex; justify-content:space-between;">
-                                <span><i class="fas fa-play" style="color:#2ecc71; font-size:0.7rem;"></i> ${onTime}</span>
-                                <span><i class="fas fa-stop" style="color:#e94560; font-size:0.7rem;"></i> ${offTime}</span>
+                                <span>
+                                    <i class="fas fa-play" style="color:#2ecc71; font-size:0.7rem;"></i>
+                                    ${onTime}
+                                </span>
+
+                                <span>
+                                    <i class="fas fa-stop" style="color:#e94560; font-size:0.7rem;"></i>
+                                    ${offTime}
+                                </span>
                             </div>
                         </div>`;
                 }
             }
 
-            document.getElementById('activeTimersDisplay').innerHTML = dashboardHtml || '<div style="color:#aaa; text-align:center; font-size: 0.9rem; padding: 10px;">Không có bộ hẹn giờ nào được bật.</div>';
+            document.getElementById('activeTimersDisplay').innerHTML =
+                dashboardHtml ||
+                '<div style="color:#aaa; text-align:center; font-size:0.9rem; padding:10px;">Không có bộ hẹn giờ nào được bật.</div>';
 
-            for(let i=1; i<=4; i++) {
+            // Lock only Output 1 and Output 2
+            for (let i = 1; i <= 2; i++) {
                 let sw = document.getElementById(`output${i}Switch`);
-                if(sw) sw.disabled = locks[`out${i}`];
+                if (sw) sw.disabled = locks[`out${i}`];
             }
-            
-            const warning = document.getElementById('outputLockWarning');
-            if(warning) warning.style.display = (locks.out1 || locks.out2 || locks.out3 || locks.out4) ? 'block' : 'none';
 
-            let inverterCard = document.getElementById('motorControlCard');
-            if(inverterCard) {
-                let startBtn = inverterCard.querySelector('button.btn[onclick="startMotor()"]');
-                let stopBtn = inverterCard.querySelector('button.btn[onclick="stopMotor()"]');
-                if(startBtn) { startBtn.disabled = locks.inverter; startBtn.style.opacity = locks.inverter ? '0.5' : '1'; }
-                if(stopBtn) { stopBtn.disabled = locks.inverter; stopBtn.style.opacity = locks.inverter ? '0.5' : '1'; }
+            // Warning
+            const warning = document.getElementById('outputLockWarning');
+            if (warning) {
+                warning.style.display = (locks.out1 || locks.out2) ? 'block' : 'none';
             }
         }
 
