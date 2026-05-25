@@ -1613,10 +1613,14 @@
                 if (mode === "system"){
                     document.getElementById('view-settings').classList.add("active");
                 }
+                fetch("/savedSettings").then(result => {
+                    showMessage(result,"info",2000);;
+                });
                 return true;
                 // Optional: Show a completion alert or notification here
                 // alert("Lưu cài đặt thành công!");
             }
+            
         }
         
         function toggleOutput(num) {
