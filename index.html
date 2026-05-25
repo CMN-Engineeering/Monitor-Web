@@ -1415,7 +1415,7 @@
         // --- Hardware APIs ---
         function startMotor(id) { 
             // fetch(`/MotorStart?num=${id}`);    
-            fetch(`/MotorControl?cmd=2&num=${id}`).then(response => response.text())
+            fetch(`/MotorControl?cmd=1&num=${id}`).then(response => response.text())
                 .then(result => {
                     showMessage(result,"info",3000);;
                 });
@@ -1425,21 +1425,21 @@
         
         function stopMotor(id) { 
             // fetch(`/MotorStop?num=${id}`);  
-            fetch(`/MotorControl?cmd=3&num=${id}`).then(result => {
+            fetch(`/MotorControl?cmd=0&num=${id}`).then(result => {
                     showMessage(result,"info",3000);;
                 });;
         }
 
         function toggleDir() {
             let isFwd = document.getElementById("dirLabel").innerText == "Quay Thuận" ? 0 : 1;
-            fetch('/MotorControl?cmd=4&val=' + (isFwd ? 1 : 0)).then(result => {
+            fetch('/MotorControl?cmd=3&val=' + (isFwd ? 1 : 0)).then(result => {
                     showMessage(result,"info",3000);;
                 });;
         }
 
         function setFrequency() {
             let val = document.getElementById('freqSlider').value;
-            fetch('/MotorControl?cmd=1&val=' + val).then(result => {
+            fetch('/MotorControl?cmd=2&val=' + val).then(result => {
                     showMessage(result,"info",3000);;
                 });;
             document.getElementById('freqVal').innerText = val;       
