@@ -1435,14 +1435,14 @@
 
         function toggleDir() {
             let isFwd = document.getElementById("dirLabel").innerText == "Quay Thuận" ? 0 : 1;
-            fetch('/MotorControl?cmd=3&val=' + (isFwd ? 1 : 0)).then(result => {
+            fetch('/MotorControl?cmd=3&num=0&val=' + (isFwd ? 1 : 0)).then(result => {
                     showMessage(result,"info",3000);;
                 });;
         }
 
         function setFrequency() {
             let val = document.getElementById('freqSlider').value;
-            fetch('/MotorControl?cmd=2&val=' + val).then(result => {
+            fetch('/MotorControl?cmd=2&num=0&val=' + val).then(result => {
                     showMessage(result,"info",3000);;
                 });;
             document.getElementById('freqVal').innerText = val;       
