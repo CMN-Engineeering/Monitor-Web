@@ -1428,23 +1428,26 @@
         
         function stopMotor(id) { 
             // fetch(`/MotorStop?num=${id}`);  
-            fetch(`/MotorControl?cmd=0&num=${id}`).then(result => {
+            fetch(`/MotorControl?cmd=0&num=${id}`).then(response => response.text())
+                .then(result => {
                     showMessage(result,"info",3000);;
-                });;
+                });
         }
 
         function toggleDir() {
             let isFwd = document.getElementById("dirLabel").innerText == "Quay Thuận" ? 0 : 1;
-            fetch('/MotorControl?cmd=3&num=0&val=' + (isFwd ? 1 : 0)).then(result => {
+            fetch('/MotorControl?cmd=3&num=0&val=' + (isFwd ? 1 : 0)).then(response => response.text())
+                .then(result => {
                     showMessage(result,"info",3000);;
-                });;
+                });
         }
 
         function setFrequency() {
             let val = document.getElementById('freqSlider').value;
-            fetch('/MotorControl?cmd=2&num=0&val=' + val).then(result => {
+            fetch('/MotorControl?cmd=2&num=0&val=' + val).then(response => response.text())
+                .then(result => {
                     showMessage(result,"info",3000);;
-                });;
+                });
             document.getElementById('freqVal').innerText = val;       
         }
 
@@ -1515,13 +1518,15 @@
                 let v = document.getElementById('voltageLimitSlider').value;
                 let c = document.getElementById('currentLimitSlider').value;
                 
-                await fetch(`/adcEn?en=${adcEn ? 1 : 0}`).then(result => {
-                    showMessage(result,"info",2000);
+                await fetch(`/adcEn?en=${adcEn ? 1 : 0}`).then(response => response.text())
+                .then(result => {
+                    showMessage(result,"info",2000);;
                 });
                 await delay(delay_time);
                 
-                await fetch(`/setAdcLimits?voltage=${v}&current=${c}`).then(result => {
-                    showMessage(result,"info",2000);
+                await fetch(`/setAdcLimits?voltage=${v}&current=${c}`).then(response => response.text())
+                .then(result => {
+                    showMessage(result,"info",2000);;
                 });
                 await delay(delay_time);
 
@@ -1529,8 +1534,9 @@
                 const motorEnabled = document.getElementById('motorEnableToggle').checked;
                 if (motorEnabled) {
                     if (selectedMotorType === '-1') {
-                        await fetch(`/MotorConf?en=1&mode=0`).then(result => {
-                    showMessage(result,"info",2000);
+                        await fetch(`/MotorConf?en=1&mode=0`).then(response => response.text())
+                .then(result => {
+                    showMessage(result,"info",2000);;
                 });
                         await delay(delay_time);
                     }
@@ -1539,8 +1545,9 @@
                         let model = document.getElementById('inverter_model').value;
                         let addr = document.getElementById('inverterAddress').value.trim();
                         let baud = document.getElementById('inverterBaudrate').value;
-                        await fetch(`/MotorConf?en=1&mode=1&model=${model}&addr=${addr}&baud=${baud}`).then(result => {
-                    showMessage(result,"info",2000);
+                        await fetch(`/MotorConf?en=1&mode=1&model=${model}&addr=${addr}&baud=${baud}`).then(response => response.text())
+                .then(result => {
+                    showMessage(result,"info",2000);;
                 });
                         await delay(delay_time);
                     }
@@ -1556,17 +1563,20 @@
                         const motor2OffPin = document.getElementById('motor2-output-off').value || 0;
                         const motor2InputFB = document.getElementById('motor2-input-feedback').value || 0;
 
-                        await fetch(`/MotorConf?en=1&mode=2&Mot1En=${motor1En}&StartPin1=${motor1OnPin}&StopPin1=${motor1OffPin}&InputFB1=${motor1InputFB}&Mot2En=${motor2En}&StartPin2=${motor2OnPin}&StopPin2=${motor2OffPin}&InputFB2=${motor2InputFB}`).then(result => {
-                    showMessage(result,"info",2000);
+                        await fetch(`/MotorConf?en=1&mode=2&Mot1En=${motor1En}&StartPin1=${motor1OnPin}&StopPin1=${motor1OffPin}&InputFB1=${motor1InputFB}&Mot2En=${motor2En}&StartPin2=${motor2OnPin}&StopPin2=${motor2OffPin}&InputFB2=${motor2InputFB}`).then(response => response.text())
+                .then(result => {
+                    showMessage(result,"info",2000);;
                 });
                         await delay(delay_time);
                     }
                 } else {
-                    await fetch('/MotorConf?en=0').then(result => {
-                    showMessage(result,"info",2000);
+                    await fetch('/MotorConf?en=0').then(response => response.text())
+                .then(result => {
+                    showMessage(result,"info",2000);;
                 });
-                    await delay(delay_time).then(result => {
-                    showMessage(result,"info",2000);
+                    await delay(delay_time).then(response => response.text())
+                .then(result => {
+                    showMessage(result,"info",2000);;
                 });
                 }
 
@@ -1582,19 +1592,22 @@
                 const in2_scale_factor = document.getElementById('input2-scale-factor').value;                
 
                 if(!gpioEn){
-                    await fetch(`/gpioEn?en=0`).then(result => {
-                    showMessage(result,"info",2000);
+                    await fetch(`/gpioEn?en=0`).then(response => response.text())
+                .then(result => {
+                    showMessage(result,"info",2000);;
                 });
                 }
                 else{
-                    await fetch(`/gpioEn?en=1`).then(result => {
-                    showMessage(result,"info",2000);
+                    await fetch(`/gpioEn?en=1`).then(response => response.text())
+                .then(result => {
+                    showMessage(result,"info",2000);;
                 });
                 }
                 await delay(delay_time);
 
-                await fetch('/setGpios?m=' + computeGpioMask() + `&in1_thr_en=${in1_thr_en}&in2_thr_en=${in2_thr_en}&in1_input_thr=${in1_input_thr}&in2_input_thr=${in2_input_thr}&in1_scale_factor=${in1_scale_factor}&in2_scale_factor=${in2_scale_factor}`).then(result => {
-                    showMessage(result,"info",2000);
+                await fetch('/setGpios?m=' + computeGpioMask() + `&in1_thr_en=${in1_thr_en}&in2_thr_en=${in2_thr_en}&in1_input_thr=${in1_input_thr}&in2_input_thr=${in2_input_thr}&in1_scale_factor=${in1_scale_factor}&in2_scale_factor=${in2_scale_factor}`).then(response => response.text())
+                .then(result => {
+                    showMessage(result,"info",2000);;
                 });
                 await delay(delay_time);
 
@@ -1605,8 +1618,9 @@
                     if(document.getElementById(`timer${i}_out1`)?.checked) m |= 1;
                     if(document.getElementById(`timer${i}_out2`)?.checked) m |= 2;
                     
-                    await fetch(`/TimerConf?timer=${i}&en=${en}&on=${document.getElementById(`timer${i}_on`).value||"00:00"}&off=${document.getElementById(`timer${i}_off`).value||"00:00"}&mask=${m}`).then(result => {
-                    showMessage(result,"info",2000);
+                    await fetch(`/TimerConf?timer=${i}&en=${en}&on=${document.getElementById(`timer${i}_on`).value||"00:00"}&off=${document.getElementById(`timer${i}_off`).value||"00:00"}&mask=${m}`).then(response => response.text())
+                .then(result => {
+                    showMessage(result,"info",2000);;
                 });
                     await delay(delay_time);
                 }
@@ -1616,14 +1630,16 @@
                 let s = document.getElementById('wifi_name').value;
                 let p = document.getElementById('wifi_pass').value;
                 let body = `sta_enable=${en}&ssid=${s}&pass=${p}&isStatic=${isStatic}&ip=${encodeURIComponent(ip)}&gateway=${encodeURIComponent(gw)}&netmask=${encodeURIComponent(nm)}&`;
-                await fetch('/saveWifi', { method: 'POST', headers: {'Content-Type': 'application/x-www-form-urlencoded'}, body: body }).then(result => {
-                    showMessage(result,"info",2000);
+                await fetch('/saveWifi', { method: 'POST', headers: {'Content-Type': 'application/x-www-form-urlencoded'}, body: body }).then(response => response.text())
+                .then(result => {
+                    showMessage(result,"info",2000);;
                 });
                 await delay(delay_time);
 
                 // AP
-                await fetch('/saveAP', { method: 'POST', headers: {'Content-Type': 'application/x-www-form-urlencoded'}, body: `ap_name=${document.getElementById('ap_name').value}&ap_pass=${document.getElementById('ap_pass').value}&` }).then(result => {
-                    showMessage(result,"info",2000);
+                await fetch('/saveAP', { method: 'POST', headers: {'Content-Type': 'application/x-www-form-urlencoded'}, body: `ap_name=${document.getElementById('ap_name').value}&ap_pass=${document.getElementById('ap_pass').value}&` }).then(response => response.text())
+                .then(result => {
+                    showMessage(result,"info",2000);;
                 });
                 await delay(delay_time);
 
@@ -1636,8 +1652,9 @@
                 let port = document.getElementById('mqtt_port').value;
                 let data = `mqtt_name=${name}&mqtt_pass=${pass}&mqtt_link=${link}&mqtt_topic=${data_link}&mqtt_id=${id}&mqtt_port=${port}&`;
                 
-                await fetch('/saveMQTT', { method: 'POST', headers: {'Content-Type': 'application/x-www-form-urlencoded'}, body: data }).then(result => {
-                    showMessage(result,"info",2000);
+                await fetch('/saveMQTT', { method: 'POST', headers: {'Content-Type': 'application/x-www-form-urlencoded'}, body: data }).then(response => response.text())
+                .then(result => {
+                    showMessage(result,"info",2000);;
                 });
                 document.getElementById("save-settings-wait").style.display = "none";
                 document.getElementById('screen-lock').style.display = "none";
