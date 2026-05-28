@@ -21,6 +21,7 @@
             padding: 0;
             box-sizing: border-box;
             font-family: 'Segoe UI', sans-serif;
+            
         }
 
         body {
@@ -729,7 +730,7 @@
             </div>
         </div>
         
-        <div id="view-settings" class="view-section">
+        <div id="view-settings" class="view-section active">
             
             <div class="card" id="loginCard">
                 <div class="card-header"><i class="fas fa-user"></i> <span id="loginHeader">Đăng nhập</span></div>
@@ -965,47 +966,84 @@
                         <span style="font-weight: 500;">Kích hoạt Station</span>
                         <label class="switch"><input type="checkbox" id="sta_enable"><span class="slider"></span></label>
                     </div>
-                    <div class="input-group"><input type="text" id="wifi_name" placeholder="Tên WiFi (SSID)"><i class="fas fa-signal"></i></div>
-                    <div class="input-group"><input type="password" id="wifi_pass" placeholder="Mật khẩu WiFi"><i class="fa fa-eye" onclick="togglePass('wifi_pass')"></i></div>
+                    <div class="input-group">
+                        <span style="margin-right: 10px;font-size: small;">Tên WiFi (SSID): </span>
+                        <input type="text" id="wifi_name" style="width : 320px"></div>
+                    <div class="input-group">
+                        <span style="margin-right: 10px;font-size: small;">Mật khẩu WiFi: </span>
+                        <input type="text" id="wifi_pass"style="width : 320px">
+                        <i class="fa fa-eye" style="right : 30px;bottom : 5px;z-index : 999" onclick="togglePass('wifi_pass')"></i>
+                    </div>
                     
                     <div style="margin-bottom: 10px; display: flex; gap: 20px;">
                         <label style="display: flex; align-items: center; gap: 5px; cursor: pointer;"><input type="radio" name="ipConfig" value="dhcp" checked onchange="toggleIpConfig()"> IP Động</label>
                         <label style="display: flex; align-items: center; gap: 5px; cursor: pointer;"><input type="radio" name="ipConfig" value="static" onchange="toggleIpConfig()"> IP Tĩnh</label>
                     </div>
                     <div class="input-group">
-                        <input type="text" id="static_ip" placeholder="IP Tĩnh (VD: 192.168.1.100)" disabled style="opacity: 0.5;">
-                        <input type="text" id="gateway" placeholder="Gateway (VD: 192.168.1.1)" disabled style="opacity: 0.5;">
-                        <input type="text" id="netmask" placeholder="Netmask (VD: 255.255.255.0)" disabled style="opacity: 0.5;">
+                        <div>
+                            <span style="margin-right: 10px;font-size: small;">IP Tĩnh: </span>
+                            <input type="text" id="static_ip" style="width : 380px; right:10px" placeholder="VD: 192.168.1.100" disabled style="opacity: 0.5;">
+                        </div>
+                        <div>
+                            <span style="margin-right: 10px;font-size: small;">Gateway: </span>
+                            <input type="text" id="gateway" style="width : 372px; right:10px" placeholder="VD: 192.168.1.1" disabled style="opacity: 0.5;">
+                        </div>
+                        <div>                        
+                            <span style="margin-right: 10px;font-size: small;">Netmask: </span>
+                            <input type="text" id="netmask" style="width : 372px; right:10px" placeholder="VD: 255.255.255.0" disabled style="opacity: 0.5;">
+                        </div>
+
                     </div>
                     <!-- <button class="btn" onclick="saveWifi()"><i class="fas fa-save"></i> Lưu & Kết Nối Lại Station</button> -->
                 </div>
 
                 <div class="card">
                     <div class="card-header"><span><i class="fas fa-broadcast-tower"></i> Cài đặt Access Point</span></div>
-                    <div class="input-group"><input type="text" id="ap_name" placeholder="Tên Access Point mới"></div>
-                    <div class="input-group"><input type="text" id="ap_pass" placeholder="Mật khẩu Access Point mới"></div>
+                    <div class="input-group">
+                        <span style="margin-right: 10px;font-size: small;">Tên Access Point: </span>
+                        <input type="text" id="ap_name" style="width : 320px">
+                    </div>
+                    <div class="input-group">
+                        <span style="margin-right: 10px;font-size: small;">Mật khẩu: </span>
+                        <input type="text" id="ap_pass" style="width : 360px">
+                        <i class="fa fa-eye" style="right : 25px;bottom : 5px;z-index : 999" onclick="togglePass('ap_pass')"></i>
+                    </div>
                     <!-- <button class="btn" onclick="saveAP()" style="background-color: #f39c12;"><i class="fas fa-sync"></i> Xác nhận & Reinit AP</button> -->
                 </div>
 
                 <div class="card" id="MQTT_Setting">
                     <div class="card-header"><span><i class="fas fa-network-wired"></i> Cài đặt Server</span></div>
                     <div class="input-group">
-                        <input type="text" id="mqtt_username" placeholder="SSID">
+                        <span style="margin-right: 10px;font-size: small;">Username: </span>
+                        <input type="text" id="mqtt_username" style="width : 360px">
                     </div>
                     <div class="input-group">
-                        <input type="text" id="mqtt_password" placeholder="Mật khẩu Server"><i class="fa fa-eye" onclick="togglePass('mqtt_password')"></i>
+                        <span style="margin-right: 10px;font-size: small;">Mật khẩu Server: </span>
+                        
+                        <input type="text" id="mqtt_password" style="width : 330px">
+                        <i class="fa fa-eye" style="right : 10px; bottom : 5px" onclick="togglePass('mqtt_password')"></i>
                     </div>
                     <div class="input-group">
-                        <input type="text" id="mqtt_link" placeholder="Link kết nối Server">
+                        <span style="margin-right: 10px;font-size: small; top : 20px">Host: </span>                        
+                        <select id = "mqtt_link_header" style="width: 100px;height:40px; margin-right: 10px; border-radius : 5px">
+                            <option value="mqtt://">mqtt://</option>
+                            <option value="mqtts://">mqtts://</option>
+                            <option value="ws://">ws://</option>
+                            <option value="wss://">wss://</option>
+                        </select>
+                        <input type="text" id="mqtt_link" style="width: 280px;">
+                    </div>
+                    <div class="input-group">                        
+                        <span style="margin-right: 10px;font-size: small; top : 20px">Port: </span>                        
+                        <input type="text" id="mqtt_port" style="width : 400px">
                     </div>
                     <div class="input-group">
-                        <input type="text" id="mqtt_port" placeholder="Port Server">
+                        <span style="margin-right: 10px;font-size: small; top : 20px">Data Link: </span>                        
+                        <input type="text" id="mqtt_topic" style="width : 370px">
                     </div>
                     <div class="input-group">
-                        <input type="text" id="mqtt_topic" placeholder="Data Link">
-                    </div>
-                    <div class="input-group">
-                        <input type="text" id="mqtt_id" placeholder="Board ID">
+                        <span style="margin-right: 10px;font-size: small; top : 20px">Board ID: </span>                        
+                        <input type="text" id="mqtt_id" style="width : 372px">
                     </div> 
                         <!-- <button class="btn" onclick="saveMQTT()" style="background-color: #9b59b6;"><i class="fas fa-save"></i> Lưu MQTT Broker</button> -->
                 </div>
@@ -1646,12 +1684,13 @@
                 // MQTT
                 let name = document.getElementById('mqtt_username').value;
                 let pass = document.getElementById('mqtt_password').value;
-                let link = document.getElementById('mqtt_link').value;
+                let link = document.getElementById('mqtt_link_header').value + document.getElementById('mqtt_link').value;
                 let data_link = document.getElementById('mqtt_topic').value;
                 let id = document.getElementById('mqtt_id').value;
                 let port = document.getElementById('mqtt_port').value;
                 let data = `mqtt_name=${name}&mqtt_pass=${pass}&mqtt_link=${link}&mqtt_topic=${data_link}&mqtt_id=${id}&mqtt_port=${port}&`;
                 
+                console.log(`MQTT Link : ${link}`)
                 await fetch('/saveMQTT', { method: 'POST', headers: {'Content-Type': 'application/x-www-form-urlencoded'}, body: data }).then(response => response.text())
                 .then(result => {
                     showMessage(result,"info",2000);;
