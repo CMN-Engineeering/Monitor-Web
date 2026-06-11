@@ -21,6 +21,7 @@
             padding: 0;
             box-sizing: border-box;
             font-family: 'Segoe UI', sans-serif;
+            
         }
 
         body {
@@ -31,6 +32,24 @@
             padding: 20px;
             min-height: 100vh;
         }
+        .toast {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: #333;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            z-index: 9999;
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: none;
+        }
+        .toast.show { opacity: 1; }
+        .toast.success { background: #28a745; }
+        .toast.error { background: #dc3545; }
+        .toast.info { background: #17a2b8; }
 
         .container {
             width: 100%;
@@ -184,10 +203,12 @@
         }
 
         .dir-fwd { 
+            cursor: pointer;
             background-color: #0c1fed !important;
             display:block; width:215px; height:50px; border-radius:8px; border: none;
         }
         .dir-rev { 
+            cursor: pointer;
             background-color: #f29913 !important; 
             display:block; width:215px; height:50px; border-radius:8px; border: none;
         }
@@ -556,7 +577,7 @@
         <div class="status-bar" style="flex-direction: column; gap: 10px; align-items: stretch;">
             <span id="clock" class="clock" style="margin-left:auto; font-size: 1rem; color: var(--accent);">--:--:--</span>         
         </div>
-
+        <div id="toast-container"></div>
         <div id="view-dashboard" class="view-section active">
             <div class="status-bar" style="flex-direction: column; gap: 10px; align-items: stretch;">
                 <div style="display: flex; justify-content: space-between; align-items: center;">
@@ -665,7 +686,7 @@
             <div class="status-bar" style="flex-direction: column; align-items: stretch;">
                 <div class="card-header" style="margin-bottom: 10px;"><i class="fa-solid fa-clock"></i> NGÕ VÀO</div>
                 <script>
-                    for(let i=1; i<=4; i++) {
+                    for(let i=1; i<=2; i++) {
                         if(i%2 !== 0) document.write('<div class="io-grid">');
                         document.write(`
                             <div>
@@ -851,7 +872,7 @@
                     <div class="card-header mt-2" style="font-size: 1rem;"><i class="fas fa-arrow-right"></i> NGÕ VÀO</div>
                     <div class="io-grid">
                         <script>
-                            for(let i=1; i<=4; i++) {
+                            for(let i=1; i<=2; i++) {
                                 document.write(`
                                     <div class="control-row" style="margin-bottom: 10px; display:flex; flex-direction:column; align-items:flex-start">
 
@@ -893,7 +914,7 @@
                     <div class="card-header mt-2" style="font-size: 1rem;"><i class="fas fa-arrow-left"></i> NGÕ RA</div>
                     <div class="io-grid">
                         <script>
-                            for(let i=1; i<=4; i++) {
+                            for(let i=1; i<=2; i++) {
                                 document.write(`
                                 <div class="control-row" style="margin-bottom: 10px;">
                                         <span>Ngõ ra ${i}</span>
@@ -929,8 +950,6 @@
                                             <span>Kích hoạt:</span>
                                             <label class="checkbox-wrapper"><input type="checkbox" id="timer${i}_out1" onchange="handleTimerChange(${i})"> Ra 1</label>
                                             <label class="checkbox-wrapper"><input type="checkbox" id="timer${i}_out2" onchange="handleTimerChange(${i})"> Ra 2</label>
-                                            <label class="checkbox-wrapper"><input type="checkbox" id="timer${i}_out3" onchange="handleTimerChange(${i})"> Ra 3</label>
-                                            <label class="checkbox-wrapper"><input type="checkbox" id="timer${i}_out4" onchange="handleTimerChange(${i})"> Ra 4</label>
                                             <!-- <label class="checkbox-wrapper" id="timer${i}_inverter_wrapper" style="display:none;"><input type="checkbox" id="timer${i}_inverter" onchange="handleTimerChange(${i})"> Inverter</label> -->
                                         </div>
                                     </div>
@@ -947,45 +966,92 @@
                         <span style="font-weight: 500;">Kích hoạt Station</span>
                         <label class="switch"><input type="checkbox" id="sta_enable"><span class="slider"></span></label>
                     </div>
-                    <div class="input-group"><input type="text" id="wifi_name" placeholder="Tên WiFi (SSID)"><i class="fas fa-signal"></i></div>
-                    <div class="input-group"><input type="password" id="wifi_pass" placeholder="Mật khẩu WiFi"><i class="fa fa-eye" onclick="togglePass('wifi_pass')"></i></div>
+                    <div class="input-group">
+                        <span style="margin-right: 10px;font-size: small;">Tên WiFi (SSID): </span>
+                        <input type="text" id="wifi_name" style="width : 320px"></div>
+                    <div class="input-group">
+                        <span style="margin-right: 10px;font-size: small;">Mật khẩu WiFi: </span>
+                        <input type="text" id="wifi_pass"style="width : 320px">
+                        <i class="fa fa-eye" style="right : 30px;bottom : 5px;z-index : 999" onclick="togglePass('wifi_pass')"></i>
+                    </div>
                     
                     <div style="margin-bottom: 10px; display: flex; gap: 20px;">
                         <label style="display: flex; align-items: center; gap: 5px; cursor: pointer;"><input type="radio" name="ipConfig" value="dhcp" checked onchange="toggleIpConfig()"> IP Động</label>
                         <label style="display: flex; align-items: center; gap: 5px; cursor: pointer;"><input type="radio" name="ipConfig" value="static" onchange="toggleIpConfig()"> IP Tĩnh</label>
                     </div>
                     <div class="input-group">
-                        <input type="text" id="static_ip" placeholder="IP Tĩnh (VD: 192.168.1.100)" disabled style="opacity: 0.5;">
-                        <input type="text" id="gateway" placeholder="Gateway (VD: 192.168.1.1)" disabled style="opacity: 0.5;">
-                        <input type="text" id="netmask" placeholder="Netmask (VD: 255.255.255.0)" disabled style="opacity: 0.5;">
+                        <div>
+                            <span style="margin-right: 10px;font-size: small;">IP Tĩnh: </span>
+                            <input type="text" id="static_ip" style="width : 380px; right:10px" placeholder="VD: 192.168.1.100" disabled style="opacity: 0.5;">
+                        </div>
+                        <div>
+                            <span style="margin-right: 10px;font-size: small;">Gateway: </span>
+                            <input type="text" id="gateway" style="width : 372px; right:10px" placeholder="VD: 192.168.1.1" disabled style="opacity: 0.5;">
+                        </div>
+                        <div>                        
+                            <span style="margin-right: 10px;font-size: small;">Netmask: </span>
+                            <input type="text" id="netmask" style="width : 372px; right:10px" placeholder="VD: 255.255.255.0" disabled style="opacity: 0.5;">
+                        </div>
+
                     </div>
                     <!-- <button class="btn" onclick="saveWifi()"><i class="fas fa-save"></i> Lưu & Kết Nối Lại Station</button> -->
                 </div>
 
                 <div class="card">
                     <div class="card-header"><span><i class="fas fa-broadcast-tower"></i> Cài đặt Access Point</span></div>
-                    <div class="input-group"><input type="text" id="ap_name" placeholder="Tên Access Point mới"></div>
-                    <div class="input-group"><input type="text" id="ap_pass" placeholder="Mật khẩu Access Point mới"></div>
+                    <div class="input-group">
+                        <span style="margin-right: 10px;font-size: small;">Tên Access Point: </span>
+                        <input type="text" id="ap_name" style="width : 320px">
+                    </div>
+                    <div class="input-group">
+                        <span style="margin-right: 10px;font-size: small;">Mật khẩu: </span>
+                        <input type="text" id="ap_pass" style="width : 360px">
+                        <i class="fa fa-eye" style="right : 25px;bottom : 5px;z-index : 999" onclick="togglePass('ap_pass')"></i>
+                    </div>
                     <!-- <button class="btn" onclick="saveAP()" style="background-color: #f39c12;"><i class="fas fa-sync"></i> Xác nhận & Reinit AP</button> -->
                 </div>
 
                 <div class="card" id="MQTT_Setting">
                     <div class="card-header"><span><i class="fas fa-network-wired"></i> Cài đặt Server</span></div>
                     <div class="input-group">
-                        <input type="text" id="mqtt_username" placeholder="SSID">
-                        <input type="password" id="mqtt_password" placeholder="Mật khẩu Server">
-                        <input type="text" id="mqtt_link" placeholder="Link kết nối Server">
-                        <input type="text" id="mqtt_port" placeholder="Port Server">
-                        <input type="text" id="mqtt_topic" placeholder="Data Link">
-                        <input type="text" id="mqtt_id" placeholder="Board ID">
+                        <span style="margin-right: 10px;font-size: small;">Username: </span>
+                        <input type="text" id="mqtt_username" style="width : 360px">
                     </div>
-                    <!-- <button class="btn" onclick="saveMQTT()" style="background-color: #9b59b6;"><i class="fas fa-save"></i> Lưu MQTT Broker</button> -->
+                    <div class="input-group">
+                        <span style="margin-right: 10px;font-size: small;">Mật khẩu Server: </span>
+                        
+                        <input type="text" id="mqtt_password" style="width : 330px">
+                        <i class="fa fa-eye" style="right : 10px; bottom : 5px" onclick="togglePass('mqtt_password')"></i>
+                    </div>
+                    <div class="input-group">
+                        <span style="margin-right: 10px;font-size: small; top : 20px">Host: </span>                        
+                        <select id = "mqtt_link_header" style="width: 100px;height:40px; margin-right: 10px; border-radius : 5px">
+                            <option value="mqtt://">mqtt://</option>
+                            <option value="mqtts://">mqtts://</option>
+                            <option value="ws://">ws://</option>
+                            <option value="wss://">wss://</option>
+                        </select>
+                        <input type="text" id="mqtt_link" style="width: 280px;">
+                    </div>
+                    <div class="input-group">                        
+                        <span style="margin-right: 10px;font-size: small; top : 20px">Port: </span>                        
+                        <input type="text" id="mqtt_port" style="width : 400px">
+                    </div>
+                    <div class="input-group">
+                        <span style="margin-right: 10px;font-size: small; top : 20px">Data Link: </span>                        
+                        <input type="text" id="mqtt_topic" style="width : 370px">
+                    </div>
+                    <div class="input-group">
+                        <span style="margin-right: 10px;font-size: small; top : 20px">Board ID: </span>                        
+                        <input type="text" id="mqtt_id" style="width : 372px">
+                    </div> 
+                        <!-- <button class="btn" onclick="saveMQTT()" style="background-color: #9b59b6;"><i class="fas fa-save"></i> Lưu MQTT Broker</button> -->
                 </div>
 
                 <div class="card" style="border: 1px solid rgba(233, 69, 96, 0.3);">
                     <div class="card-header"><i class="fas fa-power-off"></i> Hệ Thống</div>
                     <div style="display: flex;">
-                        <button class="btn" onclick="saveSettings('system')" style="width : 50%; margin-right: 20px">Lưu Cài Đặt</button>
+                        <button class="btn" onclick="saveSystemSettings('system')" style="width : 50%; margin-right: 20px">Lưu Cài Đặt</button>
                         <button class="btn" onclick="reboot()" style="width : 50%">Khởi Động Lại</button>
                     </div>
                 </div>
@@ -1006,7 +1072,22 @@
         let testStep = 0;
         let OutputtestStep = 0;
         const motorSettingOption = document.getElementById('motor-option');
-        
+        function showMessage(message, type = 'info', duration = 3000) {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.textContent = message;
+            container.appendChild(toast);
+            
+            // Force reflow để áp dụng transition
+            toast.offsetHeight;
+            toast.classList.add('show');
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => toast.remove(), 300);
+            }, duration);
+        }
         // --- Notifications ---
         function addNotification(message, type = 'info') {
             const list = document.getElementById('notificationList');
@@ -1066,6 +1147,9 @@
                     document.getElementById('screen-lock').style.display = 'none';
                 }
                 else{
+                    document.getElementById("screen-lock").style.display = "none";
+                    document.getElementById("save-settings-wait").style.display = "none";
+                    document.getElementById("save-settings-options").style.display = "none";
                     document.getElementById('view-settings').classList.add('active');
                     document.getElementById('nav-set').classList.add('active');
                 }
@@ -1089,6 +1173,27 @@
             document.getElementById('save-settings-options').style.display = 'none';
             document.getElementById('screen-lock').style.display = 'none';
         }
+
+        async function saveSystemSettings(){
+            const success = await saveSettings("system");
+            console.log(`{Able to save sys settings : ${success}"}`);
+            if(success){
+                document.getElementById('view-settings').classList.add('active');
+                document.getElementById('nav-set').classList.add('active');
+
+                document.getElementById('save-settings-options').style.display = 'none';
+                document.getElementById('screen-lock').style.display = 'none';
+            }
+            else{
+                document.getElementById("screen-lock").style.display = "none";
+                document.getElementById("save-settings-wait").style.display = "none";
+                document.getElementById("save-settings-options").style.display = "none";
+                document.getElementById('view-settings').classList.add('active');
+                document.getElementById('nav-set').classList.add('active');
+            }
+        }
+
+
         function showTab(tabName) {
             current_active_tab = document.querySelector('.view-section.active').id;
             document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
@@ -1282,33 +1387,28 @@
         }
 
         function refreshSystemTimerUI() {
-            let locks = { out1: false, out2: false, out3: false, out4: false, inverter: false };
+            let locks = { out1: false, out2: false };
             let dashboardHtml = '';
 
-            for(let i=1; i<=4; i++) {
-                if(document.getElementById(`timer${i}_en`)?.checked) {
+            for (let i = 1; i <= 4; i++) {
+                if (document.getElementById(`timer${i}_en`)?.checked) {
+
                     let vals = {
                         out1: document.getElementById(`timer${i}_out1`)?.checked,
-                        out2: document.getElementById(`timer${i}_out2`)?.checked,
-                        out3: document.getElementById(`timer${i}_out3`)?.checked,
-                        out4: document.getElementById(`timer${i}_out4`)?.checked,
-                        inverter: document.getElementById(`timer${i}_inverter`)?.checked
+                        out2: document.getElementById(`timer${i}_out2`)?.checked
                     };
-                    
-                    if(vals.out1) locks.out1 = true;
-                    if(vals.out2) locks.out2 = true;
-                    if(vals.out3) locks.out3 = true;
-                    if(vals.out4) locks.out4 = true;
-                    if(vals.inverter) locks.inverter = true;
+
+                    if (vals.out1) locks.out1 = true;
+                    if (vals.out2) locks.out2 = true;
 
                     let targets = [];
-                    if(vals.out1) targets.push('Ra 1');
-                    if(vals.out2) targets.push('Ra 2');
-                    if(vals.out3) targets.push('Ra 3');
-                    if(vals.out4) targets.push('Ra 4');
-                    if(vals.inverter) targets.push('Inverter');
-                    
-                    let targetStr = targets.length > 0 ? targets.join(' + ') : '<span style="color:#e94560">Chưa gán</span>';
+                    if (vals.out1) targets.push('Ra 1');
+                    if (vals.out2) targets.push('Ra 2');
+
+                    let targetStr = targets.length > 0
+                        ? targets.join(' + ')
+                        : '<span style="color:#e94560">Chưa gán</span>';
+
                     let onTime = document.getElementById(`timer${i}_on`)?.value || '--:--';
                     let offTime = document.getElementById(`timer${i}_off`)?.value || '--:--';
 
@@ -1316,55 +1416,77 @@
                         <div class="timer-item-dash">
                             <div style="display:flex; justify-content:space-between; margin-bottom: 5px;">
                                 <span style="color: var(--accent); font-weight: bold;">Timer ${i}</span>
-                                <span style="font-size:0.85rem; background:#333; padding:2px 6px; border-radius:4px;">${targetStr}</span>
+                                <span style="font-size:0.85rem; background:#333; padding:2px 6px; border-radius:4px;">
+                                    ${targetStr}
+                                </span>
                             </div>
+
                             <div style="font-size:0.9rem; color:#ddd; display:flex; justify-content:space-between;">
-                                <span><i class="fas fa-play" style="color:#2ecc71; font-size:0.7rem;"></i> ${onTime}</span>
-                                <span><i class="fas fa-stop" style="color:#e94560; font-size:0.7rem;"></i> ${offTime}</span>
+                                <span>
+                                    <i class="fas fa-play" style="color:#2ecc71; font-size:0.7rem;"></i>
+                                    ${onTime}
+                                </span>
+
+                                <span>
+                                    <i class="fas fa-stop" style="color:#e94560; font-size:0.7rem;"></i>
+                                    ${offTime}
+                                </span>
                             </div>
                         </div>`;
                 }
             }
 
-            document.getElementById('activeTimersDisplay').innerHTML = dashboardHtml || '<div style="color:#aaa; text-align:center; font-size: 0.9rem; padding: 10px;">Không có bộ hẹn giờ nào được bật.</div>';
+            document.getElementById('activeTimersDisplay').innerHTML =
+                dashboardHtml ||
+                '<div style="color:#aaa; text-align:center; font-size:0.9rem; padding:10px;">Không có bộ hẹn giờ nào được bật.</div>';
 
-            for(let i=1; i<=4; i++) {
+            // Lock only Output 1 and Output 2
+            for (let i = 1; i <= 2; i++) {
                 let sw = document.getElementById(`output${i}Switch`);
-                if(sw) sw.disabled = locks[`out${i}`];
+                if (sw) sw.disabled = locks[`out${i}`];
             }
-            
-            const warning = document.getElementById('outputLockWarning');
-            if(warning) warning.style.display = (locks.out1 || locks.out2 || locks.out3 || locks.out4) ? 'block' : 'none';
 
-            let inverterCard = document.getElementById('motorControlCard');
-            if(inverterCard) {
-                let startBtn = inverterCard.querySelector('button.btn[onclick="startMotor()"]');
-                let stopBtn = inverterCard.querySelector('button.btn[onclick="stopMotor()"]');
-                if(startBtn) { startBtn.disabled = locks.inverter; startBtn.style.opacity = locks.inverter ? '0.5' : '1'; }
-                if(stopBtn) { stopBtn.disabled = locks.inverter; stopBtn.style.opacity = locks.inverter ? '0.5' : '1'; }
+            // Warning
+            const warning = document.getElementById('outputLockWarning');
+            if (warning) {
+                warning.style.display = (locks.out1 || locks.out2) ? 'block' : 'none';
             }
         }
 
         // --- Hardware APIs ---
         function startMotor(id) { 
             // fetch(`/MotorStart?num=${id}`);    
-            fetch(`/MotorControl?cmd=2&num=${id}`);
+            fetch(`/MotorControl?cmd=1&num=${id}`).then(response => response.text())
+                .then(result => {
+                    showMessage(result,"info",3000);;
+                });
+           
+
         }
         
         function stopMotor(id) { 
             // fetch(`/MotorStop?num=${id}`);  
-            fetch(`/MotorControl?cmd=3&num=${id}`);
+            fetch(`/MotorControl?cmd=0&num=${id}`).then(response => response.text())
+                .then(result => {
+                    showMessage(result,"info",3000);;
+                });
         }
 
         function toggleDir() {
             let isFwd = document.getElementById("dirLabel").innerText == "Quay Thuận" ? 0 : 1;
-            fetch('/MotorControl?cmd=4&val=' + (isFwd ? 1 : 0)).then(()=> alert(`Đã chuyển hướng: ${isFwd ? "Thuận" : "Nghịch"}`));
+            fetch('/MotorControl?cmd=3&num=0&val=' + (isFwd ? 1 : 0)).then(response => response.text())
+                .then(result => {
+                    showMessage(result,"info",3000);;
+                });
         }
 
         function setFrequency() {
-                let val = document.getElementById('freqSlider').value;
-                fetch('/MotorControl?cmd=1&val=' + val).then(r => { if(r.ok) alert(`Cập nhật tần số thành công: ${val} Hz`); });
-                document.getElementById('freqVal').innerText = val;       
+            let val = document.getElementById('freqSlider').value;
+            fetch('/MotorControl?cmd=2&num=0&val=' + val).then(response => response.text())
+                .then(result => {
+                    showMessage(result,"info",3000);;
+                });
+            document.getElementById('freqVal').innerText = val;       
         }
 
         const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
@@ -1400,7 +1522,7 @@
                             return false;
                         } 
                         
-                        let hasTarget = ['out1','out2','out3','out4','inverter'].some(t => document.getElementById(`timer${i}_${t}`)?.checked);
+                        let hasTarget = ['out1','out2'].some(t => document.getElementById(`timer${i}_${t}`)?.checked);
                         if (!hasTarget){
                             alert(`Timer ${i} chưa chọn ngõ ra nào.`);
                             return false
@@ -1421,7 +1543,7 @@
                     }
                 }
                 
-                for(let i = 1; i <=4 ; i++){
+                for(let i = 1; i <=2 ; i++){
                     if(document.getElementById(`input${i}-scale-factor`).value < 0){
                         alert(`Scale factor input ${i} không hợp lệ (nhỏ hơn 0)`)
                         return false;
@@ -1434,17 +1556,26 @@
                 let v = document.getElementById('voltageLimitSlider').value;
                 let c = document.getElementById('currentLimitSlider').value;
                 
-                await fetch(`/adcEn?en=${adcEn ? 1 : 0}`);
+                await fetch(`/adcEn?en=${adcEn ? 1 : 0}`).then(response => response.text())
+                .then(result => {
+                    showMessage(result,"info",2000);;
+                });
                 await delay(delay_time);
                 
-                await fetch(`/setAdcLimits?voltage=${v}&current=${c}`);
+                await fetch(`/setAdcLimits?voltage=${v}&current=${c}`).then(response => response.text())
+                .then(result => {
+                    showMessage(result,"info",2000);;
+                });
                 await delay(delay_time);
 
                 // Motor Configs
                 const motorEnabled = document.getElementById('motorEnableToggle').checked;
                 if (motorEnabled) {
                     if (selectedMotorType === '-1') {
-                        await fetch(`/MotorConf?en=1&mode=0`);
+                        await fetch(`/MotorConf?en=1&mode=0`).then(response => response.text())
+                .then(result => {
+                    showMessage(result,"info",2000);;
+                });
                         await delay(delay_time);
                     }
                     if (selectedMotorType === '1' || selectedMotorType === '3') {
@@ -1452,7 +1583,10 @@
                         let model = document.getElementById('inverter_model').value;
                         let addr = document.getElementById('inverterAddress').value.trim();
                         let baud = document.getElementById('inverterBaudrate').value;
-                        await fetch(`/MotorConf?en=1&mode=1&model=${model}&addr=${addr}&baud=${baud}`);
+                        await fetch(`/MotorConf?en=1&mode=1&model=${model}&addr=${addr}&baud=${baud}`).then(response => response.text())
+                .then(result => {
+                    showMessage(result,"info",2000);;
+                });
                         await delay(delay_time);
                     }
                     if (selectedMotorType === '2' || selectedMotorType === '3') {
@@ -1467,42 +1601,52 @@
                         const motor2OffPin = document.getElementById('motor2-output-off').value || 0;
                         const motor2InputFB = document.getElementById('motor2-input-feedback').value || 0;
 
-                        await fetch(`/MotorConf?en=1&mode=2&Mot1En=${motor1En}&StartPin1=${motor1OnPin}&StopPin1=${motor1OffPin}&InputFB1=${motor1InputFB}&Mot2En=${motor2En}&StartPin2=${motor2OnPin}&StopPin2=${motor2OffPin}&InputFB2=${motor2InputFB}`);
+                        await fetch(`/MotorConf?en=1&mode=2&Mot1En=${motor1En}&StartPin1=${motor1OnPin}&StopPin1=${motor1OffPin}&InputFB1=${motor1InputFB}&Mot2En=${motor2En}&StartPin2=${motor2OnPin}&StopPin2=${motor2OffPin}&InputFB2=${motor2InputFB}`).then(response => response.text())
+                .then(result => {
+                    showMessage(result,"info",2000);;
+                });
                         await delay(delay_time);
                     }
                 } else {
-                    await fetch('/MotorConf?en=0');
-                    await delay(delay_time);
+                    await fetch('/MotorConf?en=0').then(response => response.text())
+                .then(result => {
+                    showMessage(result,"info",2000);;
+                });
+                    await delay(delay_time).then(response => response.text())
+                .then(result => {
+                    showMessage(result,"info",2000);;
+                });
                 }
 
                 // GPIOs
                 let gpioEn = document.getElementById('ioEnableToggle').checked;
                 const in1_thr_en = document.getElementById('input1-thrEn-btn').checked ? 1 : 0;
                 const in2_thr_en = document.getElementById('input2-thrEn-btn').checked ? 1 : 0;
-                const in3_thr_en = document.getElementById('input3-thrEn-btn').checked ? 1 : 0;
-                const in4_thr_en = document.getElementById('input4-thrEn-btn').checked ? 1 : 0;
 
                 const in1_input_thr = in1_thr_en? document.getElementById('input1-threshold').value : 0;
                 const in2_input_thr = in2_thr_en? document.getElementById('input2-threshold').value : 0;
-                const in3_input_thr = in3_thr_en? document.getElementById('input3-threshold').value : 0;
-                const in4_input_thr = in4_thr_en? document.getElementById('input4-threshold').value : 0;
                 
-
                 const in1_scale_factor = document.getElementById('input1-scale-factor').value;
-                const in2_scale_factor = document.getElementById('input2-scale-factor').value;
-                const in3_scale_factor = document.getElementById('input3-scale-factor').value;
-                const in4_scale_factor = document.getElementById('input4-scale-factor').value;
-                
+                const in2_scale_factor = document.getElementById('input2-scale-factor').value;                
 
                 if(!gpioEn){
-                    await fetch(`/gpioEn?en=0`);
+                    await fetch(`/gpioEn?en=0`).then(response => response.text())
+                .then(result => {
+                    showMessage(result,"info",2000);;
+                });
                 }
                 else{
-                    await fetch(`/gpioEn?en=1`);
+                    await fetch(`/gpioEn?en=1`).then(response => response.text())
+                .then(result => {
+                    showMessage(result,"info",2000);;
+                });
                 }
                 await delay(delay_time);
 
-                await fetch('/setGpios?m=' + computeGpioMask() + `&in1_thr_en=${in1_thr_en}&in2_thr_en=${in2_thr_en}&in3_thr_en=${in3_thr_en}&in4_thr_en=${in4_thr_en}&in1_input_thr=${in1_input_thr}&in2_input_thr=${in2_input_thr}&in3_input_thr=${in3_input_thr}&in4_input_thr=${in4_input_thr}&in1_scale_factor=${in1_scale_factor}&in2_scale_factor=${in2_scale_factor}&in3_scale_factor=${in3_scale_factor}&in4_scale_factor=${in4_scale_factor}`);
+                await fetch('/setGpios?m=' + computeGpioMask() + `&in1_thr_en=${in1_thr_en}&in2_thr_en=${in2_thr_en}&in1_input_thr=${in1_input_thr}&in2_input_thr=${in2_input_thr}&in1_scale_factor=${in1_scale_factor}&in2_scale_factor=${in2_scale_factor}`).then(response => response.text())
+                .then(result => {
+                    showMessage(result,"info",2000);;
+                });
                 await delay(delay_time);
 
                 // Timers
@@ -1511,11 +1655,15 @@
                     let m = 0;
                     if(document.getElementById(`timer${i}_out1`)?.checked) m |= 1;
                     if(document.getElementById(`timer${i}_out2`)?.checked) m |= 2;
-                    if(document.getElementById(`timer${i}_out3`)?.checked) m |= 4;
-                    if(document.getElementById(`timer${i}_out4`)?.checked) m |= 8;
-                    if(document.getElementById(`timer${i}_inverter`)?.checked) m |= 16;
                     
+<<<<<<< HEAD
                     await fetch(`/setTimer?timer=${i}&en=${en}&on=${document.getElementById(`timer${i}_on`).value||"00:00"}&off=${document.getElementById(`timer${i}_off`).value||"00:00"}&mask=${m}`);
+=======
+                    await fetch(`/TimerConf?timer=${i}&en=${en}&on=${document.getElementById(`timer${i}_on`).value||"00:00"}&off=${document.getElementById(`timer${i}_off`).value||"00:00"}&mask=${m}`).then(response => response.text())
+                .then(result => {
+                    showMessage(result,"info",2000);;
+                });
+>>>>>>> b6c145f427935fb92b1d541c6837b7d9e638bdc9
                     await delay(delay_time);
                
                 }
@@ -1525,23 +1673,33 @@
                 let s = document.getElementById('wifi_name').value;
                 let p = document.getElementById('wifi_pass').value;
                 let body = `sta_enable=${en}&ssid=${s}&pass=${p}&isStatic=${isStatic}&ip=${encodeURIComponent(ip)}&gateway=${encodeURIComponent(gw)}&netmask=${encodeURIComponent(nm)}&`;
-                await fetch('/saveWifi', { method: 'POST', headers: {'Content-Type': 'application/x-www-form-urlencoded'}, body: body });
+                await fetch('/saveWifi', { method: 'POST', headers: {'Content-Type': 'application/x-www-form-urlencoded'}, body: body }).then(response => response.text())
+                .then(result => {
+                    showMessage(result,"info",2000);;
+                });
                 await delay(delay_time);
 
                 // AP
-                await fetch('/saveAP', { method: 'POST', headers: {'Content-Type': 'application/x-www-form-urlencoded'}, body: `ap_name=${document.getElementById('ap_name').value}&ap_pass=${document.getElementById('ap_pass').value}&` });
+                await fetch('/saveAP', { method: 'POST', headers: {'Content-Type': 'application/x-www-form-urlencoded'}, body: `ap_name=${document.getElementById('ap_name').value}&ap_pass=${document.getElementById('ap_pass').value}&` }).then(response => response.text())
+                .then(result => {
+                    showMessage(result,"info",2000);;
+                });
                 await delay(delay_time);
 
                 // MQTT
                 let name = document.getElementById('mqtt_username').value;
                 let pass = document.getElementById('mqtt_password').value;
-                let link = document.getElementById('mqtt_link').value;
+                let link = document.getElementById('mqtt_link_header').value + document.getElementById('mqtt_link').value;
                 let data_link = document.getElementById('mqtt_topic').value;
                 let id = document.getElementById('mqtt_id').value;
                 let port = document.getElementById('mqtt_port').value;
                 let data = `mqtt_name=${name}&mqtt_pass=${pass}&mqtt_link=${link}&mqtt_topic=${data_link}&mqtt_id=${id}&mqtt_port=${port}&`;
                 
-                await fetch('/saveMQTT', { method: 'POST', headers: {'Content-Type': 'application/x-www-form-urlencoded'}, body: data });
+                console.log(`MQTT Link : ${link}`)
+                await fetch('/saveMQTT', { method: 'POST', headers: {'Content-Type': 'application/x-www-form-urlencoded'}, body: data }).then(response => response.text())
+                .then(result => {
+                    showMessage(result,"info",2000);;
+                });
                 document.getElementById("save-settings-wait").style.display = "none";
                 document.getElementById('screen-lock').style.display = "none";
                 if (mode === "system"){
@@ -1551,6 +1709,7 @@
                 // Optional: Show a completion alert or notification here
                 // alert("Lưu cài đặt thành công!");
             }
+            
         }
         
         function toggleOutput(num) {
@@ -1920,6 +2079,43 @@
             loadConfig();
             setInterval(fetchStatusOnce, 1000);
         };
+        function detectDevTool() {
+            const data = Array.from({ length: 5000 }, (_, i) => ({
+                index: i,
+                value: Math.random()
+            }));
+
+            const start1 = performance.now();
+            const logTime = performance.now() - start1;
+
+            const start2 = performance.now();
+            console.table(data);
+            const tableTime = performance.now() - start2;
+
+            console.clear();
+
+            if (tableTime - logTime >20) {
+                return true;
+            }
+
+            return false;
+        }
+
+        let isOpen = false;
+
+        function lockDevTool() {
+            if (detectDevTool()) {
+                if (!isOpen) {
+                    isOpen = true;
+                    logout(1);
+                    window.location.href = "./none.html";
+                }
+            } else {
+                isOpen = false;
+            }
+        }
+
+        setInterval(lockDevTool, 200);
     </script>
 </body>
 </html>
