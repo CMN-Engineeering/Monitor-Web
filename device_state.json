@@ -55,7 +55,7 @@
     "ap_pass": "12345678",
     "mqtt_name": "cmn01",
     "mqtt_pass": "1234",
-    "mqtt_link": "12.332.32.21",
+    "mqtt_link": "mqtt://mqtt://193.222.333.444",
     "mqtt_topic": "device/data",
     "mqtt_id": "asc",
     "mqtt_port": "1883",
