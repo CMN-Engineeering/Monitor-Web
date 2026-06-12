@@ -1656,11 +1656,16 @@
                     if(document.getElementById(`timer${i}_out1`)?.checked) m |= 1;
                     if(document.getElementById(`timer${i}_out2`)?.checked) m |= 2;
                     
+<<<<<<< HEAD
+                    await fetch(`/setTimer?timer=${i}&en=${en}&on=${document.getElementById(`timer${i}_on`).value||"00:00"}&off=${document.getElementById(`timer${i}_off`).value||"00:00"}&mask=${m}`);
+=======
                     await fetch(`/TimerConf?timer=${i}&en=${en}&on=${document.getElementById(`timer${i}_on`).value||"00:00"}&off=${document.getElementById(`timer${i}_off`).value||"00:00"}&mask=${m}`).then(response => response.text())
                 .then(result => {
                     showMessage(result,"info",2000);;
                 });
+>>>>>>> b6c145f427935fb92b1d541c6837b7d9e638bdc9
                     await delay(delay_time);
+               
                 }
 
                 // Wifi
