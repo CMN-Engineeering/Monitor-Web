@@ -61,7 +61,7 @@ default_device_state = {
     
     "mqtt_name" : "cmn01",
     "mqtt_pass" : "1234",
-    "mqtt_link" : "12.332.32.21",
+    "mqtt_link" : "mqtt://mqtt://193.222.333.444",
     "mqtt_topic": "device/data",
     "mqtt_id" : "asc",
     "mqtt_port" : "1883",
@@ -306,5 +306,5 @@ def reboot():
 
 if __name__ == '__main__':
     print("🚀 Server is running at: http://localhost:5000")
-    app.run(port=5000, debug=True)
+    app.run(port=5001, debug=True)
     get_config()

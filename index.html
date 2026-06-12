@@ -1755,7 +1755,10 @@
                 // 3. MQTT Config
                 setValue('mqtt_username', d.mqtt_name);
                 setValue('mqtt_password', d.mqtt_pass);
-                setValue('mqtt_link', d.mqtt_link);
+                const match = (d.mqtt_link).match(/\b(?:\d{1,3}\.){3}\d{1,3}\b/);
+
+                const ip = match ? match[0] : null;
+                setValue('mqtt_link', ip);
                 setValue('mqtt_topic', d.mqtt_topic);
                 setValue('mqtt_id', d.mqtt_id);
                 setValue('mqtt_port', d.mqtt_port);
