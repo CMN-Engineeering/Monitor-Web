@@ -305,6 +305,6 @@ def reboot():
     return "OK"
 
 if __name__ == '__main__':
-    print("🚀 Server is running at: http://localhost:5000")
+    print("🚀 Server is running at: http://localhost:5001")
     app.run(port=5001, debug=True)
     get_config()

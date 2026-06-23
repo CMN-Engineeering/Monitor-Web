@@ -1609,13 +1609,10 @@
                     }
                 } else {
                     await fetch('/MotorConf?en=0').then(response => response.text())
-                .then(result => {
-                    showMessage(result,"info",2000);;
-                });
-                    await delay(delay_time).then(response => response.text())
-                .then(result => {
-                    showMessage(result,"info",2000);;
-                });
+                    .then(result => {
+                        showMessage(result, "info", 2000);
+                    });
+                    await delay(delay_time);
                 }
 
                 // GPIOs
