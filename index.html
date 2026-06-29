@@ -625,8 +625,8 @@
                     <div style="color:#aaa; text-align:center; font-size: 0.9rem; padding: 10px;">Không có bộ hẹn giờ nào được bật.</div>
                 </div>
             </div> -->
-            <div class="card" id="output1ControlCard">
-                <div class="card-header"><i class="fas fa-fan"></i> Output 1</div>
+            <div class="card" id="machineControlCard">
+                <div class="card-header"><i class="fas fa-fan"></i>Máy Chấn</div>
                 <div class="status-indicator">
                     <div class="indicator-light stopped" id="motor1StatusLight"></div>
                     <div class="indicator-text">
@@ -639,55 +639,15 @@
                     <button class="btn medium" onclick="stopMotor(1)" style="background-color: #e94560;width:100%"><i class="fas fa-stop"></i> Dừng</button>
                 </div>
             </div>
-            <div class="card" id="output2ControlCard">
-                <div class="card-header"><i class="fas fa-fan"></i> Output 2</div>
-                <div class="status-indicator">
-                    <div class="indicator-light stopped" id="motor2StatusLight"></div>
-                    <div class="indicator-text">
-                        <span class="indicator-label">Trạng thái:</span>
-                        <span class="indicator-state" id="motor2StatusText" style="margin-top: 5px;">DỪNG</span>
-                    </div>
-                </div>
-                <div class="control-row">
-                    <!-- <button class="btn medium" onclick="startMotor(2)" style="background-color: #2ecc71;"><i class="fas fa-play"></i> Bắt đầu</button> -->
-                    <button class="btn medium" onclick="stopMotor(2)" style="background-color: #e94560;width:100%"><i class="fas fa-stop"></i> Dừng</button>
-                </div>
-            </div>
              <div class="card" id="input1ControlCard">
-                <div class="card-header"><i class="fas fa-fan"></i>Input 1</div>
-                <div class="status-indicator">
-                    <div class="indicator-light stopped" id="motor2StatusLight"></div>
-                    <div class="indicator-text">
-                        <span class="indicator-label">Trạng thái:</span>
-                        <span class="indicator-state" id="motor2StatusText" style="margin-top: 5px;">DỪNG</span>
-                    </div>
-                    
-                </div>
                 <div class="status-bar" id="input1-clickCountBar">
                 <div style="width: 100%;">
-                    <div class="card-header" style="margin-bottom: 10px;"><i class="fa-solid fa-hand-pointer"></i>Số Lần Nhấn</div>
+                    <div class="card-header" style="margin-bottom: 10px;"><i class="fa-solid fa-hand-pointer"></i>Số Lần Dập</div>
                     <div class="card-header" style="margin-bottom: 10px;" id="input1_click_count">0</div>
                 </div>
             </div>
             </div>
-            <div class="card" id="input2ControlCard">
-                <div class="card-header"><i class="fas fa-fan"></i>Input 2</div>
-                <div class="status-indicator">
-                    <div class="indicator-light stopped" id="motor2StatusLight"></div>
-                    <div class="indicator-text">
-                        <span class="indicator-label">Trạng thái:</span>
-                        <span class="indicator-state" id="motor2StatusText" style="margin-top: 5px;">DỪNG</span>
-                    </div>
-                    
-                </div>
-                <div class="status-bar" id="input2-clickCountBar">
-                <div style="width: 100%;">
-                    <div class="card-header" style="margin-bottom: 10px;"><i class="fa-solid fa-hand-pointer"></i>Số Lần Nhấn</div>
-                    <div class="card-header" style="margin-bottom: 10px;" id="input2_click_count">0</div>
-                </div>
-            </div>
-            </div>
-                
+      
             </div>
             <!--<div class="status-bar" style="flex-direction: column; align-items: stretch;">
                 <div class="card-header" style="margin-bottom: 10px;"><i class="fa-solid fa-clock"></i> NGÕ VÀO</div>
@@ -1284,217 +1244,207 @@
 
         const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
         const delay_time = 500;
+
         async function saveSettings(mode) {
-            let confirmed = false;
-            if (mode === 'system') {
-                confirmed = confirm("Lưu các settings?") ? true : false;
-            }
-            if (mode === 'dashboard') {
-                confirmed = true;
-            }
-            
-            const selectedMotorType = motorSettingOption.value;
-            
-            if (confirmed) {
+    let confirmed = false;
+    if (mode === 'system') {
+        confirmed = confirm("Lưu các settings?") ? true : false;
+    }
+    if (mode === 'dashboard') {
+        confirmed = true;
+    }
+    
+    // Helper functions to safely extract data from elements that might not exist
+    const safeGetVal = (id, fallback = '') => {
+        const el = document.getElementById(id);
+        return el ? el.value : fallback;
+    };
+    const safeGetCheck = (id, fallback = false) => {
+        const el = document.getElementById(id);
+        return el ? el.checked : fallback;
+    };
 
-                document.getElementById("screen-lock").style.display = "block";
-                document.getElementById("save-settings-wait").style.display = "flex";
-                document.getElementById("save-settings-options").style.display = "none";
-                if (mode === "system"){
-                    document.getElementById('view-settings').classList.remove("active");
-                }
-                //Validation Stage
+    const selectedMotorType = safeGetVal('motor-option', '-1');
+    
+    if (confirmed) {
 
-                for(let i=1; i<=4; i++) {
-                    if(document.getElementById(`timer${i}_en`)?.checked) {
-                        document.getElementById("screen-lock").style.display = "none";
-                        let on = document.getElementById(`timer${i}_on`).value || "00:00";
-                        let off = document.getElementById(`timer${i}_off`).value || "00:00";
-                        if(on >= off){
-                            alert(`Timer ${i}: Thời gian BẬT phải nhỏ hơn TẮT.`);
-                            return false;
-                        } 
-                        
-                        let hasTarget = ['out1','out2'].some(t => document.getElementById(`timer${i}_${t}`)?.checked);
-                        if (!hasTarget){
-                            alert(`Timer ${i} chưa chọn ngõ ra nào.`);
-                            return false
-                        }
-                    }
-                }
-
-                // Validate IP config
-                let isStatic = document.querySelector('input[name="ipConfig"]:checked').value === 'static' ? 1 : 0;
-                let ip = document.getElementById('static_ip').value;
-                let gw = document.getElementById('gateway').value;
-                let nm = document.getElementById('netmask').value;
-                if(isStatic) {
-                    const ipRegex = /^(25[0-5]|2[0-4]\d|1\d{2}|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d{2}|[1-9]?\d)){3}$/;
-                    if(!ipRegex.test(ip) || !ipRegex.test(gw) || !ipRegex.test(nm)){
-                        alert("Cấu hình IP không hợp lệ.");
-                        return false;
-                    }
-                }
-                
-                for(let i = 1; i <=2 ; i++){
-                    if(document.getElementById(`input${i}-scale-factor`).value < 0){
-                        alert(`Scale factor input ${i} không hợp lệ (nhỏ hơn 0)`)
-                        return false;
-                    }
-                }
-                // --- SEQUENTIAL FETCHES ---
-                
-                // ADC Setting
-                let adcEn = document.getElementById('adcEnableToggle').checked;
-                let v = document.getElementById('voltageLimitSlider').value;
-                let c = document.getElementById('currentLimitSlider').value;
-                
-                await fetch(`/adcEn?en=${adcEn ? 1 : 0}`).then(response => response.text())
-                .then(result => {
-                    showMessage(result,"info",2000);;
-                });
-                await delay(delay_time);
-                
-                await fetch(`/setAdcLimits?voltage=${v}&current=${c}`).then(response => response.text())
-                .then(result => {
-                    showMessage(result,"info",2000);;
-                });
-                await delay(delay_time);
-
-                // Motor Configs
-                const motorEnabled = document.getElementById('motorEnableToggle').checked;
-                if (motorEnabled) {
-                    if (selectedMotorType === '-1') {
-                        await fetch(`/MotorConf?en=1&mode=0`).then(response => response.text())
-                .then(result => {
-                    showMessage(result,"info",2000);;
-                });
-                        await delay(delay_time);
-                    }
-                    if (selectedMotorType === '1' || selectedMotorType === '3') {
-                        // Inverter Setting
-                        let model = document.getElementById('inverter_model').value;
-                        let addr = document.getElementById('inverterAddress').value.trim();
-                        let baud = document.getElementById('inverterBaudrate').value;
-                        await fetch(`/MotorConf?en=1&mode=1&model=${model}&addr=${addr}&baud=${baud}`).then(response => response.text())
-                .then(result => {
-                    showMessage(result,"info",2000);;
-                });
-                        await delay(delay_time);
-                    }
-                    if (selectedMotorType === '2' || selectedMotorType === '3') {
-                        // Contactor Setting
-                        const motor1En = document.getElementById('motor1_en').checked ? 1 : 0;
-                        const motor1OnPin = document.getElementById('motor1-output-on').value || 0;
-                        const motor1OffPin = document.getElementById('motor1-output-off').value || 0;
-                        const motor1InputFB = document.getElementById('motor1-input-feedback').value || 0;
-
-                        const motor2En = document.getElementById('motor2_en').checked ? 1 : 0;
-                        const motor2OnPin = document.getElementById('motor2-output-on').value || 0;
-                        const motor2OffPin = document.getElementById('motor2-output-off').value || 0;
-                        const motor2InputFB = document.getElementById('motor2-input-feedback').value || 0;
-
-                        await fetch(`/MotorConf?en=1&mode=2&Mot1En=${motor1En}&StartPin1=${motor1OnPin}&StopPin1=${motor1OffPin}&InputFB1=${motor1InputFB}&Mot2En=${motor2En}&StartPin2=${motor2OnPin}&StopPin2=${motor2OffPin}&InputFB2=${motor2InputFB}`).then(response => response.text())
-                .then(result => {
-                    showMessage(result,"info",2000);;
-                });
-                        await delay(delay_time);
-                    }
-                } else {
-                    await fetch('/MotorConf?en=0').then(response => response.text())
-                    .then(result => {
-                        showMessage(result, "info", 2000);
-                    });
-                    await delay(delay_time);
-                }
-
-                // GPIOs
-                let gpioEn = document.getElementById('ioEnableToggle').checked;
-                const in1_thr_en = document.getElementById('input1-thrEn-btn').checked ? 1 : 0;
-                const in2_thr_en = document.getElementById('input2-thrEn-btn').checked ? 1 : 0;
-
-                const in1_input_thr = in1_thr_en? document.getElementById('input1-threshold').value : 0;
-                const in2_input_thr = in2_thr_en? document.getElementById('input2-threshold').value : 0;
-                
-                const in1_scale_factor = document.getElementById('input1-scale-factor').value;
-                const in2_scale_factor = document.getElementById('input2-scale-factor').value;                
-
-                if(!gpioEn){
-                    await fetch(`/gpioEn?en=0`).then(response => response.text())
-                .then(result => {
-                    showMessage(result,"info",2000);;
-                });
-                }
-                else{
-                    await fetch(`/gpioEn?en=1`).then(response => response.text())
-                .then(result => {
-                    showMessage(result,"info",2000);;
-                });
-                }
-                await delay(delay_time);
-
-                await fetch('/setGpios?m=' + computeGpioMask() + `&in1_thr_en=${in1_thr_en}&in2_thr_en=${in2_thr_en}&in1_input_thr=${in1_input_thr}&in2_input_thr=${in2_input_thr}&in1_scale_factor=${in1_scale_factor}&in2_scale_factor=${in2_scale_factor}`).then(response => response.text())
-                .then(result => {
-                    showMessage(result,"info",2000);;
-                });
-                await delay(delay_time);
-
-                // Timers
-                for(let i=1; i<=4; i++) {
-                    let en = document.getElementById(`timer${i}_en`).checked ? 1 : 0;
-                    let m = 0;
-                    if(document.getElementById(`timer${i}_out1`)?.checked) m |= 1;
-                    if(document.getElementById(`timer${i}_out2`)?.checked) m |= 2;
-                    
-                    await fetch(`/TimerConf?timer=${i}&en=${en}&on=${document.getElementById(`timer${i}_on`).value||"00:00"}&off=${document.getElementById(`timer${i}_off`).value||"00:00"}&mask=${m}`);
-                    await delay(delay_time);
-               
-                }
-
-                // Wifi
-                let en = document.getElementById('sta_enable').checked ? 1 : 0;
-                let s = document.getElementById('wifi_name').value;
-                let p = document.getElementById('wifi_pass').value;
-                let body = `sta_enable=${en}&ssid=${s}&pass=${p}&isStatic=${isStatic}&ip=${encodeURIComponent(ip)}&gateway=${encodeURIComponent(gw)}&netmask=${encodeURIComponent(nm)}&`;
-                await fetch('/saveWifi', { method: 'POST', headers: {'Content-Type': 'application/x-www-form-urlencoded'}, body: body }).then(response => response.text())
-                .then(result => {
-                    showMessage(result,"info",2000);;
-                });
-                await delay(delay_time);
-
-                // AP
-                await fetch('/saveAP', { method: 'POST', headers: {'Content-Type': 'application/x-www-form-urlencoded'}, body: `ap_name=${document.getElementById('ap_name').value}&ap_pass=${document.getElementById('ap_pass').value}&` }).then(response => response.text())
-                .then(result => {
-                    showMessage(result,"info",2000);;
-                });
-                await delay(delay_time);
-
-                // MQTT
-                let name = document.getElementById('mqtt_username').value;
-                let pass = document.getElementById('mqtt_password').value;
-                let link = document.getElementById('mqtt_link_header').value + document.getElementById('mqtt_link').value;
-                let data_link = document.getElementById('mqtt_topic').value;
-                let id = document.getElementById('mqtt_id').value;
-                let port = document.getElementById('mqtt_port').value;
-                let data = `mqtt_name=${name}&mqtt_pass=${pass}&mqtt_link=${link}&mqtt_topic=${data_link}&mqtt_id=${id}&mqtt_port=${port}&`;
-                
-                console.log(`MQTT Link : ${link}`)
-                await fetch('/saveMQTT', { method: 'POST', headers: {'Content-Type': 'application/x-www-form-urlencoded'}, body: data }).then(response => response.text())
-                .then(result => {
-                    showMessage(result,"info",2000);;
-                });
-                document.getElementById("save-settings-wait").style.display = "none";
-                document.getElementById('screen-lock').style.display = "none";
-                if (mode === "system"){
-                    document.getElementById('view-settings').classList.add("active");
-                }
-                return true;
-                // Optional: Show a completion alert or notification here
-                // alert("Lưu cài đặt thành công!");
-            }
-            
+        document.getElementById("screen-lock").style.display = "block";
+        document.getElementById("save-settings-wait").style.display = "flex";
+        document.getElementById("save-settings-options").style.display = "none";
+        if (mode === "system"){
+            document.getElementById('view-settings').classList.remove("active");
         }
         
+        // --- Validation Stage ---
+        for(let i=1; i<=4; i++) {
+            if(safeGetCheck(`timer${i}_en`)) {
+                let on = safeGetVal(`timer${i}_on`, "00:00");
+                let off = safeGetVal(`timer${i}_off`, "00:00");
+                if(on >= off){
+                    document.getElementById("screen-lock").style.display = "none";
+                    document.getElementById("save-settings-wait").style.display = "none";
+                    alert(`Timer ${i}: Thời gian BẬT phải nhỏ hơn TẮT.`);
+                    return false;
+                } 
+                
+                let hasTarget = ['out1','out2'].some(t => safeGetCheck(`timer${i}_${t}`));
+                if (!hasTarget){
+                    document.getElementById("screen-lock").style.display = "none";
+                    document.getElementById("save-settings-wait").style.display = "none";
+                    alert(`Timer ${i} chưa chọn ngõ ra nào.`);
+                    return false;
+                }
+            }
+        }
+
+        // Validate IP config safely
+        let ipRadio = document.querySelector('input[name="ipConfig"]:checked');
+        let isStatic = (ipRadio && ipRadio.value === 'static') ? 1 : 0;
+        let ip = safeGetVal('static_ip');
+        let gw = safeGetVal('gateway');
+        let nm = safeGetVal('netmask');
+        
+        if(isStatic) {
+            const ipRegex = /^(25[0-5]|2[0-4]\d|1\d{2}|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d{2}|[1-9]?\d)){3}$/;
+            if(!ipRegex.test(ip) || !ipRegex.test(gw) || !ipRegex.test(nm)){
+                document.getElementById("screen-lock").style.display = "none";
+                document.getElementById("save-settings-wait").style.display = "none";
+                alert("Cấu hình IP không hợp lệ.");
+                return false;
+            }
+        }
+        
+        for(let i = 1; i <=2 ; i++){
+            let scaleFactorEl = document.getElementById(`input${i}-scale-factor`);
+            if(scaleFactorEl && scaleFactorEl.value < 0){
+                document.getElementById("screen-lock").style.display = "none";
+                document.getElementById("save-settings-wait").style.display = "none";
+                alert(`Scale factor input ${i} không hợp lệ (nhỏ hơn 0)`)
+                return false;
+            }
+        }
+        
+        // --- SEQUENTIAL FETCHES ---
+        
+        // ADC Setting
+        let adcEn = safeGetCheck('adcEnableToggle');
+        let v = safeGetVal('voltageLimitSlider', 0);
+        let c = safeGetVal('currentLimitSlider', 0);
+        
+        await fetch(`/adcEn?en=${adcEn ? 1 : 0}`).then(response => response.text())
+        .then(result => { showMessage(result,"info",2000); });
+        await delay(delay_time);
+        
+        await fetch(`/setAdcLimits?voltage=${v}&current=${c}`).then(response => response.text())
+        .then(result => { showMessage(result,"info",2000); });
+        await delay(delay_time);
+
+        // Motor Configs
+        const motorEnabled = safeGetCheck('motorEnableToggle');
+        if (motorEnabled) {
+            if (selectedMotorType === '-1') {
+                await fetch(`/MotorConf?en=1&mode=0`).then(response => response.text())
+                .then(result => { showMessage(result,"info",2000); });
+                await delay(delay_time);
+            }
+            if (selectedMotorType === '1' || selectedMotorType === '3') {
+                // Inverter Setting
+                let model = safeGetVal('inverter_model');
+                let addr = safeGetVal('inverterAddress').trim();
+                let baud = safeGetVal('inverterBaudrate');
+                await fetch(`/MotorConf?en=1&mode=1&model=${model}&addr=${addr}&baud=${baud}`).then(response => response.text())
+                .then(result => { showMessage(result,"info",2000); });
+                await delay(delay_time);
+            }
+            if (selectedMotorType === '2' || selectedMotorType === '3') {
+                // Contactor Setting
+                const motor1En = safeGetCheck('motor1_en') ? 1 : 0;
+                const motor1OnPin = safeGetVal('motor1-output-on', 0);
+                const motor1OffPin = safeGetVal('motor1-output-off', 0);
+                const motor1InputFB = safeGetVal('motor1-input-feedback', 0);
+
+                const motor2En = safeGetCheck('motor2_en') ? 1 : 0;
+                const motor2OnPin = safeGetVal('motor2-output-on', 0);
+                const motor2OffPin = safeGetVal('motor2-output-off', 0);
+                const motor2InputFB = safeGetVal('motor2-input-feedback', 0);
+
+                await fetch(`/MotorConf?en=1&mode=2&Mot1En=${motor1En}&StartPin1=${motor1OnPin}&StopPin1=${motor1OffPin}&InputFB1=${motor1InputFB}&Mot2En=${motor2En}&StartPin2=${motor2OnPin}&StopPin2=${motor2OffPin}&InputFB2=${motor2InputFB}`).then(response => response.text())
+                .then(result => { showMessage(result,"info",2000); });
+                await delay(delay_time);
+            }
+        } else {
+            await fetch('/MotorConf?en=0').then(response => response.text())
+            .then(result => { showMessage(result, "info", 2000); });
+            await delay(delay_time);
+        }
+
+        // GPIOs
+        let gpioEn = safeGetCheck('ioEnableToggle');
+        const in1_thr_en = safeGetCheck('input1-thrEn-btn') ? 1 : 0;
+        const in2_thr_en = safeGetCheck('input2-thrEn-btn') ? 1 : 0;
+
+        const in1_input_thr = in1_thr_en ? safeGetVal('input1-threshold', 0) : 0;
+        const in2_input_thr = in2_thr_en ? safeGetVal('input2-threshold', 0) : 0;
+        
+        const in1_scale_factor = safeGetVal('input1-scale-factor', 0);
+        const in2_scale_factor = safeGetVal('input2-scale-factor', 0);                
+
+        await fetch(`/gpioEn?en=${gpioEn ? 1 : 0}`).then(response => response.text())
+        .then(result => { showMessage(result,"info",2000); });
+        await delay(delay_time);
+
+        await fetch('/setGpios?m=' + computeGpioMask() + `&in1_thr_en=${in1_thr_en}&in2_thr_en=${in2_thr_en}&in1_input_thr=${in1_input_thr}&in2_input_thr=${in2_input_thr}&in1_scale_factor=${in1_scale_factor}&in2_scale_factor=${in2_scale_factor}`).then(response => response.text())
+        .then(result => { showMessage(result,"info",2000); });
+        await delay(delay_time);
+
+        // Timers
+        for(let i=1; i<=4; i++) {
+            let en = safeGetCheck(`timer${i}_en`) ? 1 : 0;
+            let m = 0;
+            if(safeGetCheck(`timer${i}_out1`)) m |= 1;
+            if(safeGetCheck(`timer${i}_out2`)) m |= 2;
+            
+            await fetch(`/TimerConf?timer=${i}&en=${en}&on=${safeGetVal(`timer${i}_on`, "00:00")}&off=${safeGetVal(`timer${i}_off`, "00:00")}&mask=${m}`);
+            await delay(delay_time);
+        }
+
+        // Wifi
+        let sta_en = safeGetCheck('sta_enable') ? 1 : 0;
+        let s = safeGetVal('wifi_name');
+        let p = safeGetVal('wifi_pass');
+        let body = `sta_enable=${sta_en}&ssid=${s}&pass=${p}&isStatic=${isStatic}&ip=${encodeURIComponent(ip)}&gateway=${encodeURIComponent(gw)}&netmask=${encodeURIComponent(nm)}&`;
+        await fetch('/saveWifi', { method: 'POST', headers: {'Content-Type': 'application/x-www-form-urlencoded'}, body: body }).then(response => response.text())
+        .then(result => { showMessage(result,"info",2000); });
+        await delay(delay_time);
+
+        // AP
+        let ap_name = safeGetVal('ap_name');
+        let ap_pass = safeGetVal('ap_pass');
+        await fetch('/saveAP', { method: 'POST', headers: {'Content-Type': 'application/x-www-form-urlencoded'}, body: `ap_name=${ap_name}&ap_pass=${ap_pass}&` }).then(response => response.text())
+        .then(result => { showMessage(result,"info",2000); });
+        await delay(delay_time);
+
+        // MQTT
+        let name = safeGetVal('mqtt_username');
+        let pass = safeGetVal('mqtt_password');
+        let link = safeGetVal('mqtt_link_header', 'mqtt://') + safeGetVal('mqtt_link');
+        let data_link = safeGetVal('mqtt_topic');
+        let id = safeGetVal('mqtt_id');
+        let port = safeGetVal('mqtt_port');
+        let data = `mqtt_name=${name}&mqtt_pass=${pass}&mqtt_link=${link}&mqtt_topic=${data_link}&mqtt_id=${id}&mqtt_port=${port}&`;
+        
+        console.log(`MQTT Link : ${link}`)
+        await fetch('/saveMQTT', { method: 'POST', headers: {'Content-Type': 'application/x-www-form-urlencoded'}, body: data }).then(response => response.text())
+        .then(result => { showMessage(result,"info",2000); });
+        
+        document.getElementById("save-settings-wait").style.display = "none";
+        document.getElementById('screen-lock').style.display = "none";
+        if (mode === "system"){
+            document.getElementById('view-settings').classList.add("active");
+        }
+        return true;
+    }
+}
         function toggleOutput(num) {
             let sw = document.getElementById(`output${num}Switch`);
             if(sw.disabled) return; 
