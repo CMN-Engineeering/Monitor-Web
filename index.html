@@ -619,43 +619,14 @@
                 </div>
             </div>
 
-            <div class="status-bar" style="flex-direction: column; align-items: stretch;">
+            <!-- <div class="status-bar" style="flex-direction: column; align-items: stretch;">
                 <div class="card-header" style="margin-bottom: 10px;"><i class="fas fa-stopwatch"></i> Bộ Hẹn Giờ Đang Hoạt Động</div>
                 <div id="activeTimersDisplay" style="display: flex; flex-direction: column; gap: 8px;">
                     <div style="color:#aaa; text-align:center; font-size: 0.9rem; padding: 10px;">Không có bộ hẹn giờ nào được bật.</div>
                 </div>
-            </div>
-            
-            <div class="card" id="motorControlCard">
-                <div class="card-header"><i class="fas fa-fan"></i> Động cơ Inverter</div>
-                <div class="status-indicator">
-                    <div class="indicator-light stopped" id="inverterStatusLight"></div>
-                    <div class="indicator-text">
-                        <span class="indicator-label">Trạng thái:</span>
-                        <span class="indicator-state" id="inverterStatusText" style="margin-top: 5px;">DỪNG</span>
-                    </div>
-                </div>
-                <div class="control-row">
-                    <button class="btn medium" onclick="startMotor(0)" style="background-color: #2ecc71;"><i class="fas fa-play"></i> Bắt đầu</button>
-                    <button class="btn medium" onclick="stopMotor(0)" style="background-color: #e94560;"><i class="fas fa-stop"></i> Dừng</button>
-                </div>
-                <div id="dirSet">
-                    <button id="dirBtn" class="dir-fwd" onclick="toggleDir()">
-                    </i> <span id="dirLabel" class="dir-fwd-label">Quay Thuận</span>
-                </button>
-                </div>
-                <div id="freqSet" style="display:block;">
-                <div class="card-header mt-2" id="freqSet"><i class="fas fa-bolt"></i> Tần số: <span id="freqVal" style="color:#e94560; margin: 0 10px;">0</span> Hz</div>
-                <div class="control-row" style="gap: 10px;">
-                    <input type="range" min="0" max="50" value="0" class="range-slider" id="freqSlider" oninput="document.getElementById('freqSlider_val').innerText=this.value" style="flex: 1;">
-                    <span id="freqSlider_val" style="color: var(--accent); font-weight: bold; min-width: 30px;">0</span>
-                </div>
-                <button class="btn medium mt-2" onclick="setFrequency()" style="background-color: #3498db;"><i class="fas fa-check"></i> Xác nhận Tần số</button>
-                <button id="testBtn" class="btn medium mt-2" onclick="testInvConfig()" style="background-color: #34db47;"><i class="fas fa-check"></i> Testing</button>
-            </div>
-            </div>
-                <div class="card" id="contactor1ControlCard">
-                <div class="card-header"><i class="fas fa-fan"></i> Động cơ Contactor 1</div>
+            </div> -->
+            <div class="card" id="output1ControlCard">
+                <div class="card-header"><i class="fas fa-fan"></i> Output 1</div>
                 <div class="status-indicator">
                     <div class="indicator-light stopped" id="motor1StatusLight"></div>
                     <div class="indicator-text">
@@ -664,12 +635,12 @@
                     </div>
                 </div>
                 <div class="control-row">
-                    <button class="btn medium" onclick="startMotor(1)" style="background-color: #2ecc71;"><i class="fas fa-play"></i> Bắt đầu</button>
-                    <button class="btn medium" onclick="stopMotor(1)" style="background-color: #e94560;"><i class="fas fa-stop"></i> Dừng</button>
+                    <!-- <button class="btn medium" onclick="startMotor(1)" style="background-color: #2ecc71;"><i class="fas fa-play"></i> Bắt đầu</button> -->
+                    <button class="btn medium" onclick="stopMotor(1)" style="background-color: #e94560;width:100%"><i class="fas fa-stop"></i> Dừng</button>
                 </div>
             </div>
-                <div class="card" id="contactor2ControlCard">
-                <div class="card-header"><i class="fas fa-fan"></i> Động cơ Contactor 2</div>
+            <div class="card" id="output2ControlCard">
+                <div class="card-header"><i class="fas fa-fan"></i> Output 2</div>
                 <div class="status-indicator">
                     <div class="indicator-light stopped" id="motor2StatusLight"></div>
                     <div class="indicator-text">
@@ -678,12 +649,47 @@
                     </div>
                 </div>
                 <div class="control-row">
-                    <button class="btn medium" onclick="startMotor(2)" style="background-color: #2ecc71;"><i class="fas fa-play"></i> Bắt đầu</button>
-                    <button class="btn medium" onclick="stopMotor(2)" style="background-color: #e94560;"><i class="fas fa-stop"></i> Dừng</button>
+                    <!-- <button class="btn medium" onclick="startMotor(2)" style="background-color: #2ecc71;"><i class="fas fa-play"></i> Bắt đầu</button> -->
+                    <button class="btn medium" onclick="stopMotor(2)" style="background-color: #e94560;width:100%"><i class="fas fa-stop"></i> Dừng</button>
                 </div>
-
             </div>
-            <div class="status-bar" style="flex-direction: column; align-items: stretch;">
+             <div class="card" id="input1ControlCard">
+                <div class="card-header"><i class="fas fa-fan"></i>Input 1</div>
+                <div class="status-indicator">
+                    <div class="indicator-light stopped" id="motor2StatusLight"></div>
+                    <div class="indicator-text">
+                        <span class="indicator-label">Trạng thái:</span>
+                        <span class="indicator-state" id="motor2StatusText" style="margin-top: 5px;">DỪNG</span>
+                    </div>
+                    
+                </div>
+                <div class="status-bar" id="input1-clickCountBar">
+                <div style="width: 100%;">
+                    <div class="card-header" style="margin-bottom: 10px;"><i class="fa-solid fa-hand-pointer"></i>Số Lần Nhấn</div>
+                    <div class="card-header" style="margin-bottom: 10px;" id="input1_click_count">0</div>
+                </div>
+            </div>
+            </div>
+            <div class="card" id="input2ControlCard">
+                <div class="card-header"><i class="fas fa-fan"></i>Input 2</div>
+                <div class="status-indicator">
+                    <div class="indicator-light stopped" id="motor2StatusLight"></div>
+                    <div class="indicator-text">
+                        <span class="indicator-label">Trạng thái:</span>
+                        <span class="indicator-state" id="motor2StatusText" style="margin-top: 5px;">DỪNG</span>
+                    </div>
+                    
+                </div>
+                <div class="status-bar" id="input2-clickCountBar">
+                <div style="width: 100%;">
+                    <div class="card-header" style="margin-bottom: 10px;"><i class="fa-solid fa-hand-pointer"></i>Số Lần Nhấn</div>
+                    <div class="card-header" style="margin-bottom: 10px;" id="input2_click_count">0</div>
+                </div>
+            </div>
+            </div>
+                
+            </div>
+            <!--<div class="status-bar" style="flex-direction: column; align-items: stretch;">
                 <div class="card-header" style="margin-bottom: 10px;"><i class="fa-solid fa-clock"></i> NGÕ VÀO</div>
                 <script>
                     for(let i=1; i<=2; i++) {
@@ -728,7 +734,7 @@
                     }
                 </script>
             </div>
-        </div>
+        </div>-->
         
         <div id="view-settings" class="view-section">
             
@@ -1895,7 +1901,7 @@
             }
         }
 
-        setInterval(lockDevTool, 200);
+        //setInterval(lockDevTool, 200);
     </script>
 </body>
 </html>
